@@ -28,11 +28,11 @@
 // module.exports = readCSVFileAsJSON;
 const { fetchAndParseCSV } = require('../services/sftpService');
 const cacheManager = require('cache-manager');
-const memoryStore = require('@cache-manager/memory-store');
+
 let cache;
 (async () => {
   cache = await cacheManager.caching({
-    store: memoryStore,
+    store: "memory",
     ttl: 900, // 15 minutes in seconds
   });
 })();
