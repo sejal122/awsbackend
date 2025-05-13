@@ -31,7 +31,7 @@ const cacheManager = require('cache-manager');
 let cache;
 (async () => {
   cache = await cacheManager.caching({
-    store: memoryStore,
+    store: "memory",
     ttl: 900, // 15 minutes in seconds
   });
 })();
