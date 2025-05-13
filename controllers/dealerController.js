@@ -30,8 +30,8 @@ const { fetchAndParseCSV } = require('../services/sftpService');
 const cacheManager = require('cache-manager');
 let cache;
 (async () => {
-  cache = await cache.caching({
-    store: memoryStore,
+  cache = await cacheManager.caching({
+    store: "memory",
     ttl: 900, // 15 minutes in seconds
   });
 })();
