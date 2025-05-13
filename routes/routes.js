@@ -9,7 +9,7 @@
 const express = require('express');
 const router = express.Router();
 const { getDealers } = require('../controllers/dealerController');
-
+const { getProducts } = require('../controllers/productsController');
 router.get('/dealers', getDealers);
-
+router.get('/products', getProducts);
 module.exports = router;
