@@ -41,7 +41,7 @@ const getDealers = async (req, res) => {
   if (dealers) {
     // If data is cached, send it
     console.log('Returning cached dealers data');
-    return res.json(dealers);
+     return res.send(dealers);
   }else{
     try {
       const data = await fetchAndParseCSV();
