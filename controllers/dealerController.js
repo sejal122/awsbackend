@@ -31,7 +31,7 @@ const cacheManager = require('cache-manager');
 let cache;
 (async () => {
   cache = await cacheManager.caching({
-    store: "memory",
+    store: memoryStore,
     ttl: 900, // 15 minutes in seconds
   });
 })();
@@ -41,12 +41,12 @@ const getDealers = async (req, res) => {
   if (dealers) {
     // If data is cached, send it
     console.log('Returning cached dealers data');
-     return res.send(dealers);
+    return res.json(dealers.data);
   }else{
     try {
       const data = await fetchAndParseCSV();
       
-      await cache.set('dealers', res.json(data));
+      await memoryCache.set('dealers', res.json(data));
       res.json(data);
       console.log(data)
     } catch (err) {
