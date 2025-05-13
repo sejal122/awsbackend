@@ -41,7 +41,7 @@ const getDealers = async (req, res) => {
   if (dealers) {
     // If data is cached, send it
     console.log('Returning cached dealers data');
-    console.log(res.json(dealers.data))
+    console.log(res.json(dealers))
     return res.json(dealers);
   }else{
     try {
