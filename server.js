@@ -97,10 +97,7 @@ const routes = require('./routes/routes');
 const cors=require('cors')
 app.use(express.json());
 
-app.use(cors({
-    origin: '    origin: 'http://13.211.119.64:3001/api/dealers' // or Vercel domain
-' // or Vercel domain
-  }));
+app.use(cors());
 app.use('/api', routes);
 
 app.listen(process.env.PORT, () => console.log(`Server running on port 3001`));
