@@ -46,7 +46,7 @@ const getDealers = async (req, res) => {
     try {
       const data = await fetchAndParseCSV();
       
-      await memoryCache.set('dealers', res.json(data));
+      await cache.set('dealers', res.json(data));
       res.json(data);
       console.log(data)
     } catch (err) {
