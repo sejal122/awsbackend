@@ -98,7 +98,8 @@ const cors=require('cors')
 app.use(express.json());
 
 app.use(cors({
-    origin: 'https://timely-chebakia-4c00b6.netlify.app' // or Vercel domain
+    origin: '    origin: 'http://13.211.119.64:3001/api/dealers' // or Vercel domain
+' // or Vercel domain
   }));
 app.use('/api', routes);
 
