@@ -28,7 +28,14 @@
 // module.exports = readCSVFileAsJSON;
 const { fetchAndParseCSV } = require('../services/sftpService');
 const cacheManager = require('cache-manager');
-const memoryCache = cacheManager.register({ store: 'memory', ttl: 15 * 60 });
+let cache;
+(async () => {
+  cache = await cacheManager.caching({
+    store: memoryStore,
+    ttl: 900, // 15 minutes in seconds
+  });
+})();
+
 const getDealers = async (req, res) => {
   let dealers = await memoryCache.get('dealers');
   if (dealers) {
