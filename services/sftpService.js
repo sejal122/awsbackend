@@ -20,5 +20,21 @@ async function fetchAndParseCSV() {
   const csvText = fileBuffer.toString('utf-8');
   return parseCSV(csvText);
 }
+async function fetchAndParseProductsCSV() {
+ 
+  await sftp.connect({
+    host: process.env.SERVER_IP,
+    port: process.env.SERVER_PORT,
+    username: process.env.SERVER_USER,
+    password: process.env.SERVER_PASS,
+  });
 
-module.exports = { fetchAndParseCSV };
+  const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Baramati/Product/Material_1010.csv');
+  console.log(fileBuffer)
+  await sftp.end();
+
+  const csvText = fileBuffer.toString('utf-8');
+  return parseCSV(csvText);
+}
+
+module.exports = { fetchAndParseCSV,fetchAndParseProductsCSV };
