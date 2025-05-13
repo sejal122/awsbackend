@@ -30,8 +30,8 @@ const { fetchAndParseCSV } = require('../services/sftpService');
 const cacheManager = require('cache-manager');
 let cache;
 (async () => {
-  cache = await cacheManager.caching({
-    store: "memory",
+  cache = await cache.caching({
+    store: memoryStore,
     ttl: 900, // 15 minutes in seconds
   });
 })();
@@ -41,13 +41,13 @@ const getDealers = async (req, res) => {
   if (dealers) {
     // If data is cached, send it
     console.log('Returning cached dealers data');
-     console.log(res.json(dealers))
-    return res.json(dealers.data);
+    console.log(res.json(dealers.data))
+    return res.json(dealers);
   }else{
     try {
       const data = await fetchAndParseCSV();
       
-      await cache.set('dealers', res.json(data));
+      await cache.set('dealers', data);
       res.json(data);
       console.log(data)
     } catch (err) {
