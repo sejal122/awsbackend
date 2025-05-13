@@ -27,16 +27,27 @@
 // }
 // module.exports = readCSVFileAsJSON;
 const { fetchAndParseCSV } = require('../services/sftpService');
-
+const cacheManager = require('cache-manager');
+const memoryCache = cacheManager.caching({ store: 'memory', ttl: 15 * 60 });
 const getDealers = async (req, res) => {
-  try {
-    const data = await fetchAndParseCSV();
-    res.json(data);
-    console.log(data)
-  } catch (err) {
-    console.error('Error fetching dealers:', err.message);
-    res.status(500).json({ error: 'Failed to fetch dealer data' });
+  let dealers = await memoryCache.get('dealers');
+  if (dealers) {
+    // If data is cached, send it
+    console.log('Returning cached dealers data');
+    return res.json(dealers);
+  }else{
+    try {
+      const data = await fetchAndParseCSV();
+      
+      await memoryCache.set('dealers', res.json(data));
+      res.json(data);
+      console.log(data)
+    } catch (err) {
+      console.error('Error fetching dealers:', err.message);
+      res.status(500).json({ error: 'Failed to fetch dealer data' });
+    }
   }
+ 
 };
 
 module.exports = { getDealers };
