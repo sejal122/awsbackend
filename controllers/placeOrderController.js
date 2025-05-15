@@ -15,7 +15,7 @@ try {
     console.log(data)
   } catch (err) {
     console.error('Error uploading orderrrrrrrrrrr', err.message);
-    res.status(500).json({ error:  err.message });
+    res.status(500).json({ error:  'Error uploading orderrrrrrrrrrr' });
   }
 }
 module.exports = { appendData };
