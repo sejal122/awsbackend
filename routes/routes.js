@@ -10,6 +10,8 @@ const express = require('express');
 const router = express.Router();
 const { getDealers } = require('../controllers/dealerController');
 const { getProducts } = require('../controllers/productsController');
+const { appendData } = require('../controllers/placeOrderController');
 router.get('/dealers', getDealers);
 router.get('/products', getProducts);
+app.post('/api/upload-csv',appendData)
 module.exports = router;
