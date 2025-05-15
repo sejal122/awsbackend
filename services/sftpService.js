@@ -49,13 +49,7 @@ async function placeOrderAndUploadFile(orderJson) {
     });
    
         const json2csvParser = new Parser();
-    orderJson=[
-    { name: 'sejal', age: 26, city: 'satara',order:[
-      {item:'item1',
-      price:'2000'}
-    ] },
-    
-  ];
+   
       const csv = json2csvParser.parse(orderJson);
       const fileName = `pendingOrders.csv`;
       const tempPath = path.join(__dirname, fileName);
