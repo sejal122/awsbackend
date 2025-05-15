@@ -13,5 +13,5 @@ const { getProducts } = require('../controllers/productsController');
 const { appendData } = require('../controllers/placeOrderController');
 router.get('/dealers', getDealers);
 router.get('/products', getProducts);
-app.post('/api/upload-csv',appendData)
+app.post('/upload-csv',appendData)
 module.exports = router;
