@@ -14,7 +14,7 @@ try {
     res.json(data);
     console.log(data)
   } catch (err) {
-    console.error('Error uploading order', err.message);
+    console.error('Error uploading orderrrrrrrrrrr', err.message);
     res.status(500).json({ error:  err.message });
   }
 }
