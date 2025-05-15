@@ -47,17 +47,18 @@ async function placeOrderAndUploadFile(orderJson) {
       username: process.env.SERVER_USER,
       password: process.env.SERVER_PASS,
     });
-   
+   console.log(orderJson)
+ 
+    
+  
         const json2csvParser = new Parser();
-   
       const csv = json2csvParser.parse(orderJson);
       const fileName = `pendingOrders.csv`;
-      const tempPath = path.join(__dirname, fileName);
+      const tempPath = path.join(__dirname, '..', 'uploads', fileName);
+      //const tempPath = path.join(__dirname, fileName);
       const targetFolder = '/DIR_MAGICAL/DIR_MAGICAL_Satara/SO'; // Change this if needed
       const finalPath = path.join(targetFolder, fileName);
-  console.log(tempPath)
   
-    console.log(finalPath)
     fs.writeFileSync(tempPath, csv, (err) => {
       if (err) {
         console.error('Error writing temp CSV file:', err);
