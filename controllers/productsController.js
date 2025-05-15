@@ -11,6 +11,7 @@ let cache;
 })();
 
 const getProducts = async (req, res) => {
+  console.log('in route')
     let products = await cache.get('products');
     if (products) {
       // If data is cached, send it
