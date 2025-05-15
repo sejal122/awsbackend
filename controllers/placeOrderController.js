@@ -1,6 +1,7 @@
 //import { placeOrderAndUploadFile } from "../services/sftpService";
 
-const placeOrderAndUploadFile=require('../services/sftpService')
+const { placeOrderAndUploadFile } = require('../services/sftpService');
+
  const  appendData=async (req,res)=> {
   console.log('hi')
     const orderJson = req.body
