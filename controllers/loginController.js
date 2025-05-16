@@ -8,7 +8,7 @@ try {
     console.log(dealers)
     console.log(typeof dealers)
     
-     dealers=Array(dealers)
+     dealers=[dealers]
      const dealer = dealers.find(d => d.Phone_number === phone);
 
     if (dealer) {
