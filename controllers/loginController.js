@@ -1,6 +1,6 @@
 const {fetchAndParseCSV} =require('../services/sftpService')
 const  handleLogin=async (req,res)=> {
-const {phone}=req.body
+const phone=req.body
 console.log("phone")
 console.log(phone)
 try {
