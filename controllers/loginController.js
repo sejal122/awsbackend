@@ -1,9 +1,9 @@
-const {verifyDealer} =require('../services/sftpService')
+const {fetchAndParseCSV} =require('../services/sftpService')
 const  handleLogin=async (req,res)=> {
 const {phone}=req.body
 console.log(phone)
 try {
-    const dealers = await verifyDealer(); // Should return array of dealer objects
+    const dealers = await fetchAndParseCSV(); // Should return array of dealer objects
     console.log(dealers)
     console.log(typeof dealers)
     const dealer = dealers.find(d => d.phone === phone);
