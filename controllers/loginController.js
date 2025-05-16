@@ -3,11 +3,13 @@ const  handleLogin=async (req,res)=> {
 const {phone}=req.body
 console.log(phone)
 try {
-    const dealers = await fetchAndParseCSV(); // Should return array of dealer objects
+    const dealers = await fetchAndParseCSV();
+    console.log("dealers") // Should return array of dealer objects
     console.log(dealers)
     console.log(typeof dealers)
+    
      dealers=Array(dealers)
-     const dealer = dealers.find(d => d.phone === phone);
+     const dealer = dealers.find(d => d.Phone_number === phone);
 
     if (dealer) {
       res.json({ success: true, dealer });
