@@ -75,4 +75,31 @@ async function placeOrderAndUploadFile(orderJson) {
   }
 
 }
-module.exports = { fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile};
+
+
+async function verifyDealer() {
+  try{
+    await sftp.connect({
+      host: process.env.SERVER_IP,
+      port: process.env.SERVER_PORT,
+      username: process.env.SERVER_USER,
+      password: process.env.SERVER_PASS,
+    });
+  
+ 
+    const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Baramati/Customer/Customer_1010.csv');
+    console.log(fileBuffer)
+    await sftp.end();
+  
+    const csvText = fileBuffer.toString('utf-8');
+   
+    console.log(csvText)
+
+  
+
+  }catch (err) {
+    console.error('SFTP Error:', err);
+  }
+
+}
+module.exports = { fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
