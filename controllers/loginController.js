@@ -6,7 +6,8 @@ try {
     const dealers = await fetchAndParseCSV(); // Should return array of dealer objects
     console.log(dealers)
     console.log(typeof dealers)
-    const dealer = dealers.find(d => d.phone === phone);
+     dealers=Array(dealers)
+     const dealer = dealers.find(d => d.phone === phone);
 
     if (dealer) {
       res.json({ success: true, dealer });
