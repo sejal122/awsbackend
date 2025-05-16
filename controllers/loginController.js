@@ -10,7 +10,8 @@ try {
     
      dealers=Object.values(dealers);
      const dealer = dealers.find(d => d.Phone_number === phone);
-
+        console.log('matching dealer')
+    console.log(dealer)
     if (dealer) {
       res.json({ success: true, dealer });
     } else {
