@@ -3,6 +3,7 @@ const  handleLogin=async (req,res)=> {
 const phone=req.body
 console.log("phone")
 console.log(phone)
+console.log(req.body)
 try {
     let dealers = await fetchAndParseCSV();
     // console.log("dealers") // Should return array of dealer objects
