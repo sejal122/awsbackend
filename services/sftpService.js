@@ -16,7 +16,7 @@ async function fetchAndParseCSV() {
   });
 
   const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Baramati/Customer/Customer_1010.csv');
-  console.log(fileBuffer)
+ // console.log(fileBuffer)
   await sftp.end();
 
   const csvText = fileBuffer.toString('utf-8');
