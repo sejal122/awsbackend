@@ -11,7 +11,10 @@ const router = express.Router();
 const { getDealers } = require('../controllers/dealerController');
 const { getProducts } = require('../controllers/productsController');
 const { appendData } = require('../controllers/placeOrderController');
+const {handleLogin} = require('../controllers/loginController')
 router.get('/dealers', getDealers);
 router.get('/products', getProducts);
 router.post('/upload-csv',appendData)
+router.post('/login',handleLogin)
+
 module.exports = router;
