@@ -13,7 +13,7 @@ try {
    
      dealers=Object.values(dealers);
     // const dealer = dealers.find(d => d.Phone_number === phone);
-    console.log(d['Telephone 1'])
+   
     const dealer = dealers.find(d => d['Telephone 1'] === phone);
 console.log(dealer)
     if (dealer) {
