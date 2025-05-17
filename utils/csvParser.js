@@ -16,7 +16,8 @@
 //     headers.forEach((header, index) => {
 //       obj[header] = values[index] || '';
 //     });
-
+      console.log('obj')
+      console.log(obj)
 //     return obj;
 //   });
 
