@@ -31,14 +31,14 @@ function parseCSV(csvString) {
 
   // Clean header line
   // const headers = lines[0].split(',').map(header =>
-  //   header.trim().replace(/^"+|"+$/g, '')
+  //   header.trim()
   // );
   const headers = lines[0].split(',').map(header =>
     header.trim()
   );
   // const data = lines.slice(1).map(line => {
   //   const values = line.split(',').map(val =>
-  //     val.trim().replace(/^"+|"+$/g, '')
+  //     val.trim()
   //   );
     const data = lines.slice(1).map(line => {
       const values = line.split(',').map(val =>
