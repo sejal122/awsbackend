@@ -10,10 +10,11 @@ try {
     // console.log("dealers") // Should return array of dealer objects
     // console.log(dealers)
     //console.log(typeof dealers)
-    let tele='Telephone 1'
+   
      dealers=Object.values(dealers);
     // const dealer = dealers.find(d => d.Phone_number === phone);
-    const dealer = dealers.find(d => d.Reagion.tele === phone);
+    console.log(d['Telephone 1'])
+    const dealer = dealers.find(d => d['Telephone 1'] === phone);
 console.log(dealer)
     if (dealer) {
       res.json({ success: true, dealer });
