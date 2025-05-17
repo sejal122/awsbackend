@@ -15,7 +15,7 @@ async function fetchAndParseCSV() {
     password: process.env.SERVER_PASS,
   });
 
-  const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Satara/Price/HANA TEMPLET GROUP WISE.csv');
+  const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Satara/Customer/Dealers.csv');
  // console.log(fileBuffer)
   await sftp.end();
 
@@ -31,7 +31,7 @@ async function fetchAndParseProductsCSV() {
     password: process.env.SERVER_PASS,
   });
 
-  const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Baramati/Product/Material_1010.csv');
+  const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Satara/Price/SAP PRICE LIST TEMPLET - 18.03.25.csv'');
   console.log(fileBuffer)
   await sftp.end();
 
