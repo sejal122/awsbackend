@@ -12,9 +12,11 @@ const { getDealers } = require('../controllers/dealerController');
 const { getProducts } = require('../controllers/productsController');
 const { appendData } = require('../controllers/placeOrderController');
 const {handleLogin} = require('../controllers/loginController')
+const {getOutstanding}= require('../controllers/outstandingController')
 router.get('/dealers', getDealers);
 router.get('/products', getProducts);
 router.post('/upload-csv',appendData)
 router.post('/login',handleLogin)
+router.get('/outstanding',getOutstanding)
 
 module.exports = router;
