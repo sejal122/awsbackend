@@ -16,12 +16,16 @@ async function fetchAndParseCSV() {
   });
 
   const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Satara/Customer/Dealers.csv');
- // console.log(fileBuffer)
+  //console.log(fileBuffer)
   await sftp.end();
 
   const csvText = fileBuffer.toString('utf-8');
   return parseCSV(csvText);
 }
+
+
+
+
 async function fetchAndParseProductsCSV() {
  
   await sftp.connect({
@@ -31,7 +35,7 @@ async function fetchAndParseProductsCSV() {
     password: process.env.SERVER_PASS,
   });
 
-  const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Satara/Price/HANA TEMPLET GROUP WISE1.csv');
+  const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Baramati/Product/Material_1010.csv');
   console.log(fileBuffer)
   await sftp.end();
 
@@ -87,7 +91,7 @@ async function verifyDealer() {
     });
   
  
-    const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Satara/Customer/Dealers.csv');
+    const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Baramati/Customer/Customer_1010.csv');
     console.log(fileBuffer)
     await sftp.end();
   
@@ -102,4 +106,20 @@ async function verifyDealer() {
   }
 
 }
-module.exports = { fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
+async function fetchOutstandingAndParseCSV() {
+ 
+  await sftp.connect({
+    host: process.env.SERVER_IP,
+    port: process.env.SERVER_PORT,
+    username: process.env.SERVER_USER,
+    password: process.env.SERVER_PASS,
+  });
+
+  const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Satara/on-account/custopen_2010.csv');
+  //console.log(fileBuffer)
+  await sftp.end();
+
+  const csvText = fileBuffer.toString('utf-8');
+  return parseCSV(csvText);
+}
+module.exports = { fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
