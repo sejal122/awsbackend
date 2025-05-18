@@ -1,5 +1,5 @@
 const { fetchOutstandingAndParseCSV } = require('../services/sftpService');
- const getOutstanding =async()=>{
+ const getOutstanding =async(req,res)=>{
     try {
         const data = await fetchOutstandingAndParseCSV();
         
