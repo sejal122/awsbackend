@@ -27,7 +27,10 @@ const getProducts = async (req, res) => {
         console.log(data)
       } catch (err) {
         console.error('Error fetching products:', err.message);
-        res.status(500).json({ error: 'Failed to fetch products data' });
+        if (!res.headersSent) {
+     res.status(500).json({ error: 'Failed to fetch products data' });
+    }
+        
       }
     }
    
