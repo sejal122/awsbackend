@@ -15,7 +15,7 @@ async function fetchAndParseCSV() {
     password: process.env.SERVER_PASS,
   });
 
-  const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Satara/Product/Dealers.csv');
+  const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Satara/Customer/Dealers.csv');
   //console.log(fileBuffer)
   await sftp.end();
 
