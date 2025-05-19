@@ -16,7 +16,7 @@ const getProducts = async (req, res) => {
     if (products) {
       // If data is cached, send it
       console.log('Returning cached products data');
-      console.log(res.json(products))
+      
       return res.json(products);
     }else{
       try {
