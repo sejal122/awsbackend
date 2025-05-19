@@ -4,10 +4,10 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const { Parser } = require('json2csv');
-const sftp = new Client();
+
 
 async function fetchAndParseCSV() {
- 
+ const sftp = new Client();
   await sftp.connect({
     host: process.env.SERVER_IP,
     port: process.env.SERVER_PORT,
@@ -27,7 +27,7 @@ async function fetchAndParseCSV() {
 
 
 async function fetchAndParseProductsCSV() {
- 
+ const sftp = new Client();
   await sftp.connect({
     host: process.env.SERVER_IP,
     port: process.env.SERVER_PORT,
@@ -44,6 +44,7 @@ async function fetchAndParseProductsCSV() {
 }
 
 async function placeOrderAndUploadFile(orderJson) {
+ const sftp = new Client();
   try{
     await sftp.connect({
       host: process.env.SERVER_IP,
@@ -82,6 +83,7 @@ async function placeOrderAndUploadFile(orderJson) {
 
 
 async function verifyDealer() {
+ const sftp = new Client();
   try{
     await sftp.connect({
       host: process.env.SERVER_IP,
@@ -107,7 +109,7 @@ async function verifyDealer() {
 
 }
 async function fetchOutstandingAndParseCSV() {
- 
+ const sftp = new Client();
   await sftp.connect({
     host: process.env.SERVER_IP,
     port: process.env.SERVER_PORT,
