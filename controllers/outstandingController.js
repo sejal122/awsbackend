@@ -7,7 +7,10 @@ const { fetchOutstandingAndParseCSV } = require('../services/sftpService');
         console.log(data)
       } catch (err) {
         console.error('Error fetching outstanding:', err.message);
-        res.status(500).json({ error: 'Failed to fetch outstanding data' });
+      if (!res.headersSent) {
+      res.status(500).json({ error: 'Failed to fetch outstanding data' });
+    }
+       
       }
 }
 
