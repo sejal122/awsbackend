@@ -23,7 +23,10 @@ console.log(dealer)
     }
   } catch (err) {
     console.error('Error fetching dealers:', err);
-    res.status(500).json({ success: false, message: 'Server error' });
+    if (!res.headersSent) {
+      res.status(500).json({ success: false, message: 'Server error' });
+    }
+   
   }
 
 
