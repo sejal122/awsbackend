@@ -41,10 +41,12 @@ function parseCSV(csvString) {
   //     val.trim()
   //   );
     const data = lines.slice(1).map(line => {
-      const values = line.split(',').map(val =>
-        val.trim()
-      );
-
+    //  const values = line.split(',').map(val =>
+    //    val.trim()
+    //  );
+ const values = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g)?.map(val =>
+      val.trim().replace(/^"+|"+$/g, '')
+    ) || [];
     const obj = {};
     headers.forEach((key, index) => {
       obj[key] = values[index] || '';
