@@ -24,7 +24,22 @@ async function fetchAndParseCSV() {
 }
 
 
+async function fetchAndParseSubDealerCSV() {
+ 
+  await sftp.connect({
+    host: process.env.SERVER_IP,
+    port: process.env.SERVER_PORT,
+    username: process.env.SERVER_USER,
+    password: process.env.SERVER_PASS,
+  });
 
+  const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Satara/Hierarchy/Dealer & Subdealer list From SAP.csv');
+  //console.log(fileBuffer)
+  await sftp.end();
+
+  const csvText = fileBuffer.toString('utf-8');
+  return parseCSV(csvText);
+}
 
 async function fetchAndParseProductsCSV() {
  const sftp = new Client();
