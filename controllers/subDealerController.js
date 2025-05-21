@@ -1,5 +1,5 @@
 
-const { fetchAndParseCSV } = require('../services/sftpService');
+const { fetchAndParseSubDealerCSV } = require('../services/sftpService');
 const getSubdealerData=async(req,res)=>{
     try {
         const data = await fetchAndParseSubDealerCSV();
