@@ -2,7 +2,7 @@
 const { fetchAndParseCSV } = require('../services/sftpService');
 const getSubdealerData=async(req,res)=>{
     try {
-        const data = await fetchAndParseCSV();
+        const data = await fetchAndParseSubDealerCSV();
         
         await cache.set('dealers', data);
         res.json(data);
