@@ -25,7 +25,7 @@ async function fetchAndParseCSV() {
 
 
 async function fetchAndParseSubDealerCSV() {
- 
+ const sftp = new Client();
   await sftp.connect({
     host: process.env.SERVER_IP,
     port: process.env.SERVER_PORT,
