@@ -4,7 +4,7 @@ const getSubdealerData=async(req,res)=>{
     try {
         const data = await fetchAndParseSubDealerCSV();
         
-        await cache.set('dealers', data);
+      
         res.json(data);
         console.log(data)
       } catch (err) {
