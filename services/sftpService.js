@@ -139,4 +139,4 @@ async function fetchOutstandingAndParseCSV() {
   const csvText = fileBuffer.toString('utf-8');
   return parseOutstandingCSV(csvText);
 }
-module.exports = { fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
+module.exports = { fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
