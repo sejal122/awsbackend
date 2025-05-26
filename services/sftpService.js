@@ -14,7 +14,7 @@ async function fetchAndParseOrderHistoryCSV() {
     password: process.env.SERVER_PASS,
   });
 
-  const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Satara/Hierarchy/Dealer & Subdealer list From SAP.csv');
+  const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Satara/orders/Orders_2010.csv');
   //console.log(fileBuffer)
   await sftp.end();
 
