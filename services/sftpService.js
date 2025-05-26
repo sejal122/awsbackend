@@ -6,7 +6,7 @@ const path = require('path');
 const { Parser } = require('json2csv');
 
 async function fetchAndParseOrderHistoryCSV() {
- 
+  const sftp = new Client();
   await sftp.connect({
     host: process.env.SERVER_IP,
     port: process.env.SERVER_PORT,
