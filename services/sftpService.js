@@ -5,7 +5,22 @@ const fs = require('fs');
 const path = require('path');
 const { Parser } = require('json2csv');
 
+async function fetchAndParseOrderHistoryCSV() {
+ 
+  await sftp.connect({
+    host: process.env.SERVER_IP,
+    port: process.env.SERVER_PORT,
+    username: process.env.SERVER_USER,
+    password: process.env.SERVER_PASS,
+  });
 
+  const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Satara/Hierarchy/Dealer & Subdealer list From SAP.csv');
+  //console.log(fileBuffer)
+  await sftp.end();
+
+  const csvText = fileBuffer.toString('utf-8');
+  return parseCSV(csvText);
+}
 async function fetchAndParseCSV() {
  const sftp = new Client();
   await sftp.connect({
@@ -139,4 +154,4 @@ async function fetchOutstandingAndParseCSV() {
   const csvText = fileBuffer.toString('utf-8');
   return parseOutstandingCSV(csvText);
 }
-module.exports = { fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
+module.exports = { fetchAndParseOrderHistoryCSV,fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
