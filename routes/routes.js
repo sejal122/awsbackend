@@ -14,11 +14,12 @@ const { appendData } = require('../controllers/placeOrderController');
 const {handleLogin} = require('../controllers/loginController')
 const {getOutstanding}= require('../controllers/outstandingController')
 const {getSubdealerData}=require('../controllers/subDealerController')
+const {getOutstanding}= require('../controllers/outstandingController')
 router.get('/dealers', getDealers);
 router.get('/products', getProducts);
 router.post('/upload-csv',appendData)
 router.post('/login',handleLogin)
 router.get('/outstanding',getOutstanding)
 router.get('/sub-dealers',getSubdealerData)
-
+router.get('/outstanding',getOutstanding)
 module.exports = router;
