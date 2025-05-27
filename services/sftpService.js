@@ -84,7 +84,7 @@ async function fetchAndParseProductsCSV() {
   console.log(fileBuffer)
   await sftp.end();
 
-  const csvText = fileBuffer.toString('utf-16le');
+  const csvText = fileBuffer.toString('utf-8');
   return parseCSV(csvText);
 }
 
