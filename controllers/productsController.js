@@ -11,14 +11,14 @@ let cache;
 })();
 
 const getProducts = async (req, res) => {
-  console.log('in route')
+  //console.log('in route')
 
       try {
         const data = await fetchAndParseProductsCSV();
         
         await cache.set('products', data);
         res.json(data);
-        console.log(data)
+       // console.log(data)
       } catch (err) {
         console.error('Error fetching products:', err.message);
         if (!res.headersSent) {
