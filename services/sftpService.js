@@ -136,6 +136,8 @@ async function placeOrderAndUploadFile(orderJson) {
       ? existingCsv.trim() + '\n' + newCsv.split('\n').slice(1).join('\n') // skip header
       : newCsv;
 
+    console.log("combined csv")
+    console.log(combinedCsv)
     
     fs.writeFileSync(tempPath, combinedCsv, (err) => {
       if (err) {
