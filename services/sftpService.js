@@ -101,8 +101,8 @@ async function placeOrderAndUploadFile(orderJson) {
  
     
   
-        const json2csvParser = new Parser();
-      const csv = json2csvParser.parse(orderJson);
+       // const json2csvParser = new Parser();
+    //  const csv = json2csvParser.parse(orderJson);
       const fileName = `pendingOrders.csv`;
       const tempPath = path.join(__dirname, '..', 'uploads', fileName);
       //const tempPath = path.join(__dirname, fileName);
