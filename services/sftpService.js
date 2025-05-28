@@ -116,6 +116,8 @@ async function placeOrderAndUploadFile(orderJson) {
     try {
       existingBuffer = await sftp.get(finalPath)
       existingCsv=existingBuffer.toString()
+      console.log('existingcsv')
+      console.log(existingCsv)
     } catch (err) {
       if (err.code !== 2) {
         console.error('Error reading existing file:', err);
