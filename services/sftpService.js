@@ -108,8 +108,40 @@ async function placeOrderAndUploadFile(orderJson) {
       //const tempPath = path.join(__dirname, fileName);
       const targetFolder = '/DIR_MAGICAL/DIR_MAGICAL_Satara/SO'; // Change this if needed
       const finalPath = path.join(targetFolder, fileName);
-  
-    fs.writeFileSync(tempPath, csv, (err) => {
+
+
+      let existingCsv = '';
+
+    // 1. Try downloading the existing file (if it exists)
+    try {
+      existingCsv = await sftp.get(remoteFilePath).then(stream => {
+        return new Promise((resolve, reject) => {
+          let data = '';
+          stream.on('data', chunk => data += chunk.toString());
+          stream.on('end', () => resolve(data));
+          stream.on('error', reject);
+        });
+      });
+    } catch (err) {
+      if (err.code !== 2) {
+        console.error('Error reading existing file:', err);
+        throw err;
+      } else {
+        console.log('No existing file found. Creating new one.');
+      }
+    }
+    
+// 2. Convert new data to CSV
+      const json2csvParser = new Parser({ header: !existingCsv }); // include header only if file is new
+    const newCsv = json2csvParser.parse(orderJson);
+
+    // 3. Combine old and new CSV data
+    const combinedCsv = existingCsv
+      ? existingCsv.trim() + '\n' + newCsv.split('\n').slice(1).join('\n') // skip header
+      : newCsv;
+
+    
+    fs.writeFileSync(tempPath, combinedCsv, (err) => {
       if (err) {
         console.error('Error writing temp CSV file:', err);
         return;
