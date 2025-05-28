@@ -87,7 +87,16 @@ async function fetchAndParseProductsCSV() {
   const csvText = fileBuffer.toString('utf-8');
   return parseCSV(csvText);
 }
-
+   function cleanAndParse(str) {
+  try {
+    const unquoted = str.replace(/^"|"$/g, '');     // remove surrounding quotes
+    const fixed = unquoted.replace(/""/g, '"');     // replace double double-quotes
+    return JSON.parse(fixed);
+  } catch (err) {
+    console.error('Parsing failed:', str);
+    return null;
+  }
+}
 async function placeOrderAndUploadFile(orderJson) {
  const sftp = new Client();
   try{
@@ -99,7 +108,7 @@ async function placeOrderAndUploadFile(orderJson) {
     });
    console.log(orderJson)
  
-    
+ 
   
        // const json2csvParser = new Parser();
     //  const csv = json2csvParser.parse(orderJson);
@@ -128,32 +137,48 @@ async function placeOrderAndUploadFile(orderJson) {
     }
     
 // 2. Convert new data to CSV
-   const existingOrders = [];
-    if (existingCsv) {
-      const [header, ...rows] = existingCsv.split('\n');
-      for (const row of rows) {
-        if (!row.trim()) continue;
-        const [orderItems, dealer, orderId, orderDate] = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/g); // CSV-safe split
-        existingOrders.push({
-          orderItems: JSON.parse(orderItems),
-          dealer: JSON.parse(dealer),
-          orderId: orderId.replace(/^"|"$/g, ''),
-          orderDate: orderDate.replace(/^"|"$/g, '')
+   const combinedOrders = [];
+ try {
+      const tempDownload = path.join(__dirname, '..', 'uploads', 'existing_' + fileName);
+      await sftp.fastGet(finalPath, tempDownload);
+
+      const fileContent = fs.readFileSync(tempDownload, 'utf-8').trim();
+      const lines = fileContent.split('\n');
+      const header = lines[0];
+      const rows = lines.slice(1);
+
+      for (let row of rows) {
+        const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); // split respecting quotes
+
+        combinedOrders.push({
+          orderItems: cleanAndParse(cols[0]),
+          dealer: cleanAndParse(cols[1]),
+          orderId: cols[2]?.replace(/^"|"$/g, ''),
+          orderDate: cols[3]?.replace(/^"|"$/g, ''),
         });
       }
+    } catch (err) {
+      console.log('No existing file or error reading existing orders. Will create new file.');
     }
 
     // 3. Combine old and new CSV data
-    existingOrders.push(orderJson); // make sure orderJson is same structure
+    combinedOrders.push(newOrder); // make sure orderJson is same structure
     
     // Step 4: Convert combined JSON to CSV
     const json2csvParser = new Parser({
       fields: ['orderItems', 'dealer', 'orderId', 'orderDate'],
       quote: '"',
-      flatten: false,
-      unwind: false
     });
-    const csv = json2csvParser.parse(existingOrders);
+    
+    const csv = json2csvParser.parse(
+      combinedOrders.map(order => ({
+        orderItems: JSON.stringify(order.orderItems),
+        dealer: JSON.stringify(order.dealer),
+        orderId: order.orderId,
+        orderDate: order.orderDate,
+      }))
+    );
+
 
     
     fs.writeFileSync(tempPath, csv, (err) => {
