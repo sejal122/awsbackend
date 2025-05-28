@@ -162,7 +162,7 @@ async function placeOrderAndUploadFile(orderJson) {
     }
 
     // 3. Combine old and new CSV data
-    combinedOrders.push(newOrder); // make sure orderJson is same structure
+    combinedOrders.push(orderJson); // make sure orderJson is same structure
     
     // Step 4: Convert combined JSON to CSV
     const json2csvParser = new Parser({
