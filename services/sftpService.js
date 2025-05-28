@@ -114,7 +114,7 @@ async function placeOrderAndUploadFile(orderJson) {
 
     // 1. Try downloading the existing file (if it exists)
     try {
-      existingCsv = await sftp.get(remoteFilePath).then(stream => {
+      existingCsv = await sftp.get(finalPath).then(stream => {
         return new Promise((resolve, reject) => {
           let data = '';
           stream.on('data', chunk => data += chunk.toString());
