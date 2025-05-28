@@ -43,7 +43,7 @@ const getDealers = async (req, res) => {
       
       await cache.set('dealers', data);
       res.json(data);
-      console.log(data)
+     // console.log(data)
     } catch (err) {
       console.error('Error fetching dealers:', err.message);
       if (!res.headersSent) {
