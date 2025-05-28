@@ -6,7 +6,7 @@ console.log(phone)
 console.log(req.body)
 try {
     let dealers = await fetchAndParseCSV();
-    console.log(dealers)
+   // console.log(dealers)
     // console.log("dealers") // Should return array of dealer objects
     // console.log(dealers)
     //console.log(typeof dealers)
@@ -15,7 +15,7 @@ try {
     // const dealer = dealers.find(d => d.Phone_number === phone);
    
     const dealer = dealers.find(d => d['Telephone 1'] === phone);
-console.log(dealer)
+//console.log(dealer)
     if (dealer) {
       res.json({ success: true, dealer });
     } else {
