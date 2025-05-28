@@ -108,7 +108,7 @@ async function placeOrderAndUploadFile(orderJson) {
       //const tempPath = path.join(__dirname, fileName);
       const targetFolder = '/DIR_MAGICAL/DIR_MAGICAL_Satara/SO'; // Change this if needed
       const finalPath = path.join(targetFolder, fileName);
-
+      const remotePath = `/DIR_MAGICAL/DIR_MAGICAL_Satara/SO/${fileName}`;
 
       let existingCsv = '';
 
@@ -128,18 +128,35 @@ async function placeOrderAndUploadFile(orderJson) {
     }
     
 // 2. Convert new data to CSV
-      const json2csvParser = new Parser({ header: !existingCsv }); // include header only if file is new
-    const newCsv = json2csvParser.parse(orderJson);
+   const existingOrders = [];
+    if (existingCsv) {
+      const [header, ...rows] = existingCsv.split('\n');
+      for (const row of rows) {
+        if (!row.trim()) continue;
+        const [orderItems, dealer, orderId, orderDate] = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/g); // CSV-safe split
+        existingOrders.push({
+          orderItems: JSON.parse(orderItems),
+          dealer: JSON.parse(dealer),
+          orderId: orderId.replace(/^"|"$/g, ''),
+          orderDate: orderDate.replace(/^"|"$/g, '')
+        });
+      }
+    }
 
     // 3. Combine old and new CSV data
-    const combinedCsv = existingCsv
-      ? existingCsv.trim() + '\n' + newCsv.split('\n').slice(1).join('\n') // skip header
-      : newCsv;
-
-    console.log("combined csv")
-    console.log(combinedCsv)
+    existingOrders.push(orderJson); // make sure orderJson is same structure
     
-    fs.writeFileSync(tempPath, combinedCsv, (err) => {
+    // Step 4: Convert combined JSON to CSV
+    const json2csvParser = new Parser({
+      fields: ['orderItems', 'dealer', 'orderId', 'orderDate'],
+      quote: '"',
+      flatten: false,
+      unwind: false
+    });
+    const csv = json2csvParser.parse(existingOrders);
+
+    
+    fs.writeFileSync(tempPath, csv, (err) => {
       if (err) {
         console.error('Error writing temp CSV file:', err);
         return;
@@ -148,7 +165,7 @@ async function placeOrderAndUploadFile(orderJson) {
       console.log(`CSV file created at: ${tempPath}`);
   
     });
-  await sftp.put(tempPath, finalPath);
+  await sftp.put(tempPath, remotePath);
   await sftp.end();
   }catch (err) {
     console.error('SFTP Error:', err);
