@@ -16,6 +16,7 @@ const {getOutstanding}= require('../controllers/outstandingController')
 const {getSubdealerData}=require('../controllers/subDealerController')
 const {getOrderHistory} =require('../controllers/orderHistoryController')
 const {dealerTarget}=require('../controllers/dealerTargetController')
+const {getpendingOrders}=require('../controllers/pendingOrderController')
 router.get('/dealers', getDealers);
 router.get('/products', getProducts);
 router.post('/upload-csv',appendData)
