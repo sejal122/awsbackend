@@ -103,7 +103,12 @@ function splitCSVLine(line) {
 
   for (let i = 0; i < line.length; i++) {
     const char = line[i];
-    if (char === '"') {
+    const nextChar = line[i + 1];
+
+    if (char === '"' && nextChar === '"') {
+      current += '"';
+      i++;
+    } else if (char === '"') {
       inQuotes = !inQuotes;
     } else if (char === ',' && !inQuotes) {
       result.push(current);
@@ -112,43 +117,12 @@ function splitCSVLine(line) {
       current += char;
     }
   }
+
   result.push(current);
   return result;
 }
-
-// Try parsing rawValue or fix malformed JSON-like structure
-function tryFixMalformedJSON(rawValue) {
-  try {
-    return JSON.parse(rawValue);
-  } catch {
-    // Attempt to fix keys & string values (add quotes)
-    const fixed = rawValue
-      .replace(/([{,])\s*([^":\[\]{},\s]+)\s*:/g, '$1"$2":') // fix keys
-      .replace(/:\s*([^"\[{][^,\]}]*)/g, (match, val) => {
-        // Add quotes only if the value is not number/boolean/null
-        const trimmed = val.trim();
-        if (
-          /^-?\d+(\.\d+)?$/.test(trimmed) || // number
-          /^(true|false|null)$/.test(trimmed) // boolean/null
-        ) {
-          return `:${trimmed}`;
-        } else {
-          return `:"${trimmed}"`;
-        }
-      });
-
-    try {
-      return JSON.parse(fixed);
-    } catch (err) {
-      // Still invalid, return original string
-      return rawValue;
-    }
-  }
-}
-
-
 function parsePendingOrderCSV(csvString) {
-    const lines = csvString.trim().split('\n');
+  const lines = csvString.trim().split('\n');
   if (lines.length < 2) return [];
 
   const headers = splitCSVLine(lines[0]);
@@ -158,19 +132,27 @@ function parsePendingOrderCSV(csvString) {
     const obj = {};
 
     headers.forEach((key, index) => {
-      let rawValue = values[index] || '';
+      let value = values[index]?.trim() || '';
 
-      // Remove outer quotes if present
-      if (
-        rawValue.startsWith('"') &&
-        rawValue.endsWith('"')
-      ) {
-        rawValue = rawValue.slice(1, -1);
+      // Special case for `orderItems` field
+      if (key === 'orderItems' && typeof value === 'string') {
+        try {
+          // Remove outer quotes if present
+          if (value.startsWith('"') && value.endsWith('"')) {
+            value = value.slice(1, -1);
+          }
+
+          // Unescape double quotes
+          value = value.replace(/\\"/g, '"');
+
+          // Final parse
+          value = JSON.parse(value);
+        } catch (e) {
+          console.warn('Could not parse orderItems:', value);
+        }
       }
 
-      // Fix and parse malformed JSON
-      const fixedJSON = tryFixMalformedJSON(rawValue);
-      obj[key] = fixedJSON;
+      obj[key] = value;
     });
 
     return obj;
