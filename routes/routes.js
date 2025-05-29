@@ -24,4 +24,5 @@ router.get('/outstanding',getOutstanding)
 router.get('/sub-dealers',getSubdealerData)
 router.get('/orderHistory',getOrderHistory)
 router.get('/dealerTarget',dealerTarget)
+router.get('/pendingorderHistory',getpendingOrders)
 module.exports = router;
