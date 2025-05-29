@@ -96,4 +96,64 @@ function parseOutstandingCSV(csvString) {
   return data;
   
 }
-module.exports = {parseCSV,parseOutstandingCSV};
+function splitCSVLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    const nextChar = line[i + 1];
+
+    if (char === '"' && nextChar === '"') {
+      current += '"';
+      i++; // skip next quote
+    } else if (char === '"') {
+      inQuotes = !inQuotes;
+    } else if (char === ',' && !inQuotes) {
+      result.push(current);
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+
+  result.push(current);
+  return result;
+}
+function parsePendingOrderCSV(csvString) {
+  const lines = csvString.trim().split('\n');
+
+  if (lines.length < 2) return [];
+
+  // Extract headers
+  const headers = lines[0].split(',').map(header => header.trim());
+
+  // Parse data lines
+  const data = lines.slice(1).map(line => {
+    const values = splitCSVLine(line); // handles quoted JSON commas
+
+    const obj = {};
+    headers.forEach((key, index) => {
+      let value = values[index]?.trim() || '';
+
+      // Try to parse as JSON if it starts and ends with { or [
+      if ((value.startsWith('{') && value.endsWith('}')) || 
+          (value.startsWith('[') && value.endsWith(']'))) {
+        try {
+          // Replace double-double quotes for proper JSON parsing
+          value = JSON.parse(value.replace(/""/g, '"'));
+        } catch (e) {
+          console.warn('JSON parse error in field:', key, value);
+        }
+      }
+
+      obj[key] = value;
+    });
+
+    return obj;
+  });
+
+  return data;
+}
+module.exports = {parseCSV,parseOutstandingCSV,parsePendingOrderCSV};
