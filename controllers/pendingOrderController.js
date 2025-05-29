@@ -7,8 +7,8 @@ const getpendingOrders=async(req,res)=>{
         res.json(data);
         console.log(data)
       } catch (err) {
-        console.error('Error fetching dealers:', err.message);
-        res.status(500).json({ error: 'Failed to fetch dealer data' });
+        console.error('Error fetching pending orders:', err.message);
+        res.status(500).json({ error: 'Failed to fetch pending order data' });
       }
 }
 module.exports = { getpendingOrders };
