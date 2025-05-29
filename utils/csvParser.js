@@ -123,28 +123,25 @@ function splitCSVLine(line) {
 }
 function parsePendingOrderCSV(csvString) {
   const lines = csvString.trim().split('\n');
-
   if (lines.length < 2) return [];
 
-  // Extract headers
-  const headers = lines[0].split(',').map(header => header.trim());
+  const headers = splitCSVLine(lines[0]);
 
-  // Parse data lines
   const data = lines.slice(1).map(line => {
-    const values = splitCSVLine(line); // handles quoted JSON commas
-
+    const values = splitCSVLine(line);
     const obj = {};
+
     headers.forEach((key, index) => {
       let value = values[index]?.trim() || '';
 
-      // Try to parse as JSON if it starts and ends with { or [
-      if ((value.startsWith('{') && value.endsWith('}')) || 
+      // Fix badly escaped JSON strings (like orderItems)
+      if ((value.startsWith('{') && value.endsWith('}')) ||
           (value.startsWith('[') && value.endsWith(']'))) {
         try {
-          // Replace double-double quotes for proper JSON parsing
+          // Handle extra escape characters
           value = JSON.parse(value.replace(/""/g, '"'));
         } catch (e) {
-          console.warn('JSON parse error in field:', key, value);
+          console.warn(`Failed to parse field ${key}:`, value);
         }
       }
 
