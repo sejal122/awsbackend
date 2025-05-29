@@ -135,23 +135,20 @@ const lines = csvString.trim().split('\n');
     headers.forEach((key, index) => {
       let value = values[index]?.trim() || '';
 
-      // Check if it's a stringified JSON object/array
-      const looksLikeJSON = value.startsWith('"{"') || value.startsWith('"[');
-      
-      if (looksLikeJSON) {
+      // Try to parse value if it's a stringified JSON object or array
+      if (
+        (value.startsWith('"{"') && value.endsWith('"}')) || // Object
+        (value.startsWith('"[') && value.endsWith(']"'))     // Array
+      ) {
         try {
-          // Remove outer quotes
-          if (value.startsWith('"') && value.endsWith('"')) {
-            value = value.slice(1, -1);
-          }
-
+          // Strip outer quotes
+          value = value.slice(1, -1);
           // Unescape quotes
           value = value.replace(/\\"/g, '"');
-
-          // Parse to object/array
+          // Convert to object/array
           value = JSON.parse(value);
         } catch (e) {
-          console.warn(`Could not parse JSON field: ${key}`, value);
+          console.warn(`Could not parse JSON in field "${key}":`, value);
         }
       }
 
