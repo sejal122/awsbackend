@@ -112,14 +112,43 @@ function splitCSVLine(line) {
       current += char;
     }
   }
-
   result.push(current);
   return result;
 }
 
+// Try parsing rawValue or fix malformed JSON-like structure
+function tryFixMalformedJSON(rawValue) {
+  try {
+    return JSON.parse(rawValue);
+  } catch {
+    // Attempt to fix keys & string values (add quotes)
+    const fixed = rawValue
+      .replace(/([{,])\s*([^":\[\]{},\s]+)\s*:/g, '$1"$2":') // fix keys
+      .replace(/:\s*([^"\[{][^,\]}]*)/g, (match, val) => {
+        // Add quotes only if the value is not number/boolean/null
+        const trimmed = val.trim();
+        if (
+          /^-?\d+(\.\d+)?$/.test(trimmed) || // number
+          /^(true|false|null)$/.test(trimmed) // boolean/null
+        ) {
+          return `:${trimmed}`;
+        } else {
+          return `:"${trimmed}"`;
+        }
+      });
+
+    try {
+      return JSON.parse(fixed);
+    } catch (err) {
+      // Still invalid, return original string
+      return rawValue;
+    }
+  }
+}
+
 
 function parsePendingOrderCSV(csvString) {
-  const lines = csvString.trim().split('\n');
+    const lines = csvString.trim().split('\n');
   if (lines.length < 2) return [];
 
   const headers = splitCSVLine(lines[0]);
@@ -131,7 +160,7 @@ function parsePendingOrderCSV(csvString) {
     headers.forEach((key, index) => {
       let rawValue = values[index] || '';
 
-      // Remove outer quotes if they exist
+      // Remove outer quotes if present
       if (
         rawValue.startsWith('"') &&
         rawValue.endsWith('"')
@@ -139,19 +168,9 @@ function parsePendingOrderCSV(csvString) {
         rawValue = rawValue.slice(1, -1);
       }
 
-      // Try parsing JSON if it looks like an object or array
-      const isLikelyJSON = (rawValue.startsWith('{') && rawValue.endsWith('}')) ||
-                           (rawValue.startsWith('[') && rawValue.endsWith(']'));
-
-      if (isLikelyJSON) {
-        try {
-          obj[key] = JSON.parse(rawValue);
-        } catch (e) {
-          obj[key] = rawValue;
-        }
-      } else {
-        obj[key] = rawValue;
-      }
+      // Fix and parse malformed JSON
+      const fixedJSON = tryFixMalformedJSON(rawValue);
+      obj[key] = fixedJSON;
     });
 
     return obj;
