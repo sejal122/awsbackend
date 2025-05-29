@@ -132,6 +132,7 @@ function parsePendingOrderCSV(csvString) {
     const obj = {};
 
     headers.forEach((key, index) => {
+         let value = values[index]?.trim() || '';
          if (key === 'orderItems' && typeof value === 'string') {
   try {
     value = JSON.parse(value.replace(/^"+|"+$/g, '').replace(/""/g, '"'));
@@ -139,7 +140,7 @@ function parsePendingOrderCSV(csvString) {
     console.warn('Could not parse orderItems:', value);
   }
 }
-      let value = values[index]?.trim() || '';
+      
 
       // Fix badly escaped JSON strings (like orderItems)
       if ((value.startsWith('{') && value.endsWith('}')) ||
