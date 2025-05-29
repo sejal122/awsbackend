@@ -135,21 +135,23 @@ const lines = csvString.trim().split('\n');
     headers.forEach((key, index) => {
       let value = values[index]?.trim() || '';
 
-      // Special case for `orderItems` field
-      if (key === 'orderItems' && typeof value === 'string') {
+      // Check if it's a stringified JSON object/array
+      const looksLikeJSON = value.startsWith('"{"') || value.startsWith('"[');
+      
+      if (looksLikeJSON) {
         try {
-          // Remove outer quotes if present
+          // Remove outer quotes
           if (value.startsWith('"') && value.endsWith('"')) {
             value = value.slice(1, -1);
           }
 
-          // Unescape double quotes
+          // Unescape quotes
           value = value.replace(/\\"/g, '"');
 
-          // Final parse
+          // Parse to object/array
           value = JSON.parse(value);
         } catch (e) {
-          console.warn('Could not parse orderItems:', value);
+          console.warn(`Could not parse JSON field: ${key}`, value);
         }
       }
 
