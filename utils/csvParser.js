@@ -103,12 +103,7 @@ function splitCSVLine(line) {
 
   for (let i = 0; i < line.length; i++) {
     const char = line[i];
-    const nextChar = line[i + 1];
-
-    if (char === '"' && nextChar === '"') {
-      current += '"';
-      i++;
-    } else if (char === '"') {
+    if (char === '"') {
       inQuotes = !inQuotes;
     } else if (char === ',' && !inQuotes) {
       result.push(current);
@@ -122,8 +117,9 @@ function splitCSVLine(line) {
   return result;
 }
 
+
 function parsePendingOrderCSV(csvString) {
-const lines = csvString.trim().split('\n');
+  const lines = csvString.trim().split('\n');
   if (lines.length < 2) return [];
 
   const headers = splitCSVLine(lines[0]);
@@ -133,26 +129,29 @@ const lines = csvString.trim().split('\n');
     const obj = {};
 
     headers.forEach((key, index) => {
-      let value = values[index]?.trim() || '';
+      let rawValue = values[index] || '';
 
-      // Try to parse value if it's a stringified JSON object or array
+      // Remove outer quotes if they exist
       if (
-        (value.startsWith('"{"') && value.endsWith('"}')) || // Object
-        (value.startsWith('"[') && value.endsWith(']"'))     // Array
+        rawValue.startsWith('"') &&
+        rawValue.endsWith('"')
       ) {
-        try {
-          // Strip outer quotes
-          value = value.slice(1, -1);
-          // Unescape quotes
-          value = value.replace(/\\"/g, '"');
-          // Convert to object/array
-          value = JSON.parse(value);
-        } catch (e) {
-          console.warn(`Could not parse JSON in field "${key}":`, value);
-        }
+        rawValue = rawValue.slice(1, -1);
       }
 
-      obj[key] = value;
+      // Try parsing JSON if it looks like an object or array
+      const isLikelyJSON = (rawValue.startsWith('{') && rawValue.endsWith('}')) ||
+                           (rawValue.startsWith('[') && rawValue.endsWith(']'));
+
+      if (isLikelyJSON) {
+        try {
+          obj[key] = JSON.parse(rawValue);
+        } catch (e) {
+          obj[key] = rawValue;
+        }
+      } else {
+        obj[key] = rawValue;
+      }
     });
 
     return obj;
