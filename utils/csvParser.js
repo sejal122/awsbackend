@@ -107,7 +107,7 @@ function splitCSVLine(line) {
 
     if (char === '"' && nextChar === '"') {
       current += '"';
-      i++; // skip next quote
+      i++;
     } else if (char === '"') {
       inQuotes = !inQuotes;
     } else if (char === ',' && !inQuotes) {
@@ -121,8 +121,9 @@ function splitCSVLine(line) {
   result.push(current);
   return result;
 }
+
 function parsePendingOrderCSV(csvString) {
-  const lines = csvString.trim().split('\n');
+const lines = csvString.trim().split('\n');
   if (lines.length < 2) return [];
 
   const headers = splitCSVLine(lines[0]);
@@ -132,24 +133,23 @@ function parsePendingOrderCSV(csvString) {
     const obj = {};
 
     headers.forEach((key, index) => {
-         let value = values[index]?.trim() || '';
-         if (key === 'orderItems' && typeof value === 'string') {
-  try {
-    value = JSON.parse(value.replace(/^"+|"+$/g, '').replace(/""/g, '"'));
-  } catch (e) {
-    console.warn('Could not parse orderItems:', value);
-  }
-}
-      
+      let value = values[index]?.trim() || '';
 
-      // Fix badly escaped JSON strings (like orderItems)
-      if ((value.startsWith('{') && value.endsWith('}')) ||
-          (value.startsWith('[') && value.endsWith(']'))) {
+      // Special case for `orderItems` field
+      if (key === 'orderItems' && typeof value === 'string') {
         try {
-          // Handle extra escape characters
-          value = JSON.parse(value.replace(/""/g, '"'));
+          // Remove outer quotes if present
+          if (value.startsWith('"') && value.endsWith('"')) {
+            value = value.slice(1, -1);
+          }
+
+          // Unescape double quotes
+          value = value.replace(/\\"/g, '"');
+
+          // Final parse
+          value = JSON.parse(value);
         } catch (e) {
-          console.warn(`Failed to parse field ${key}:`, value);
+          console.warn('Could not parse orderItems:', value);
         }
       }
 
