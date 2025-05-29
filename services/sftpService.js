@@ -255,6 +255,6 @@ async function fetchAndParsependingOrdersCSV() {
   await sftp.end();
 
   const csvText = fileBuffer.toString('utf-8');
-  return parseCSV(csvText);
+  return csvText;
 }
 module.exports = {fetchAndParsependingOrdersCSV,fetchAndParseDealerTargetCSV, fetchAndParseOrderHistoryCSV,fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
