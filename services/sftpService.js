@@ -107,7 +107,11 @@ function formatDate(dateString) {
   return `${day}.${month}.${year}`;
 }
 async function placeOrderAndUploadFile(orderJsonInput) {
-  const orderJson = Array.isArray(orderJsonInput) ? orderJsonInput : [orderJsonInput];
+ const orderJson = Array.isArray(orderJsonInput)
+  ? orderJsonInput
+  : orderJsonInput
+  ? [orderJsonInput]
+  : [];
    const sftp = new Client();
 
   try {
@@ -122,6 +126,23 @@ async function placeOrderAndUploadFile(orderJsonInput) {
     const tempPath = path.join(__dirname, "..", "uploads", fileName);
     const remotePath = `/DIR_MAGICAL/DIR_MAGICAL_Satara/SO/${fileName}`;
 
+     let existingRows = [];
+
+  // Step 1: Check if file exists and download it
+  const fileExists = await sftp.exists(remotePath);
+  if (fileExists) {
+    await sftp.fastGet(remotePath, tempPath);
+
+    // Step 2: Parse existing CSV to JSON
+    const data = fs.readFileSync(tempPath);
+    await new Promise((resolve, reject) => {
+      fs.createReadStream(tempPath)
+        .pipe(csvParser())
+        .on("data", (row) => existingRows.push(row))
+        .on("end", resolve)
+        .on("error", reject);
+    });
+  }
     // Flatten orderJson into individual item rows
     const flattenedRows = [];
     let srNo = 1;
@@ -183,13 +204,15 @@ async function placeOrderAndUploadFile(orderJsonInput) {
 
       srNo++; // Increment for next dealer
     });
-
+ const allRows = [...existingRows, ...flattenedRows];
     // Generate CSV
     const json2csvParser = new Parser({
-      fields: Object.keys(flattenedRows[0]),
+     fields: allRows.length
+  ? Object.keys(allRows[0])
+  : ["SR NO", "Doc type", "Sales org", "Sales off(Headquarter)", "Dist channel", "Division", "Sector", "Doc date", "Payment terms", "purch_no_c", "purch_date", "req_date_h", "sold_to", "Account Name", "City", "Street Add", "Phone", "Sold_Region", "ship_to", "Name", "City_name", "Street_Add", "PhoneNumber", "Ship_Region", "bill_to", "payer", "plant", "itm_number", "material", "target_qty", "target_qu", "cust_mat35", "sched_type", "sched_line", "sch_DATE", "req_qty", "Incoterms", "Place", "Cond Type - ZPR0", "Cond Value"]
     });
 
-    const csv = json2csvParser.parse(flattenedRows);
+    const csv = json2csvParser.parse(allRows);
     fs.writeFileSync(tempPath, csv);
 
     // Upload to SFTP
