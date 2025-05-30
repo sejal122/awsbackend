@@ -100,7 +100,7 @@ async function fetchAndParseProductsCSV() {
 
 const Papa = require('papaparse');
 
-async function placeOrderAndUploadFile(orderJson) {
+async function placeOrderAndUploadFile(orderJsonInput) {
   const orderJson = Array.isArray(orderJsonInput) ? orderJsonInput : [orderJsonInput];
    const sftp = new Client();
 
