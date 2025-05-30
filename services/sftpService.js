@@ -147,63 +147,68 @@ async function placeOrderAndUploadFile(orderJsonInput) {
     const flattenedRows = [];
     let srNo = 1;
 
-    orderJson.forEach((order) => {
-      const dealerId = order.dealerId || "";
-      const dealerName = order.dealerName || "";
-      const subDealerId = order.subDealerId || "";
-      const subDealerName = order.subDealerName || "";
-      const docDate = formatDate(order.savedAt || new Date());
-      const items = order.orderItems || [];
-      items.forEach((item, index) => {
-        const product = item.items.product || {};
-        const quantity = item.items.quantity || "";
+orderJson.forEach((order) => {
+         const dealerId = order.dealerId || "";
+         const dealerName = order.dealerName || "";
+         const subDealerId = order.subDealerId || "";
+         
+         const docDate = formatDate(order.orderDate || "");
+         const items = order.orderItems || [];
 
-        flattenedRows.push({
-          "SR NO": srNo,
-          "Doc type": "ZOR",
-          "Sales org": "2000",
-          "Sales off(Headquarter)":  "",
-          "Dist channel": "10",
-          "Division": "10",
-          "Sector": "",
-          "Doc date": docDate,
-          "Payment terms": "",
-          "purch_no_c": order.orderId,
-          "purch_date": docDate,
-          "req_date_h": "00.00.0000",
-          "sold_to":  dealerId,
-          "Account Name": dealerName,
-          "City":  "",
-          "Street Add": "NA",
-          "Phone": "",
-          "Sold_Region":"",
-          "ship_to": subDealerId || dealerId,
-          "Name": "",
-          "City_name": "",
-          "Street_Add": "",
-          "PhoneNumber": "",
-          "Ship_Region": "",
-          "bill_to": "",
-          "payer": "",
-          "plant": "2010",
-          "itm_number": (index + 1) * 10,
-          "material": product["Material CODE"] || "",
-          "target_qty": quantity,
-          "target_qu": "BAG",
-          "cust_mat35": product["Material Name"] || "",
-          "sched_type": "CP",
-          "sched_line": "1",
-          "sch_DATE": "00.00.0000",
-          "req_qty": quantity,
-          "Incoterms": "",
-          "Place": "",
-          "Cond Type - ZPR0": product["Pricing Condition"] || "",
-          "Cond Value": product["Price"] || "",
-        });
-      });
+         items.items.forEach((item, index) => {
+           const product = item.items.product || {};
+           
 
-      srNo++; // Increment for next dealer
-    });
+            items.orderItems.forEach((subitem,index)=>{
+                const quantity = subitem.quantity || "";
+                flattenedRows.push({
+                    "SR NO": srNo,
+                    "Doc type": "ZOR",
+                    "Sales org": "2000",
+                    "Sales off(Headquarter)":  "",
+                    "Dist channel": "10",
+                    "Division": "10",
+                    "Sector": "",
+                    "Doc date": docDate,
+                    "Payment terms": "",
+                    "purch_no_c": order.orderId,
+                    "purch_date": docDate,
+                    "req_date_h": "00.00.0000",
+                    "sold_to":  dealerId,
+                    "Account Name": dealerName,
+                    "City":  "",
+                    "Street Add": "NA",
+                    "Phone": "",
+                    "Sold_Region":"",
+                    "ship_to": subDealerId || dealerId,
+                    "Name": "",
+                    "City_name": "",
+                    "Street_Add": "",
+                    "PhoneNumber": "",
+                    "Ship_Region": "",
+                    "bill_to": "",
+                    "payer": "",
+                    "plant": "2010",
+                    "itm_number": (index + 1) * 10,
+                    "material": subitem.product["Material CODE"] || "",
+                    "target_qty": quantity,
+                    "target_qu": "BAG",
+                    "cust_mat35": subitem.product["Material Name"] || "",
+                    "sched_type": "CP",
+                    "sched_line": "1",
+                    "sch_DATE": "00.00.0000",
+                    "req_qty": quantity,
+                    "Incoterms": "",
+                    "Place": "",
+                    "Cond Type - ZPR0": subitem.product["Pricing Condition"] || "",
+                    "Cond Value": subitem.product["Price"] || "",
+                  });
+            })
+          
+         });
+   
+         srNo++; // Increment for next dealer
+       });
  const allRows = [...existingRows, ...flattenedRows];
     // Generate CSV
     const json2csvParser = new Parser({
