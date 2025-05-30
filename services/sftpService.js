@@ -101,10 +101,7 @@ async function fetchAndParseProductsCSV() {
 const Papa = require('papaparse');
 
 async function placeOrderAndUploadFile(orderJson) {
-  const sftp = new Client();
-  const fileName = `pendingOrders.csv`;
-  const tempPath = path.join(__dirname, '..', 'uploads', fileName);
-  const remotePath = `/DIR_MAGICAL/DIR_MAGICAL_Satara/SO/${fileName}`;
+   const sftp = new Client();
 
   try {
     await sftp.connect({
@@ -114,83 +111,88 @@ async function placeOrderAndUploadFile(orderJson) {
       password: process.env.SERVER_PASS,
     });
 
-    // 1. Read existing file if any
-    let existingRows = [];
-    try {
-      const tempDownload = path.join(__dirname, '..', 'uploads', 'existing_' + fileName);
-      await sftp.fastGet(remotePath, tempDownload);
+    const fileName = `pendingOrders.csv`;
+    const tempPath = path.join(__dirname, "..", "uploads", fileName);
+    const remotePath = `/DIR_MAGICAL/DIR_MAGICAL_Satara/SO/${fileName}`;
 
-      const fileContent = fs.readFileSync(tempDownload, 'utf-8').trim();
-      const parsed = Papa.parse(fileContent, { header: true });
-      existingRows = parsed.data.filter(row => row['OrderID']); // ignore empty lines
-    } catch (err) {
-      console.log('No existing file or error reading existing orders. Creating new one.');
-    }
+    // Flatten orderJson into individual item rows
+    const flattenedRows = [];
+    let srNo = 1;
 
-    // 2. Determine current max Sr. No.
-    let currentSrNo = 0;
-    if (existingRows.length > 0) {
-      const srNos = existingRows.map(row => parseInt(row['Sr. No.'] || '0')).filter(n => !isNaN(n));
-      currentSrNo = srNos.length > 0 ? Math.max(...srNos) : 0;
-    }
+    orderJson.forEach((order) => {
+      const dealerId = order.dealerId || "";
+      const dealerName = order.dealerName || "";
+      const subDealerId = order.subDealerId || "";
+      const subDealerName = order.subDealerName || "";
+      const docDate = formatDate(order.savedAt || new Date());
+      const items = order.items || [];
+      items.forEach((item, index) => {
+        const product = item.product || {};
+        const quantity = item.quantity || "";
 
-    // 3. Flatten incoming orderJson into rows
-const newRows = orderJson.orderItems.map((item, index)=> ({
-  "SR NO": currentSrNo + 1,
-  "Doc type": "ZOR",
-  "Sales org": "2000",
-  "Sales off(Headquarter)": "",
-  "Dist channel": "10",
-  "Division": "10",
-  "Sector": "",
-  "Doc date": orderJson.orderDate || "",
-  "Payment terms": "",
-  "purch_no_c": orderJson.orderId || "",
-  "purch_date": orderJson.orderDate || "",
-  "req_date_h": "00.00.0000",
-  "sold_to": orderJson.dealer?.id || "",
-  "Account Name": orderJson.dealer?.name || "",
-  "City": orderJson.dealer?.location || "",
-  "Street Add": "NA",
-  "Phone": "",
-  "Sold_Region": "",
-  "ship_to": orderJson.dealer?.subDealerId || orderJson.dealer?.id || "",
-  "Name": "",
-  "City_name": "",
-  "Street_Add": "",
-  "PhoneNumber": "",
-  "Ship_Region": "",
-  "bill_to": "",
-  "payer": "",
-  "plant": "2010",
-  "itm_number": (index + 1) * 10, // Optional item number if you want
-  "material": item.product?.["Material CODE"] || "",
-  "target_qty": item.quantity || "",
-  "target_qu": "BAG",
-  "cust_mat35": item.product?.["Material Name"] || "",
-  "sched_type": "",
-  "sched_line": "1",
-  "sch_DATE": "00.00.0000",
-  "req_qty": item.quantity || "",
-  "Incoterms": "",
-  "Place": "",
-  "Cond Type - ZPR0": "",
-  "Cond Value": ""
-}));
+        flattenedRows.push({
+          "SR NO": srNo,
+          "Doc type": "ZOR",
+          "Sales org": "2000",
+          "Sales off(Headquarter)":  "",
+          "Dist channel": "10",
+          "Division": "10",
+          "Sector": "",
+          "Doc date": docDate,
+          "Payment terms": "",
+          "purch_no_c": order.orderId,
+          "purch_date": docDate,
+          "req_date_h": "00.00.0000",
+          "sold_to":  dealerId,
+          "Account Name": dealerName,
+          "City":  "",
+          "Street Add": "NA",
+          "Phone": "",
+          "Sold_Region":"",
+          "ship_to": subDealerId || dealerId,
+          "Name": "",
+          "City_name": "",
+          "Street_Add": "",
+          "PhoneNumber": "",
+          "Ship_Region": "",
+          "bill_to": "",
+          "payer": "",
+          "plant": "2010",
+          "itm_number": (index + 1) * 10,
+          "material": product["Material CODE"] || "",
+          "target_qty": quantity,
+          "target_qu": "BAG",
+          "cust_mat35": product["Material Name"] || "",
+          "sched_type": "CP",
+          "sched_line": "1",
+          "sch_DATE": "00.00.0000",
+          "req_qty": quantity,
+          "Incoterms": "",
+          "Place": "",
+          "Cond Type - ZPR0": product["Pricing Condition"] || "",
+          "Cond Value": product["Price"] || "",
+        });
+      });
 
-    const allRows = [...existingRows, ...newRows];
+      srNo++; // Increment for next dealer
+    });
 
-    // 4. Generate CSV
-    const csv = Papa.unparse(allRows);
+    // Generate CSV
+    const json2csvParser = new Parser({
+      fields: Object.keys(flattenedRows[0]),
+    });
+
+    const csv = json2csvParser.parse(flattenedRows);
     fs.writeFileSync(tempPath, csv);
 
-    // 5. Upload to SFTP
+    // Upload to SFTP
     await sftp.put(tempPath, remotePath);
     await sftp.end();
 
-    console.log(`CSV uploaded successfully to: ${remotePath}`);
+    console.log("CSV uploaded successfully.");
+
   } catch (err) {
-    console.error('SFTP Error:', err);
+    console.error("SFTP Error:", err);
   }
 }
 
