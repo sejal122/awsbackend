@@ -99,7 +99,13 @@ async function fetchAndParseProductsCSV() {
 }
 
 const Papa = require('papaparse');
-
+function formatDate(dateString) {
+  const d = new Date(dateString);
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+  return `${day}.${month}.${year}`;
+}
 async function placeOrderAndUploadFile(orderJsonInput) {
   const orderJson = Array.isArray(orderJsonInput) ? orderJsonInput : [orderJsonInput];
    const sftp = new Client();
