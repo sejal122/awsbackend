@@ -135,7 +135,7 @@ async function placeOrderAndUploadFile(orderJson) {
     }
 
     // 3. Flatten incoming orderJson into rows
-const newRows = orderJson.orderItems.map(item => ({
+const newRows = orderJson.orderItems.map((item, index)=> ({
   "SR NO": currentSrNo + 1,
   "Doc type": "ZOR",
   "Sales org": "2000",
