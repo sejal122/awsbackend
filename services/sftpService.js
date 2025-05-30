@@ -153,10 +153,11 @@ orderJson.forEach((order) => {
          const subDealerId = order.subDealerId || "";
          
          const docDate = formatDate(order.orderDate || "");
-         const items = order.orderItems || [];
+         const outerItem = order.orderItems || [];
+   const innerItems = outerItem.items || [];
    console.log("items")
-          console.log(items)
-         items.Array(items).forEach((item, index) => {
+          console.log(outerItem)
+         innerItems.forEach((item, index) => {
            const product = item.items.product || {};
            
 
