@@ -97,7 +97,7 @@ async function fetchAndParseProductsCSV() {
     return null;
   }
 }
-
+const csvParser = require("csv-parser");
 const Papa = require('papaparse');
 function formatDate(dateString) {
   const d = new Date(dateString);
