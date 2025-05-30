@@ -153,10 +153,10 @@ async function placeOrderAndUploadFile(orderJsonInput) {
       const subDealerId = order.subDealerId || "";
       const subDealerName = order.subDealerName || "";
       const docDate = formatDate(order.savedAt || new Date());
-      const items = order.items || [];
+      const items = order.orderItems || [];
       items.forEach((item, index) => {
-        const product = item.product || {};
-        const quantity = item.quantity || "";
+        const product = item.items.product || {};
+        const quantity = item.items.quantity || "";
 
         flattenedRows.push({
           "SR NO": srNo,
