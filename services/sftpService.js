@@ -156,7 +156,7 @@ orderJson.forEach((order) => {
          const items = order.orderItems || [];
    console.log("items")
           console.log(items)
-         items.items.forEach((item, index) => {
+         items.Array(items).forEach((item, index) => {
            const product = item.items.product || {};
            
 
