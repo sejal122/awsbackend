@@ -97,106 +97,105 @@ async function fetchAndParseProductsCSV() {
     return null;
   }
 }
+
+const Papa = require('papaparse');
+
 async function placeOrderAndUploadFile(orderJson) {
- const sftp = new Client();
-  try{
+  const sftp = new Client();
+  const fileName = `pendingOrders.csv`;
+  const tempPath = path.join(__dirname, '..', 'uploads', fileName);
+  const remotePath = `/DIR_MAGICAL/DIR_MAGICAL_Satara/SO/${fileName}`;
+
+  try {
     await sftp.connect({
       host: process.env.SERVER_IP,
       port: process.env.SERVER_PORT,
       username: process.env.SERVER_USER,
       password: process.env.SERVER_PASS,
     });
-   console.log(orderJson)
- 
- 
-  
-       // const json2csvParser = new Parser();
-    //  const csv = json2csvParser.parse(orderJson);
-      const fileName = `pendingOrders.csv`;
-      const tempPath = path.join(__dirname, '..', 'uploads', fileName);
-      //const tempPath = path.join(__dirname, fileName);
-      const targetFolder = '/DIR_MAGICAL/DIR_MAGICAL_Satara/SO'; // Change this if needed
-      const finalPath = path.join(targetFolder, fileName);
-      const remotePath = `/DIR_MAGICAL/DIR_MAGICAL_Satara/SO/${fileName}`;
 
-      let existingCsv = '';
-
-    // 1. Try downloading the existing file (if it exists)
+    // 1. Read existing file if any
+    let existingRows = [];
     try {
-      existingBuffer = await sftp.get(finalPath)
-      existingCsv=existingBuffer.toString()
-      console.log('existingcsv')
-      console.log(existingCsv)
-    } catch (err) {
-      if (err.code !== 2) {
-        console.error('Error reading existing file:', err);
-        throw err;
-      } else {
-        console.log('No existing file found. Creating new one.');
-      }
-    }
-    
-// 2. Convert new data to CSV
-   const combinedOrders = [];
- try {
       const tempDownload = path.join(__dirname, '..', 'uploads', 'existing_' + fileName);
-      await sftp.fastGet(finalPath, tempDownload);
+      await sftp.fastGet(remotePath, tempDownload);
 
       const fileContent = fs.readFileSync(tempDownload, 'utf-8').trim();
-      const lines = fileContent.split('\n');
-      const header = lines[0];
-      const rows = lines.slice(1);
-
-      for (let row of rows) {
-        const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); // split respecting quotes
-
-        combinedOrders.push({
-          orderItems: cleanAndParse(cols[0]),
-          dealer: cleanAndParse(cols[1]),
-          orderId: cols[2]?.replace(/^"|"$/g, ''),
-          orderDate: cols[3]?.replace(/^"|"$/g, ''),
-        });
-      }
+      const parsed = Papa.parse(fileContent, { header: true });
+      existingRows = parsed.data.filter(row => row['OrderID']); // ignore empty lines
     } catch (err) {
-      console.log('No existing file or error reading existing orders. Will create new file.');
+      console.log('No existing file or error reading existing orders. Creating new one.');
     }
 
-    // 3. Combine old and new CSV data
-    combinedOrders.push(orderJson); // make sure orderJson is same structure
-    
-    // Step 4: Convert combined JSON to CSV
-    const json2csvParser = new Parser({
-      fields: ['orderItems', 'dealer', 'orderId', 'orderDate'],
-      quote: '"',
-    });
-    
-    const csv = json2csvParser.parse(
-      combinedOrders.map(order => ({
-        orderItems: JSON.stringify(order.orderItems),
-        dealer: JSON.stringify(order.dealer),
-        orderId: order.orderId,
-        orderDate: order.orderDate,
-      }))
-    );
+    // 2. Determine current max Sr. No.
+    let currentSrNo = 0;
+    if (existingRows.length > 0) {
+      const srNos = existingRows.map(row => parseInt(row['Sr. No.'] || '0')).filter(n => !isNaN(n));
+      currentSrNo = srNos.length > 0 ? Math.max(...srNos) : 0;
+    }
 
+    // 3. Flatten incoming orderJson into rows
+const newRows = orderJson.orderItems.map(item => ({
+  "SR NO": currentSrNo + 1,
+  "Doc type": "ZOR",
+  "Sales org": "2000",
+  "Sales off(Headquarter)": "",
+  "Dist channel": "10",
+  "Division": "10",
+  "Sector": "",
+  "Doc date": orderJson.orderDate || "",
+  "Payment terms": "",
+  "purch_no_c": orderJson.orderId || "",
+  "purch_date": orderJson.orderDate || "",
+  "req_date_h": "00.00.0000",
+  "sold_to": orderJson.dealer?.id || "",
+  "Account Name": orderJson.dealer?.name || "",
+  "City": orderJson.dealer?.location || "",
+  "Street Add": "NA",
+  "Phone": "",
+  "Sold_Region": "",
+  "ship_to": orderJson.dealer?.subDealerId || orderJson.dealer?.id || ""
+  "Name": "",
+  "City_name": "",
+  "Street_Add": "",
+  "PhoneNumber": "",
+  "Ship_Region": "",
+  "bill_to": "",
+  "payer": "",
+  "plant": "2010",
+  "itm_number": (index + 1) * 10, // Optional item number if you want
+  "material": item.product?.["Material CODE"] || "",
+  "target_qty": item.quantity || "",
+  "target_qu": "BAG",
+  "cust_mat35": item.product?.["Material Name"] || "",
+  "sched_type": "",
+  "sched_line": "1",
+  "sch_DATE": "00.00.0000",
+  "req_qty": item.quantity || "",
+  "Incoterms": "",
+  "Place": "",
+  "Cond Type - ZPR0": "",
+  "Cond Value": ""
+}));
 
-    
-    fs.writeFileSync(tempPath, csv, (err) => {
-      if (err) {
-        console.error('Error writing temp CSV file:', err);
-        return;
-      }
-    
-      console.log(`CSV file created at: ${tempPath}`);
-  
-    });
-  await sftp.put(tempPath, remotePath);
-  await sftp.end();
-  }catch (err) {
+    const allRows = [...existingRows, ...newRows];
+
+    // 4. Generate CSV
+    const csv = Papa.unparse(allRows);
+    fs.writeFileSync(tempPath, csv);
+
+    // 5. Upload to SFTP
+    await sftp.put(tempPath, remotePath);
+    await sftp.end();
+
+    console.log(`CSV uploaded successfully to: ${remotePath}`);
+  } catch (err) {
     console.error('SFTP Error:', err);
   }
-
 }
+
+
+
 
 
 async function verifyDealer() {
