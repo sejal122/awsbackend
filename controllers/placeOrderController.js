@@ -8,7 +8,7 @@ const { placeOrderAndUploadFile } = require('../services/sftpService');
     console.log(orderJson)
 
 try {
-    const data = await placeOrderAndUploadFile([orderJson]);
+    const data = await placeOrderAndUploadFile(orderJson);
   
   
     res.json(data);
