@@ -154,7 +154,7 @@ const newRows = orderJson.orderItems.map(item => ({
   "Street Add": "NA",
   "Phone": "",
   "Sold_Region": "",
-  "ship_to": orderJson.dealer?.subDealerId || orderJson.dealer?.id || ""
+  "ship_to": orderJson.dealer?.subDealerId || orderJson.dealer?.id || "",
   "Name": "",
   "City_name": "",
   "Street_Add": "",
