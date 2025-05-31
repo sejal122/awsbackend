@@ -170,7 +170,7 @@ async function placeOrderAndUploadFile(invoiceData) {
           "Sector": "",
           "Doc date": docDate,
           "Payment terms": "",
-          "purch_no_c": orderJson.orderId || "",
+          "purch_no_c":purch_no_c || "",
           "purch_date": docDate,
           "req_date_h": "00.00.0000",
           "sold_to": dealerId,
