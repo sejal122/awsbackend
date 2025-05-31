@@ -46,7 +46,7 @@ async function fetchAndParseCSV() {
   });
 
   const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Satara/Customer/Dealers.csv');
-  //console.log(fileBuffer)
+  console.log(fileBuffer)
   await sftp.end();
 
   const csvText = fileBuffer.toString('utf-8');
