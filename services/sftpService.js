@@ -106,14 +106,13 @@ function formatDate(dateString) {
   const year = d.getFullYear();
   return `${day}.${month}.${year}`;
 }
-async function placeOrderAndUploadFile(orderJsonInput) {
+async function placeOrderAndUploadFile(invoiceData) {
   const sftp = new Client();
-  const orderJson = Array.isArray(orderJsonInput)
-    ? orderJsonInput
-    : orderJsonInput?.orderItems
-    ? orderJsonInput.orderItems
+  const orderJson = Array.isArray(invoiceData.orderItems)
+    ? invoiceData.orderItems
     : [];
 
+ 
   try {
     await sftp.connect({
       host: process.env.SERVER_IP,
@@ -146,10 +145,13 @@ async function placeOrderAndUploadFile(orderJsonInput) {
     // Flatten order items
     const flattenedRows = [];
     let srNo = 1;
+ const dealerId = invoiceData?.dealer?.id || "";
+  const dealerName = invoiceData?.dealer?.name || "";
+  const docDate = formatDate(invoiceData?.orderDate || "");
+  const purch_no_c = invoiceData?.orderId || "";
 
     for (const order of orderJson) {
-      const dealerId = order.dealerId || "";
-      const dealerName = order.dealerName || "";
+ 
       const subDealerId = order.subDealerId || "";
       const docDate = formatDate(order.savedAt || new Date());
       const items = order.items || [];
