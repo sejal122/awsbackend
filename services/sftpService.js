@@ -242,12 +242,12 @@ async function verifyDealer() {
   
  
     const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Satara/Customer/Dealers.csv');
-    console.log(fileBuffer)
+    //console.log(fileBuffer)
     await sftp.end();
   
     const csvText = fileBuffer.toString('utf-8');
    
-    console.log(csvText)
+   // console.log(csvText)
 
   
 
@@ -324,7 +324,10 @@ async function approveOrderAndUploadFile(doc_number,approvedOrders) {
       ? JSON.parse(fs.readFileSync(pendingPath, 'utf8'))
       : [];
       const orderstatus = JSON.parse(fs.readFileSync(orderstatustempPath, 'utf8'));
-
+    console.log(------)
+  console.log(pendingOrders)
+    console.log(finalOrders)
+    console.log(orderstatus)
       // 3. Filter matching & non-matching orders
     const approvedOrders = pendingOrders.filter(order => order.purch_no_c === purch_no_c);
     const updatedPending = pendingOrders.filter(order => order.purch_no_c !== purch_no_c);
