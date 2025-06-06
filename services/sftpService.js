@@ -288,4 +288,84 @@ async function fetchAndParsependingOrdersCSV() {
   const csvText = fileBuffer.toString('utf-8');
   return parsePendingOrderCSV(csvText);
 }
-module.exports = {fetchAndParsependingOrdersCSV,fetchAndParseDealerTargetCSV, fetchAndParseOrderHistoryCSV,fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
+
+async function approveOrderAndUploadFile(doc_number,approvedOrders) {
+  const sftp = new Client();
+  try{
+    await sftp.connect({
+      host: process.env.SERVER_IP,
+      port: process.env.SERVER_PORT,
+      username: process.env.SERVER_USER,
+      password: process.env.SERVER_PASS,
+    });
+
+
+    
+    //original and temp for pending orders
+    const pendingordersoriginalpath='/DIR_MAGICAL/DIR_MAGICAL_Satara/SO/pendingOrders.csv'
+    const temppendingorder=path.join(__dirname, "..", "uploads", "temppendingorder.csv");
+
+    //original and temp for order status
+    const orderstatustempPath = path.join(__dirname, "..", "uploads", "orderstatus.csv");
+    const orderstatusoriginalpath='/DIR_MAGICAL/DIR_MAGICAL_Satara/Price/ORDER STATUS.csv'
+
+    //original and temp for final order
+    const fileName = `Orders.csv`;
+    const pendingPath = path.join(__dirname, 'uploads', 'Orders.csv');
+    const remotePath = `/DIR_MAGICAL/DIR_MAGICAL_Satara/SO/${fileName}`;
+   
+    //download pending orders, order status
+    await sftp.fastGet(pendingordersoriginalpath + temppendingorder);
+    await sftp.fastGet(remotePath + pendingPath);
+    await sftp.fastGet(orderstatusoriginalpath + orderstatustempPath);
+
+    const pendingOrders = JSON.parse(fs.readFileSync(temppendingorder, 'utf8'));
+    let finalOrders = fs.existsSync(pendingPath)
+      ? JSON.parse(fs.readFileSync(pendingPath, 'utf8'))
+      : [];
+      const orderstatus = JSON.parse(fs.readFileSync(orderstatustempPath, 'utf8'));
+
+      // 3. Filter matching & non-matching orders
+    const approvedOrders = pendingOrders.filter(order => order.purch_no_c === purch_no_c);
+    const updatedPending = pendingOrders.filter(order => order.purch_no_c !== purch_no_c);
+
+
+       // 4. Determine next sr_no
+       const existingSrNos = finalOrders.map(o => o.Sr_no).filter(Boolean);
+       const maxSrNo = existingSrNos.length > 0 ? Math.max(...existingSrNos) : 0;
+       const nextSrNo = maxSrNo + 1;
+   
+       // 5. Add sr_no to all approved orders
+    const approvedWithSrNo = approvedOrders.map(order => ({
+      ...order,
+      Sr_no: nextSrNo,
+    }));
+
+    finalOrders.push(...approvedWithSrNo);
+    orderstatus.push(approvedOrders)
+
+    fs.writeFileSync(temppendingorder, JSON.stringify(updatedPending, null, 2));
+    fs.writeFileSync(pendingPath, JSON.stringify(finalOrders, null, 2));
+    fs.writeFileSync(orderstatustempPath, JSON.stringify(orderstatus, null, 2));
+    //const updatedorderHistory=lastorderhistory.filter(order => order.purch_no_c !== doc_number);
+
+ // 7. Upload updated files to server
+ await sftp.fastPut(temppendingorder, pendingordersoriginalpath);
+ await sftp.fastPut(pendingPath, remotePath);
+ await sftp.fastPut(orderstatustempPath, orderstatusoriginalpath);
+ res.status(200).json({
+  message: `Order ${purch_no_c} approved & updated`,
+  sr_no: nextSrNo,
+  
+});
+  }
+  catch(err){
+    console.error('Approval error:', err);
+    res.status(500).json({ message: 'SFTP approval failed' });
+  }
+  finally {
+    sftp.end();
+  }
+}
+
+module.exports = {approveOrderAndUploadFile , fetchAndParsependingOrdersCSV,fetchAndParseDealerTargetCSV, fetchAndParseOrderHistoryCSV,fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
