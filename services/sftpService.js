@@ -361,7 +361,7 @@ async function approveOrderAndUploadFile(doc_number,approvedOrders) {
   }
   catch(err){
     console.error('Approval error:', err);
-    res.status(500).json({ message: 'SFTP approval failed' });
+   
   }
   finally {
     sftp.end();
