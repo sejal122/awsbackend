@@ -315,9 +315,9 @@ async function approveOrderAndUploadFile(doc_number,approvedOrders) {
     const remotePath = `/DIR_MAGICAL/DIR_MAGICAL_Satara/SO/${fileName}`;
    
     //download pending orders, order status
-    await sftp.fastGet(pendingordersoriginalpath + temppendingorder);
-    await sftp.fastGet(remotePath + pendingPath);
-    await sftp.fastGet(orderstatusoriginalpath + orderstatustempPath);
+    await sftp.fastGet(pendingordersoriginalpath , temppendingorder);
+    await sftp.fastGet(remotePath , pendingPath);
+    await sftp.fastGet(orderstatusoriginalpath , orderstatustempPath);
 
     const pendingOrders = JSON.parse(fs.readFileSync(temppendingorder, 'utf8'));
     let finalOrders = fs.existsSync(pendingPath)
