@@ -324,7 +324,7 @@ async function approveOrderAndUploadFile(doc_number,approvedOrders) {
       ? JSON.parse(fs.readFileSync(pendingPath, 'utf8'))
       : [];
       const orderstatus = JSON.parse(fs.readFileSync(orderstatustempPath, 'utf8'));
-    console.log(------)
+    console.log('------')
   console.log(pendingOrders)
     console.log(finalOrders)
     console.log(orderstatus)
