@@ -311,7 +311,7 @@ async function approveOrderAndUploadFile(doc_number,approvedOrders) {
 
     //original and temp for final order
     const fileName = `Orders.csv`;
-    const pendingPath = path.join(__dirname, 'uploads', 'Orders.csv');
+    const pendingPath = path.join(__dirname,"..", 'uploads', 'Orders.csv');
     const remotePath = `/DIR_MAGICAL/DIR_MAGICAL_Satara/SO/${fileName}`;
    
     //download pending orders, order status
