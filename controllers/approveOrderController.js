@@ -16,6 +16,7 @@ try {
     console.log(data)
   } catch (err) {
     console.error('Error approving order', err.message);
+ 
  if (!res.headersSent) {
      res.status(500).json({ error:  'Error approving order' });
     }
