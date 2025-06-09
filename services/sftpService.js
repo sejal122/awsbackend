@@ -288,7 +288,16 @@ async function fetchAndParsependingOrdersCSV() {
   const csvText = fileBuffer.toString('utf-8');
   return parsePendingOrderCSV(csvText);
 }
-
+function parseCsvforApproveorder(filePath) {
+  return new Promise((resolve, reject) => {
+    const results = [];
+    fs.createReadStream(filePath)
+      .pipe(csv())
+      .on('data', data => results.push(data))
+      .on('end', () => resolve(results))
+      .on('error', reject);
+  });
+}
 async function approveOrderAndUploadFile(doc_number,approvedOrders) {
   const sftp = new Client();
   try{
@@ -319,11 +328,12 @@ async function approveOrderAndUploadFile(doc_number,approvedOrders) {
     await sftp.fastGet(remotePath , pendingPath);
     await sftp.fastGet(orderstatusoriginalpath , orderstatustempPath);
 
-    const pendingOrders = JSON.parse(fs.readFileSync(temppendingorder, 'utf8'));
-    let finalOrders = fs.existsSync(pendingPath)
-      ? JSON.parse(fs.readFileSync(pendingPath, 'utf8'))
-      : [];
-      const orderstatus = JSON.parse(fs.readFileSync(orderstatustempPath, 'utf8'));
+const pendingOrders = await parseCsvforApproveorder(temppendingorder);
+const finalOrders = fs.existsSync(pendingPath)
+  ? await parseCsvforApproveorder(pendingPath)
+  : [];
+const orderstatus = await parseCsvforApproveorder(orderstatustempPath);
+
     console.log('------')
   console.log(pendingOrders)
     console.log(finalOrders)
@@ -354,8 +364,8 @@ async function approveOrderAndUploadFile(doc_number,approvedOrders) {
 
  // 7. Upload updated files to server
  await sftp.fastPut(temppendingorder, pendingordersoriginalpath);
-// await sftp.fastPut(pendingPath, remotePath);
- //await sftp.fastPut(orderstatustempPath, orderstatusoriginalpath);
+ await sftp.fastPut(pendingPath, remotePath);
+ await sftp.fastPut(orderstatustempPath, orderstatusoriginalpath);
  res.status(200).json({
   message: `Order ${purch_no_c} approved & updated`,
   sr_no: nextSrNo,
