@@ -35,7 +35,7 @@ async function fetchAndParseOrderHistoryCSV() {
   await sftp.end();
 
   const csvText = fileBuffer.toString('utf-8');
-  return parseBrokenJsonFile(csvText);
+  return parseCSV(csvText);
 }
 async function fetchAndParseCSV() {
  const sftp = new Client();
