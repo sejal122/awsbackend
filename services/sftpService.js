@@ -352,8 +352,8 @@ const orderstatus = await parseBrokenJsonFile(orderstatustempPath);
 
     console.log('------')
   console.log(pendingOrders)
-    console.log(finalOrders)
-    console.log(orderstatus)
+   // console.log(finalOrders)
+   // console.log(orderstatus)
       // 3. Filter matching & non-matching orders
     const approvedOrders = pendingOrders.filter(order => order.purch_no_c === doc_number);
     const updatedPending = pendingOrders.filter(order => order.purch_no_c!== doc_number);
