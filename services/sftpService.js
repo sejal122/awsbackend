@@ -344,9 +344,9 @@ async function approveOrderAndUploadFile(doc_number,approvedOrders) {
     await sftp.fastGet(remotePath , pendingPath);
     await sftp.fastGet(orderstatusoriginalpath , orderstatustempPath);
 
-const pendingOrders = await parseBrokenJsonFile(temppendingorder);
+const pendingOrders = await parsePendingOrderCSV(temppendingorder);
 const finalOrders = fs.existsSync(pendingPath)
-  ? await parseBrokenJsonFile(pendingPath)
+  ? await parseCSV(pendingPath)
   : [];
 const orderstatus = await parseBrokenJsonFile(orderstatustempPath);
 
