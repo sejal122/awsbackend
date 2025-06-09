@@ -349,7 +349,7 @@ const pendingOrders = await parsePendingOrderCSV(temppendingorder);
 const finalOrders = fs.existsSync(pendingPath)
   ? await parseCSV(pendingPath)
   : [];
-const orderstatus = await parseBrokenJsonFile(orderstatustempPath);
+const orderstatus = await parseCSV(orderstatustempPath);
 
     console.log('------')
   console.log(pendingOrders)
