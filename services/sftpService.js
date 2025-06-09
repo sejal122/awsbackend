@@ -360,8 +360,9 @@ async function approveOrderAndUploadFile(doc_number,approvedOrders) {
     await sftp.fastGet(pendingordersoriginalpath , temppendingorder);
     await sftp.fastGet(remotePath , pendingPath);
     await sftp.fastGet(orderstatusoriginalpath , orderstatustempPath);
-
-const pendingOrders = await parsePendingOrderCSV(temppendingorder);
+const rawCsv = fs.readFileSync(temppendingorder, 'utf-8');
+//const pendingOrders = parsePendingOrderCSV(rawCsv);
+const pendingOrders = await parsePendingOrderCSV(rawCsv);
 const finalOrders = fs.existsSync(pendingPath)
   ? await parseCSV(pendingPath)
   : [];
