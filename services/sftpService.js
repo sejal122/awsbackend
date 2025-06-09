@@ -331,7 +331,7 @@ function parseBrokenJsonFile(filePath) {
   }
 }
 
-async function approveOrderAndUploadFile(doc_number,approvedOrders) {
+async function approveOrderAndUploadFile(doc_number,approvedOrderFormat) {
   const sftp = new Client();
   try{
     await sftp.connect({
@@ -340,8 +340,8 @@ async function approveOrderAndUploadFile(doc_number,approvedOrders) {
       username: process.env.SERVER_USER,
       password: process.env.SERVER_PASS,
     });
-console.log('---------approvedOrders------')
-console.log(approvedOrders)
+console.log('---------approvedOrderFormat------')
+console.log(approvedOrderFormat)
     
     //original and temp for pending orders
     const pendingordersoriginalpath='/DIR_MAGICAL/DIR_MAGICAL_Satara/SO/pendingOrders.csv'
@@ -397,7 +397,7 @@ console.log('******')
     }));
 
     finalOrders.push(...approvedWithSrNo);
-    orderstatus.push(approvedOrders)
+    orderstatus.push(approvedOrderFormat)
 
     //fs.writeFileSync(temppendingorder, JSON.stringify(updatedPending, null, 2));
     //fs.writeFileSync(pendingPath, JSON.stringify(finalOrders, null, 2));
