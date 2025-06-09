@@ -4,6 +4,7 @@ require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const { Parser } = require('json2csv');
+const csv=require('csv-parser')
 async function fetchAndParseDealerTargetCSV() {
   const sftp = new Client();
   await sftp.connect({
@@ -288,7 +289,7 @@ async function fetchAndParsependingOrdersCSV() {
   const csvText = fileBuffer.toString('utf-8');
   return parsePendingOrderCSV(csvText);
 }
-import csv from 'csv-parser';
+
 function parseCsvforApproveorder(filePath) {
   return new Promise((resolve, reject) => {
     const results = [];
