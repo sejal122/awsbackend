@@ -291,6 +291,22 @@ async function fetchAndParsependingOrdersCSV() {
  return parsePendingOrderCSV(csvText);
  // return parseBrokenJsonFile(csvText)
 }
+const { createObjectCsvWriter } = require('csv-writer');
+
+async function writeCSV(filePath, data) {
+  if (!data || data.length === 0) {
+    fs.writeFileSync(filePath, ''); // Write empty file
+    return;
+  }
+
+  const headers = Object.keys(data[0]).map(key => ({ id: key, title: key }));
+  const writer = createObjectCsvWriter({
+    path: filePath,
+    header: headers,
+  });
+
+  await writer.writeRecords(data);
+}
 
 function parseBrokenJsonFile(filePath) {
   try {
@@ -374,13 +390,15 @@ console.log('******')
     }));
 
     finalOrders.push(...approvedWithSrNo);
-    orderstatus.push(approvedOrders)
+    orderstatus.push(...approvedWithSrNo)
 
-    fs.writeFileSync(temppendingorder, JSON.stringify(updatedPending, null, 2));
-    fs.writeFileSync(pendingPath, JSON.stringify(finalOrders, null, 2));
-    fs.writeFileSync(orderstatustempPath, JSON.stringify(orderstatus, null, 2));
+    //fs.writeFileSync(temppendingorder, JSON.stringify(updatedPending, null, 2));
+    //fs.writeFileSync(pendingPath, JSON.stringify(finalOrders, null, 2));
+   // fs.writeFileSync(orderstatustempPath, JSON.stringify(orderstatus, null, 2));
     //const updatedorderHistory=lastorderhistory.filter(order => order.purch_no_c !== doc_number);
-
+await writeCSV(temppendingorder, updatedPending);
+await writeCSV(pendingPath, finalOrders);
+await writeCSV(orderstatustempPath, orderstatus.flat()); // flatten because you're pushing an array inside
  // 7. Upload updated files to server
  await sftp.fastPut(temppendingorder, pendingordersoriginalpath);
  await sftp.fastPut(pendingPath, remotePath);
