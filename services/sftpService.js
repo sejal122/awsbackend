@@ -287,8 +287,8 @@ async function fetchAndParsependingOrdersCSV() {
   await sftp.end();
 
   const csvText = fileBuffer.toString('utf-8');
- // const po= parsePendingOrderCSV(csvText);
-  return parseBrokenJsonFile(csvText)
+ return parsePendingOrderCSV(csvText);
+ // return parseBrokenJsonFile(csvText)
 }
 
 function parseBrokenJsonFile(filePath) {
