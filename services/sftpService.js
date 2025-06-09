@@ -397,7 +397,7 @@ console.log('******')
     }));
 
     finalOrders.push(...approvedWithSrNo);
-    orderstatus.push(...approvedWithSrNo)
+    orderstatus.push(approvedOrders)
 
     //fs.writeFileSync(temppendingorder, JSON.stringify(updatedPending, null, 2));
     //fs.writeFileSync(pendingPath, JSON.stringify(finalOrders, null, 2));
