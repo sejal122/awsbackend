@@ -354,8 +354,8 @@ async function approveOrderAndUploadFile(doc_number,approvedOrders) {
 
  // 7. Upload updated files to server
  await sftp.fastPut(temppendingorder, pendingordersoriginalpath);
- await sftp.fastPut(pendingPath, remotePath);
- await sftp.fastPut(orderstatustempPath, orderstatusoriginalpath);
+// await sftp.fastPut(pendingPath, remotePath);
+ //await sftp.fastPut(orderstatustempPath, orderstatusoriginalpath);
  res.status(200).json({
   message: `Order ${purch_no_c} approved & updated`,
   sr_no: nextSrNo,
