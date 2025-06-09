@@ -341,8 +341,8 @@ const orderstatus = await parseCsvforApproveorder(orderstatustempPath);
     console.log(finalOrders)
     console.log(orderstatus)
       // 3. Filter matching & non-matching orders
-    const approvedOrders = pendingOrders.filter(order => order.purch_no_c === purch_no_c);
-    const updatedPending = pendingOrders.filter(order => order.purch_no_c !== purch_no_c);
+    const approvedOrders = pendingOrders.filter(order => order['purch_no_c'] === purch_no_c);
+    const updatedPending = pendingOrders.filter(order => order['purch_no_c']!== purch_no_c);
 
 
        // 4. Determine next sr_no
