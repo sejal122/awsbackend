@@ -355,9 +355,11 @@ const orderstatus = await parseBrokenJsonFile(orderstatustempPath);
    // console.log(finalOrders)
    // console.log(orderstatus)
       // 3. Filter matching & non-matching orders
-    const approvedOrders = pendingOrders.filter(order => order.purch_no_c === doc_number);
+    const approvedOrders = pendingOrders.filter(order => order.purch_no_c == doc_number);
     const updatedPending = pendingOrders.filter(order => order.purch_no_c!== doc_number);
-
+console.log('******')
+    console.log(approvedOrders)
+    console.log(updatedPending)
 
        // 4. Determine next sr_no
        const existingSrNos = finalOrders.map(o => o.Sr_no).filter(Boolean);
