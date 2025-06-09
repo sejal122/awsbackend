@@ -397,7 +397,12 @@ console.log('******')
     }));
 
     finalOrders.push(...approvedWithSrNo);
-    orderstatus.push(approvedHistoryFormat)
+    if (Array.isArray(approvedHistoryFormat)) {
+  orderstatus.push(...approvedHistoryFormat);
+} else {
+  orderstatus.push(approvedHistoryFormat);
+}
+
 
     //fs.writeFileSync(temppendingorder, JSON.stringify(updatedPending, null, 2));
     //fs.writeFileSync(pendingPath, JSON.stringify(finalOrders, null, 2));
