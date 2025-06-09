@@ -290,16 +290,29 @@ async function fetchAndParsependingOrdersCSV() {
   return parsePendingOrderCSV(csvText);
 }
 
-function parseCsvforApproveorder(filePath) {
-  return new Promise((resolve, reject) => {
-    const results = [];
-    fs.createReadStream(filePath)
-      .pipe(csv())
-      .on('data', data => results.push(data))
-      .on('end', () => resolve(results))
-      .on('error', reject);
-  });
+function parseBrokenJsonFile(filePath) {
+  try {
+    let content = fs.readFileSync(filePath, 'utf8');
+
+    // Remove line breaks and JS string concat artifacts
+    content = content
+      .replace(/\\n/g, '')                         // Remove literal \n
+      .replace(/\r?\n\s*['|"]?\s*\+\s*/g, '')      // Remove newline + concat
+      .replace(/^['"]+|['"]+$/g, '')               // Strip starting/ending quotes
+      .replace(/\\"/g, '"')                        // Replace \" with "
+      .trim();
+
+    // Optional debug step
+    // console.log("CLEANED CONTENT:", content);
+
+    const parsed = JSON.parse(content);
+    return parsed;
+  } catch (err) {
+    console.error("❌ JSON parsing failed:", err.message);
+    return null;
+  }
 }
+
 async function approveOrderAndUploadFile(doc_number,approvedOrders) {
   const sftp = new Client();
   try{
@@ -330,11 +343,11 @@ async function approveOrderAndUploadFile(doc_number,approvedOrders) {
     await sftp.fastGet(remotePath , pendingPath);
     await sftp.fastGet(orderstatusoriginalpath , orderstatustempPath);
 
-const pendingOrders = await parseCSV(temppendingorder);
+const pendingOrders = await parseBrokenJsonFile(temppendingorder);
 const finalOrders = fs.existsSync(pendingPath)
-  ? await parseCSV(pendingPath)
+  ? await parseBrokenJsonFile(pendingPath)
   : [];
-const orderstatus = await parseCSV(orderstatustempPath);
+const orderstatus = await parseBrokenJsonFile(orderstatustempPath);
 
     console.log('------')
   console.log(pendingOrders)
