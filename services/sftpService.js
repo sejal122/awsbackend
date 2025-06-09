@@ -371,6 +371,9 @@ const orderstatus = await parseCSV(orderstatustempPath);
   console.log(pendingOrders)
    // console.log(finalOrders)
    // console.log(orderstatus)
+    console.log("DOC_NUMBER RECEIVED:", doc_number);
+console.log("PENDING ORDER PURCH_NO_Cs:", pendingOrders.map(p => p.purch_no_c));
+
       // 3. Filter matching & non-matching orders
     const approvedOrders = pendingOrders.filter(order => order.purch_no_c == doc_number);
     const updatedPending = pendingOrders.filter(order => order.purch_no_c!== doc_number);
