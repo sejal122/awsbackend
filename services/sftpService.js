@@ -341,8 +341,8 @@ const orderstatus = await parseCsvforApproveorder(orderstatustempPath);
     console.log(finalOrders)
     console.log(orderstatus)
       // 3. Filter matching & non-matching orders
-    const approvedOrders = pendingOrders.filter(order => order['purch_no_c'] === doc_number);
-    const updatedPending = pendingOrders.filter(order => order['purch_no_c']!== doc_number);
+    const approvedOrders = pendingOrders.filter(order => order.purch_no_c === doc_number);
+    const updatedPending = pendingOrders.filter(order => order.purch_no_c!== doc_number);
 
 
        // 4. Determine next sr_no
@@ -368,11 +368,7 @@ const orderstatus = await parseCsvforApproveorder(orderstatustempPath);
  await sftp.fastPut(temppendingorder, pendingordersoriginalpath);
  await sftp.fastPut(pendingPath, remotePath);
  await sftp.fastPut(orderstatustempPath, orderstatusoriginalpath);
- res.status(200).json({
-  message: `Order ${doc_number} approved & updated`,
-  sr_no: nextSrNo,
-  
-});
+
   }
   catch(err){
     console.error('Approval error:', err);
