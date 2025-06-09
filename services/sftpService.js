@@ -330,11 +330,11 @@ async function approveOrderAndUploadFile(doc_number,approvedOrders) {
     await sftp.fastGet(remotePath , pendingPath);
     await sftp.fastGet(orderstatusoriginalpath , orderstatustempPath);
 
-const pendingOrders = await parseCsvforApproveorder(temppendingorder);
+const pendingOrders = await parseCSV(temppendingorder);
 const finalOrders = fs.existsSync(pendingPath)
-  ? await parseCsvforApproveorder(pendingPath)
+  ? await parseCSV(pendingPath)
   : [];
-const orderstatus = await parseCsvforApproveorder(orderstatustempPath);
+const orderstatus = await parseCSV(orderstatustempPath);
 
     console.log('------')
   console.log(pendingOrders)
