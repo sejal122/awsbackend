@@ -340,8 +340,8 @@ async function approveOrderAndUploadFile(doc_number,approvedOrders) {
       username: process.env.SERVER_USER,
       password: process.env.SERVER_PASS,
     });
-
-
+console.log('---------approvedOrders------')
+console.log(approvedOrders)
     
     //original and temp for pending orders
     const pendingordersoriginalpath='/DIR_MAGICAL/DIR_MAGICAL_Satara/SO/pendingOrders.csv'
