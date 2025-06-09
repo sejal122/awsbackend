@@ -371,6 +371,9 @@ const orderstatus = await parseCSV(orderstatustempPath);
   console.log(pendingOrders)
    // console.log(finalOrders)
    // console.log(orderstatus)
+    const pendingRaw = fs.readFileSync(temppendingorder, 'utf-8');
+console.log("📂 Raw Temp Pending Order File Content:\n", pendingRaw);
+
     console.log("DOC_NUMBER RECEIVED:", doc_number);
 console.log("PENDING ORDER PURCH_NO_Cs:", pendingOrders.map(p => p.purch_no_c));
 
