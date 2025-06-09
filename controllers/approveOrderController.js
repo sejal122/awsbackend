@@ -4,12 +4,12 @@ const { approveOrderAndUploadFile } = require('../services/sftpService');
 
  const  approveOrder=async (req,res)=> {
 
-    const {  doc_number,approvedOrders } = req.body;
-    console.log(approvedOrders)
+    const {  doc_number,approvedHistoryFormat } = req.body;
+    console.log(approvedHistoryFormat)
     console.log(doc_number)
 
 try {
-    const data = await approveOrderAndUploadFile(doc_number,approvedOrders);
+    const data = await approveOrderAndUploadFile(doc_number,approvedHistoryFormat);
   
   
     res.json(data);
