@@ -330,6 +330,28 @@ function parseBrokenJsonFile(filePath) {
     return null;
   }
 }
+const fs = require('fs');
+const { parse } = require('csv-parse/sync');
+
+async function parseCSVstatus(filePath) {
+  try {
+    const content = fs.readFileSync(filePath, 'utf-8');
+
+    // Optional normalization (handles CRLF vs LF)
+    const normalizedContent = content.replace(/\r\n/g, '\n');
+
+    const records = parse(normalizedContent, {
+      columns: true,           // Parse as key-value objects
+      skip_empty_lines: true,  // Skip empty rows
+      trim: true               // Trim whitespace
+    });
+
+    return records;
+  } catch (err) {
+    console.error("❌ Failed to parse CSV:", err);
+    return [];
+  }
+}
 
 async function approveOrderAndUploadFile(doc_number,approvedHistoryFormat) {
   const sftp = new Client();
@@ -370,7 +392,7 @@ const finalOrders = fs.existsSync(pendingPath)
     const rawOrderStatusCSV = fs.readFileSync(orderstatustempPath, 'utf-8');
 console.log("📂 Raw ORDER STATUS CSV:\n", rawOrderStatusCSV);
      console.log('------****************----------')
-const orderstatus = await parseCSV(orderstatustempPath);
+const orderstatus = await parseCSVstatus(orderstatustempPath);
 console.log(orderstatus)
     console.log('------')
  // console.log(pendingOrders)
