@@ -385,8 +385,9 @@ console.log(approvedHistoryFormat)
 const rawCsv = fs.readFileSync(temppendingorder, 'utf-8');
 //const pendingOrders = parsePendingOrderCSV(rawCsv);
 const pendingOrders = await parsePendingOrderCSV(rawCsv);
+     const content = fs.readFileSync(pendingPath, 'utf-8');
 const finalOrders = fs.existsSync(pendingPath)
-  ? await parsefinalorderCSV(pendingPath)
+  ? await parsefinalorderCSV(content)
   : [];
     
     const rawOrderStatusCSV = fs.readFileSync(orderstatustempPath, 'utf-8');
