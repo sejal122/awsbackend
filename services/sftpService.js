@@ -1,5 +1,5 @@
 const Client = require('ssh2-sftp-client');
-const { parseCSV,parseOutstandingCSV,parsePendingOrderCSV } = require('../utils/csvParser');
+const { parseCSV,parseOutstandingCSV,parsePendingOrderCSV ,parsefinalorderCSV} = require('../utils/csvParser');
 require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
@@ -386,7 +386,7 @@ const rawCsv = fs.readFileSync(temppendingorder, 'utf-8');
 //const pendingOrders = parsePendingOrderCSV(rawCsv);
 const pendingOrders = await parsePendingOrderCSV(rawCsv);
 const finalOrders = fs.existsSync(pendingPath)
-  ? await parseCSV(pendingPath)
+  ? await parsefinalorderCSV(pendingPath)
   : [];
     
     const rawOrderStatusCSV = fs.readFileSync(orderstatustempPath, 'utf-8');
