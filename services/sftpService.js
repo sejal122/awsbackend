@@ -388,13 +388,17 @@ const pendingOrders = await parsePendingOrderCSV(rawCsv);
 const finalOrders = fs.existsSync(pendingPath)
   ? await parseCSV(pendingPath)
   : [];
-    console.log('------****************----------')
+    
     const rawOrderStatusCSV = fs.readFileSync(orderstatustempPath, 'utf-8');
-console.log("📂 Raw ORDER STATUS CSV:\n", rawOrderStatusCSV);
-     console.log('------****************----------')
+//console.log("📂 Raw ORDER STATUS CSV:\n", rawOrderStatusCSV);
+
 const orderstatus = await parseCSVstatus(orderstatustempPath);
-console.log(orderstatus)
-    console.log('------')
+//console.log(orderstatus)
+   // console.log('------')
+    console.log('------****************----------')
+    const rawFinalCsv = fs.readFileSync(pendingPath, 'utf-8');
+console.log("📂 Raw Final Orders CSV:\n", rawFinalCsv);
+     console.log('------****************----------')
  // console.log(pendingOrders)
    // console.log(finalOrders)
    // console.log(orderstatus)
