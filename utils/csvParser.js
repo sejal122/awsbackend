@@ -160,4 +160,16 @@ function parsePendingOrderCSV(csvString) {
 
   return data;
 }
-module.exports = {parseCSV,parseOutstandingCSV,parsePendingOrderCSV};
+function parsefinalorderCSV(filePath) {
+  const content = fs.readFileSync(filePath, 'utf-8');
+
+  const records = parse(content, {
+    columns: true,
+    skip_empty_lines: true,
+    relax_quotes: true,
+    trim: true,
+  });
+
+  return records;
+}
+module.exports = {parsefinalorderCSV,parseCSV,parseOutstandingCSV,parsePendingOrderCSV};
