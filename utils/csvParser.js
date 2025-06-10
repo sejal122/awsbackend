@@ -160,8 +160,8 @@ function parsePendingOrderCSV(csvString) {
 
   return data;
 }
-function parsefinalorderCSV(filePath) {
-  const content = fs.readFileSync(filePath, 'utf-8');
+function parsefinalorderCSV(content) {
+ 
 
   const records = parse(content, {
     columns: true,
