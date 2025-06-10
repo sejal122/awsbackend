@@ -298,7 +298,10 @@ async function writeCSV(filePath, data) {
     fs.writeFileSync(filePath, ''); // Write empty file
     return;
   }
-
+const writefinalorderCSV = async (filePath, data) => {
+  const csv = stringify(data, { header: true });
+  fs.writeFileSync(filePath, csv, 'utf-8');
+};
   const headers = Object.keys(data[0]).map(key => ({ id: key, title: key }));
   const writer = createObjectCsvWriter({
     path: filePath,
@@ -439,7 +442,7 @@ console.log('******')
    // fs.writeFileSync(orderstatustempPath, JSON.stringify(orderstatus, null, 2));
     //const updatedorderHistory=lastorderhistory.filter(order => order.purch_no_c !== doc_number);
 await writeCSV(temppendingorder, updatedPending);
-await writeCSV(pendingPath, finalOrders);
+await writefinalorderCSV(pendingPath, finalOrders);
 await writeCSV(orderstatustempPath, orderstatus.flat()); // flatten because you're pushing an array inside
  // 7. Upload updated files to server
  await sftp.fastPut(temppendingorder, pendingordersoriginalpath);
