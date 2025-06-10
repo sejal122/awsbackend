@@ -298,10 +298,7 @@ async function writeCSV(filePath, data) {
     fs.writeFileSync(filePath, ''); // Write empty file
     return;
   }
-async function writefinalorderCSV(filePath, data) {
-  const csv = stringify(data, { header: true });
-  fs.writeFileSync(filePath, csv, 'utf-8');
-};
+
   const headers = Object.keys(data[0]).map(key => ({ id: key, title: key }));
   const writer = createObjectCsvWriter({
     path: filePath,
@@ -355,7 +352,10 @@ async function parseCSVstatus(filePath) {
     return [];
   }
 }
-
+async function writefinalorderCSV(filePath, data) {
+  const csv = stringify(data, { header: true });
+  fs.writeFileSync(filePath, csv, 'utf-8');
+};
 async function approveOrderAndUploadFile(doc_number,approvedHistoryFormat) {
   const sftp = new Client();
   try{
