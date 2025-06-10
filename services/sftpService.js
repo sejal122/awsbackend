@@ -298,7 +298,7 @@ async function writeCSV(filePath, data) {
     fs.writeFileSync(filePath, ''); // Write empty file
     return;
   }
-const writefinalorderCSV = async (filePath, data) => {
+async function writefinalorderCSV(filePath, data) {
   const csv = stringify(data, { header: true });
   fs.writeFileSync(filePath, csv, 'utf-8');
 };
