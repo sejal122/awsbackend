@@ -160,6 +160,7 @@ function parsePendingOrderCSV(csvString) {
 
   return data;
 }
+const { parse } = require('csv-parse/sync');
 function parsefinalorderCSV(content) {
  
 
