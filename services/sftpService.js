@@ -297,7 +297,8 @@ async function writeCSV(filePath, data) {
     fs.writeFileSync(filePath, ''); // Write empty file
     return;
   }
-
+const allKeys = Object.keys(data[0]);
+  const sortedKeys = ['SR NO', ...allKeys.filter(k => k !== 'SR NO')];
   const headers = Object.keys(data[0]).map(key => ({ id: key, title: key }));
   const writer = createObjectCsvWriter({
     path: filePath,
@@ -426,11 +427,13 @@ console.log('******')
    
        // 5. Add sr_no to all approved orders
   const approvedWithSrNo = approvedOrders.map(order => {
-  const cleaned = {};
+    const cleaned = {};
+      cleaned['SR NO'] = nextSrNo;
+  
   for (let key in order) {
     cleaned[key] = cleanValue(order[key]);
   }
-  cleaned['SR NO'] = nextSrNo;
+
   return cleaned;
 });
 
