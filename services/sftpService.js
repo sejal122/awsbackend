@@ -199,8 +199,8 @@ async function placeOrderAndUploadFile(invoiceData) {
           "req_qty": quantity,
           "Incoterms": "",
           "Place": "",
-          "Cond Type - ZPR0":"",
-          "Cond Value":"",
+          "Cond Type - ZPR0": product["Pricing Condition"] || "",
+          "Cond Value": product["Price"] || "",
         });
       });
 
@@ -447,6 +447,11 @@ console.log('******')
 const cleanedFinalOrders = finalOrders.map(order => {
   const cleaned = {};
   for (let key in order) {
+     if (key === 'Cond Type - ZPR0' || key === 'Cond Value') {
+      cleaned[key] = ''; // force blank
+    } else {
+      cleaned[key] = cleanValue(order[key]);
+    }
     cleaned[key] = cleanValue(order[key]);
   }
   return cleaned;
