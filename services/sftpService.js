@@ -294,12 +294,18 @@ const { createObjectCsvWriter } = require('csv-writer');
 
 async function writeCSV(filePath, data) {
   if (!data || data.length === 0) {
-    fs.writeFileSync(filePath, ''); // Write empty file
+    fs.writeFileSync(filePath, '');
     return;
   }
-const allKeys = Object.keys(data[0]);
-  const sortedKeys = ['SR NO', ...allKeys.filter(k => k !== 'SR NO')];
-  const headers = Object.keys(data[0]).map(key => ({ id: key, title: key }));
+
+  const allKeys = Object.keys(data[0]);
+
+  // Force SR NO to appear first
+  const headers = ['SR NO', ...allKeys.filter(k => k !== 'SR NO')].map(key => ({
+    id: key,
+    title: key,
+  }));
+
   const writer = createObjectCsvWriter({
     path: filePath,
     header: headers,
@@ -307,6 +313,7 @@ const allKeys = Object.keys(data[0]);
 
   await writer.writeRecords(data);
 }
+
 
 function parseBrokenJsonFile(filePath) {
   try {
@@ -426,12 +433,20 @@ console.log('******')
        const nextSrNo = maxSrNo + 1;
    
        // 5. Add sr_no to all approved orders
-  const approvedWithSrNo = approvedOrders.map(order => {
-    const cleaned = {};
-      cleaned['SR NO'] = nextSrNo;
-  
+const approvedWithSrNo = approvedOrders.map(order => {
+  const cleaned = {};
+
+  // 1. Add SR NO first
+  cleaned['SR NO'] = nextSrNo;
+
+  // 2. Add rest of the keys except Cond Type - ZPR0 and Cond Value
   for (let key in order) {
-    cleaned[key] = cleanValue(order[key]);
+    if (key === 'SR NO') continue; // skip if already set manually
+    if (key === 'Cond Type - ZPR0' || key === 'Cond Value') {
+      cleaned[key] = ''; // blank out for final order
+    } else {
+      cleaned[key] = cleanValue(order[key]);
+    }
   }
 
   return cleaned;
