@@ -162,7 +162,6 @@ async function placeOrderAndUploadFile(invoiceData) {
         const quantity = item.quantity || "";
 
         flattenedRows.push({
-          "SR NO": srNo,
           "Doc type": "ZOR",
           "Sales org": "2000",
           "Sales off(Headquarter)": "",
@@ -421,7 +420,7 @@ console.log('******')
     console.log(updatedPending)
 
        // 4. Determine next sr_no
-       const existingSrNos = finalOrders.map(o => o.Sr_no).filter(Boolean);
+       const existingSrNos = finalOrders.map(o => o['SR NO']).filter(Boolean);
        const maxSrNo = existingSrNos.length > 0 ? Math.max(...existingSrNos) : 0;
        const nextSrNo = maxSrNo + 1;
    
@@ -431,7 +430,7 @@ console.log('******')
   for (let key in order) {
     cleaned[key] = cleanValue(order[key]);
   }
-  cleaned['Sr_no'] = nextSrNo;
+  cleaned['SR NO'] = nextSrNo;
   return cleaned;
 });
 
