@@ -199,8 +199,8 @@ async function placeOrderAndUploadFile(invoiceData) {
           "req_qty": quantity,
           "Incoterms": "",
           "Place": "",
-          "Cond Type - ZPR0": product["Pricing Condition"] || "",
-          "Cond Value": product["Price"] || "",
+          "Cond Type - ZPR0":"",
+          "Cond Value":"",
         });
       });
 
