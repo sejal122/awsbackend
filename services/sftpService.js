@@ -364,7 +364,11 @@ async function approveOrderAndUploadFile(doc_number,approvedHistoryFormat) {
     });
 console.log('---------approvedHistoryFormat------')
 console.log(approvedHistoryFormat)
-    
+    function cleanValue(val) {
+  if (val === null || val === undefined) return '';
+  if (typeof val === 'string' && val.trim().replace(/"/g, '') === '') return '';
+  return val;
+}
     //original and temp for pending orders
     const pendingordersoriginalpath='/DIR_MAGICAL/DIR_MAGICAL_Satara/SO/pendingOrders.csv'
     const temppendingorder=path.join(__dirname, "..", "uploads", "temppendingorder.csv");
@@ -422,10 +426,14 @@ console.log('******')
        const nextSrNo = maxSrNo + 1;
    
        // 5. Add sr_no to all approved orders
-    const approvedWithSrNo = approvedOrders.map(order => ({
-      ...order,
-      Sr_no: nextSrNo,
-    }));
+  const approvedWithSrNo = approvedOrders.map(order => {
+  const cleaned = {};
+  for (let key in order) {
+    cleaned[key] = cleanValue(order[key]);
+  }
+  cleaned['Sr_no'] = nextSrNo;
+  return cleaned;
+});
 
     finalOrders.push(...approvedWithSrNo);
     if (Array.isArray(approvedHistoryFormat)) {
@@ -434,13 +442,19 @@ console.log('******')
   orderstatus.push(approvedHistoryFormat);
 }
 
-
+const cleanedFinalOrders = finalOrders.map(order => {
+  const cleaned = {};
+  for (let key in order) {
+    cleaned[key] = cleanValue(order[key]);
+  }
+  return cleaned;
+});
     //fs.writeFileSync(temppendingorder, JSON.stringify(updatedPending, null, 2));
     //fs.writeFileSync(pendingPath, JSON.stringify(finalOrders, null, 2));
    // fs.writeFileSync(orderstatustempPath, JSON.stringify(orderstatus, null, 2));
     //const updatedorderHistory=lastorderhistory.filter(order => order.purch_no_c !== doc_number);
 await writeCSV(temppendingorder, updatedPending);
-await writeCSV(pendingPath, finalOrders);
+await writeCSV(pendingPath, cleanedFinalOrders);
 await writeCSV(orderstatustempPath, orderstatus.flat()); // flatten because you're pushing an array inside
  // 7. Upload updated files to server
  await sftp.fastPut(temppendingorder, pendingordersoriginalpath);
