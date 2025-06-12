@@ -492,5 +492,42 @@ await writeCSV(orderstatustempPath, orderstatus.flat()); // flatten because you'
     sftp.end();
   }
 }
+async function uploadVisitsCSV(){
+  const sftp = new Client();
+  try{
+    await sftp.connect({
+      host: process.env.SERVER_IP,
+      port: process.env.SERVER_PORT,
+      username: process.env.SERVER_USER,
+      password: process.env.SERVER_PASS,
+    });
 
-module.exports = {approveOrderAndUploadFile , fetchAndParsependingOrdersCSV,fetchAndParseDealerTargetCSV, fetchAndParseOrderHistoryCSV,fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
+    const visitsoriginalpath='/DIR_MAGICAL/DIR_MAGICAL_Satara/Reports/Visits.csv'
+    const tempvisits=path.join(__dirname, "..", "uploads", "tempvisits.csv");
+
+    await sftp.fastGet(visitsoriginalpath, tempvisits);
+
+    const existingData = await fs.readFile(tempvisits, 'utf-8');
+    const newLine = [
+      visit.date,
+      visit.dealerName,
+      visit.checkInTime,
+      visit.checkOutTime,
+      visit.duration
+    ].map(value => `"${value.replace(/"/g, '""')}"`).join(',') + '\n';
+    const updatedData = existingData.trimEnd() + '\n' + newLine;
+// Step 5: Write back to the temp file
+await fs.writeFile(tempvisits, updatedData, 'utf-8');
+
+// Step 6: Upload the updated file back to SFTP
+await sftp.fastPut(tempvisits, visitsoriginalpath);
+
+console.log('✅ Visit appended and file uploaded to SFTP.');
+  }catch(err){
+    console.error('❌ Error saving visit to SFTP:', err.message);
+    throw err;
+  }finally {
+    await sftp.end();
+  }
+}
+module.exports = {uploadVisitsCSV,approveOrderAndUploadFile , fetchAndParsependingOrdersCSV,fetchAndParseDealerTargetCSV, fetchAndParseOrderHistoryCSV,fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
