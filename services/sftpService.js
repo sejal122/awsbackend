@@ -493,6 +493,7 @@ await writeCSV(orderstatustempPath, orderstatus.flat()); // flatten because you'
   }
 }
 async function uploadVisitsCSV(visit){
+  const newfs = require('fs/promises');
   const sftp = new Client();
   try{
     await sftp.connect({
@@ -509,7 +510,7 @@ async function uploadVisitsCSV(visit){
 
     await sftp.fastGet(visitsoriginalpath, tempvisits);
 
-    const existingData = await fs.readFile(tempvisits, 'utf-8');
+    const existingData = await newfs.readFile(tempvisits, 'utf-8');
   
     const newLine = [
       visit.date,
@@ -523,7 +524,7 @@ const header = isFirstLine ? `"Date","Dealer Name","Check-In","Check-Out","Durat
 const updatedData = header + existingData.trimEnd() + '\n' + newLine;
   
 // Step 5: Write back to the temp file
-await fs.writeFile(tempvisits, updatedData,{ encoding: 'utf8' });
+await newfs.writeFile(tempvisits, updatedData,{ encoding: 'utf8' });
 
 // Step 6: Upload the updated file back to SFTP
 await sftp.fastPut(tempvisits, visitsoriginalpath);
