@@ -18,6 +18,7 @@ const {getOrderHistory} =require('../controllers/orderHistoryController')
 const {dealerTarget}=require('../controllers/dealerTargetController')
 const {getpendingOrders}=require('../controllers/pendingOrderController')
 const { approveOrder } = require('../controllers/approveOrderController');
+const { uploadVisits } = require('../controllers/uploadVisitsController');
 router.post('/approveOrder',approveOrder)
 router.get('/dealers', getDealers);
 router.get('/products', getProducts);
@@ -28,4 +29,5 @@ router.get('/sub-dealers',getSubdealerData)
 router.get('/orderHistory',getOrderHistory)
 router.get('/dealerTarget',dealerTarget)
 router.get('/pendingorderHistory',getpendingOrders)
+router.get('/upload-visitdata',uploadVisits)
 module.exports = router;
