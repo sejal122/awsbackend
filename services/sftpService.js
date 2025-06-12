@@ -492,7 +492,7 @@ await writeCSV(orderstatustempPath, orderstatus.flat()); // flatten because you'
     sftp.end();
   }
 }
-async function uploadVisitsCSV(){
+async function uploadVisitsCSV(visit){
   const sftp = new Client();
   try{
     await sftp.connect({
