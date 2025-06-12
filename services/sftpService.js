@@ -501,6 +501,8 @@ async function uploadVisitsCSV(visit){
       username: process.env.SERVER_USER,
       password: process.env.SERVER_PASS,
     });
+ 
+
 
     const visitsoriginalpath='/DIR_MAGICAL/DIR_MAGICAL_Satara/Reports/Visits.csv'
     const tempvisits=path.join(__dirname, "..", "uploads", "tempvisits.csv");
@@ -508,6 +510,7 @@ async function uploadVisitsCSV(visit){
     await sftp.fastGet(visitsoriginalpath, tempvisits);
 
     const existingData = await fs.readFile(tempvisits, 'utf-8');
+  
     const newLine = [
       visit.date,
       visit.dealerName,
@@ -515,9 +518,12 @@ async function uploadVisitsCSV(visit){
       visit.checkOutTime,
       visit.duration
     ].map(value => `"${value.replace(/"/g, '""')}"`).join(',') + '\n';
-    const updatedData = existingData.trimEnd() + '\n' + newLine;
+         const isFirstLine = existingData.trim().length === 0;
+const header = isFirstLine ? `"Date","Dealer Name","Check-In","Check-Out","Duration"\n` : '';
+const updatedData = header + existingData.trimEnd() + '\n' + newLine;
+  
 // Step 5: Write back to the temp file
-await fs.writeFile(tempvisits, updatedData, 'utf-8');
+await fs.writeFile(tempvisits, updatedData,{ encoding: 'utf8' });
 
 // Step 6: Upload the updated file back to SFTP
 await sftp.fastPut(tempvisits, visitsoriginalpath);
