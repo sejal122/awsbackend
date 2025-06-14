@@ -523,7 +523,7 @@ async function uploadVisitsCSV(visit){
       visit.VisitInlocation,
       visit.VisitOutlocation,
       visit.duration
-    ].map(value => `"${value.replace(/"/g, '""')}"`).join(',') + '\n';
+    ].map(value =>  `"${(value ?? '').toString().replace(/"/g, '""')}"`).join(',') + '\n';
          const isFirstLine = existingData.trim().length === 0;
 const header = isFirstLine ? `"Date","SalespersonName","Dealer Name","Check-In","Check-Out","VisitInTime","VisitOutTime", "VisitInlocation" ,"VisitOutLocation" ,"Duration"\n` : '';
 const updatedData = header + existingData.trimEnd() + '\n' + newLine;
