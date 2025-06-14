@@ -521,7 +521,7 @@ async function uploadVisitsCSV(visit){
       visit.visitInTime,
       visit.checkOutTime,
       visit.VisitInlocation,
-      visit.VisitOutlocation
+      visit.VisitOutlocation,
       visit.duration
     ].map(value => `"${value.replace(/"/g, '""')}"`).join(',') + '\n';
          const isFirstLine = existingData.trim().length === 0;
