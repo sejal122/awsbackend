@@ -19,10 +19,12 @@ const {dealerTarget}=require('../controllers/dealerTargetController')
 const {getpendingOrders}=require('../controllers/pendingOrderController')
 const { approveOrder } = require('../controllers/approveOrderController');
 const { uploadVisits } = require('../controllers/uploadVisitsController');
+const { replacependingordercontroller } = require('../controllers/replacependingorder');
 router.post('/approveOrder',approveOrder)
 router.get('/dealers', getDealers);
 router.get('/products', getProducts);
 router.post('/upload-csv',appendData)
+router.post('/update-order',replacependingordercontroller)
 router.post('/login',handleLogin)
 router.get('/outstanding',getOutstanding)
 router.get('/sub-dealers',getSubdealerData)
