@@ -5,6 +5,53 @@ const fs = require('fs');
 const path = require('path');
 const { Parser } = require('json2csv');
 const csv=require('csv-parser')
+
+
+
+async function replacePendingOrder(purch_no_c, updatedOrderArray) {
+  const sftp = new Client();
+  try {
+    await sftp.connect({
+      host: process.env.SERVER_IP,
+      port: process.env.SERVER_PORT,
+      username: process.env.SERVER_USER,
+      password: process.env.SERVER_PASS,
+    });
+
+    const remotePath = '/DIR_MAGICAL/DIR_MAGICAL_Satara/SO/pendingOrders.csv';
+    const localPath = path.join(__dirname, '..', 'uploads', 'pendingOrders.csv');
+
+    // Download current pending orders
+    await sftp.fastGet(remotePath, localPath);
+    const rawCSV = fs.readFileSync(localPath, 'utf-8');
+    const existingOrders = await parsePendingOrderCSV(rawCSV);
+
+    // Filter out the old version of this order
+    const filteredOrders = existingOrders.filter(order => order.purch_no_c !== purch_no_c);
+
+    // Ensure all items in updatedOrderArray include purch_no_c
+    const normalized = updatedOrderArray.map(item => ({
+      ...item
+    }));
+
+    // Combine filtered + updated
+    const updatedCSV = [...filteredOrders, ...normalized];
+
+    // Write and upload
+    await writeCSV(localPath, updatedCSV);
+    await sftp.fastPut(localPath, remotePath);
+
+    console.log(`✅ Successfully replaced order with purch_no_c = ${purch_no_c}`);
+  } catch (err) {
+    console.error('❌ Error updating pendingOrders.csv:', err);
+  } finally {
+    sftp.end();
+  }
+}
+
+
+
+
 async function fetchAndParseDealerTargetCSV() {
   const sftp = new Client();
   await sftp.connect({
@@ -542,4 +589,4 @@ console.log('✅ Visit appended and file uploaded to SFTP.');
     await sftp.end();
   }
 }
-module.exports = {uploadVisitsCSV,approveOrderAndUploadFile , fetchAndParsependingOrdersCSV,fetchAndParseDealerTargetCSV, fetchAndParseOrderHistoryCSV,fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
+module.exports = {replacePendingOrder,uploadVisitsCSV,approveOrderAndUploadFile , fetchAndParsependingOrdersCSV,fetchAndParseDealerTargetCSV, fetchAndParseOrderHistoryCSV,fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
