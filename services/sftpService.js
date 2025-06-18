@@ -312,7 +312,7 @@ async function fetchOutstandingAndParseCSV() {
     password: process.env.SERVER_PASS,
   });
 
-  const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Satara/on-account/custopen.csv');
+  const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/on-account/custopen.csv');
   //console.log(fileBuffer)
   await sftp.end();
 
@@ -432,9 +432,9 @@ console.log(approvedHistoryFormat)
     const orderstatusoriginalpath='/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Price/ORDER STATUS.csv'
 
     //original and temp for final order
-    const fileName = `Orders.csv`;
+    const fileName = `orders_2010.csv`;
     const pendingPath = path.join(__dirname,"..", 'uploads', 'Orders.csv');
-    const remotePath = `/DIR_MAGICAL/DIR_MAGICAL_Satara/SO/${fileName}`;
+    const remotePath = `/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/orders/data/${fileName}`;
    
     //download pending orders, order status
     await sftp.fastGet(pendingordersoriginalpath , temppendingorder);
@@ -552,7 +552,7 @@ async function uploadVisitsCSV(visit){
  
 
 
-    const visitsoriginalpath='/DIR_MAGICAL/DIR_MAGICAL_Satara/Reports/Visits.csv'
+    const visitsoriginalpath='/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara//Reports/Visits.csv'
     const tempvisits=path.join(__dirname, "..", "uploads", "tempvisits.csv");
 
     await sftp.fastGet(visitsoriginalpath, tempvisits);
