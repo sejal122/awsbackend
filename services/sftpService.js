@@ -18,7 +18,7 @@ async function replacePendingOrder(purch_no_c, updatedOrderArray) {
       password: process.env.SERVER_PASS,
     });
 
-    const remotePath = '/DIR_MAGICAL/DIR_MAGICAL_Satara/SO/pendingOrders.csv';
+    const remotePath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/SO/pendingOrders.csv';
     const localPath = path.join(__dirname, '..', 'uploads', 'pendingOrders.csv');
 
     // Download current pending orders
@@ -61,7 +61,7 @@ async function fetchAndParseDealerTargetCSV() {
     password: process.env.SERVER_PASS,
   });
 
-  const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Satara/targets/SALES Target Vs Achievement.csv');
+  const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/targets/SALES Target Vs Achievement.csv');
   //console.log(fileBuffer)
   await sftp.end();
 
@@ -77,7 +77,7 @@ async function fetchAndParseOrderHistoryCSV() {
     password: process.env.SERVER_PASS,
   });
 
-  const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Satara/Price/ORDER STATUS.csv');
+  const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Price/ORDER STATUS.csv');
   //console.log(fileBuffer)
   await sftp.end();
 
@@ -93,7 +93,7 @@ async function fetchAndParseCSV() {
     password: process.env.SERVER_PASS,
   });
 
-  const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Satara/Customer/Dealers.csv');
+  const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Customer/Dealers.csv');
   console.log(fileBuffer)
   await sftp.end();
 
@@ -111,7 +111,7 @@ async function fetchAndParseSubDealerCSV() {
     password: process.env.SERVER_PASS,
   });
 
-  const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Satara/Hierarchy/Dealer & Subdealer list From SAP.csv');
+  const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Hierarchy/Dealer & Subdealer list From SAP.csv');
   //console.log(fileBuffer)
   await sftp.end();
 
@@ -128,7 +128,7 @@ async function fetchAndParseProductsCSV() {
     password: process.env.SERVER_PASS,
   });
 
-  const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Satara/Price/HANA TEMPLET GROUP WISE1.csv');
+  const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Price/HANA TEMPLET GROUP WISE1.csv');
   console.log(fileBuffer)
   await sftp.end();
 
@@ -171,7 +171,7 @@ async function placeOrderAndUploadFile(invoiceData) {
 
     const fileName = `pendingOrders.csv`;
     const tempPath = path.join(__dirname, "..", "uploads", fileName);
-    const remotePath = `/DIR_MAGICAL/DIR_MAGICAL_Satara/SO/${fileName}`;
+    const remotePath = `/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/SO/${fileName}`;
 
     let existingRows = [];
 
@@ -288,7 +288,7 @@ async function verifyDealer() {
     });
   
  
-    const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Satara/Customer/Dealers.csv');
+    const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Customer/Dealers.csv');
     //console.log(fileBuffer)
     await sftp.end();
   
@@ -328,7 +328,7 @@ async function fetchAndParsependingOrdersCSV() {
     password: process.env.SERVER_PASS,
   });
 
-  const fileBuffer = await sftp.get('/DIR_MAGICAL/DIR_MAGICAL_Satara/SO/pendingOrders.csv');
+  const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/SO/pendingOrders.csv');
   //console.log(fileBuffer)
   await sftp.end();
 
@@ -424,12 +424,12 @@ console.log(approvedHistoryFormat)
   return val;
 }
     //original and temp for pending orders
-    const pendingordersoriginalpath='/DIR_MAGICAL/DIR_MAGICAL_Satara/SO/pendingOrders.csv'
+    const pendingordersoriginalpath='/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/SO/pendingOrders.csv'
     const temppendingorder=path.join(__dirname, "..", "uploads", "temppendingorder.csv");
 
     //original and temp for order status
     const orderstatustempPath = path.join(__dirname, "..", "uploads", "orderstatus.csv");
-    const orderstatusoriginalpath='/DIR_MAGICAL/DIR_MAGICAL_Satara/Price/ORDER STATUS.csv'
+    const orderstatusoriginalpath='/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Price/ORDER STATUS.csv'
 
     //original and temp for final order
     const fileName = `Orders.csv`;
