@@ -3,14 +3,14 @@ const  replacependingordercontroller=async (req,res)=> {
 
     const { purch_no_c,updatedOrderArray } = req.body;
     console.log(updatedOrderArray)
-    console.log(doc_number)
+    console.log(purch_no_c)
 
 try {
     
   if (!purch_no_c || !Array.isArray(updatedOrderArray)) {
     return res.status(400).json({ error: 'Missing or invalid data' });
   }
-    const data = await replacePendingOrder(doc_number,updatedOrderArray);
+    const data = await replacePendingOrder(purch_no_c,updatedOrderArray);
   
   
     res.json(data);
