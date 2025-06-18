@@ -1,7 +1,7 @@
 const { replacePendingOrder } = require('../services/sftpService');
 const  replacependingordercontroller=async (req,res)=> {
 
-    const {  doc_number,updatedOrderArray } = req.body;
+    const { purch_no_c,updatedOrderArray } = req.body;
     console.log(updatedOrderArray)
     console.log(doc_number)
 
