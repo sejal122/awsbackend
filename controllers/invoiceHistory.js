@@ -1,7 +1,7 @@
-const { fetchAndParseOrderHistoryCSV } = require('../services/sftpService');
+const { fetchAndParseInvoiceHistory } = require('../services/sftpService');
 const getInvoiceHistory = async (req, res) => {
     try {
-        const data = await fetchAndParseOrderHistoryCSV();
+        const data = await fetchAndParseInvoiceHistory();
      
         res.json(data);
         console.log(data)
