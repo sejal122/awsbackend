@@ -14,7 +14,7 @@ try {
      dealers=Object.values(dealers);
     // const dealer = dealers.find(d => d.Phone_number === phone);
     localStorage.setItem('allDealers', JSON.stringify(data));
-    const dealer = dealers.find(d => d['Telephone 1'] === phone);
+    const dealer = dealers.filter(d => d['Telephone 1'] === phone);
 console.log(dealer)
     if (dealer) {
       res.json({ success: true, dealer });
