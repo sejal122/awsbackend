@@ -7,7 +7,22 @@ const { Parser } = require('json2csv');
 const csv=require('csv-parser')
 
 
+async function fetchAndParseInvoiceHistory() {
+  const sftp = new Client();
+  await sftp.connect({
+    host: process.env.SERVER_IP,
+    port: process.env.SERVER_PORT,
+    username: process.env.SERVER_USER,
+    password: process.env.SERVER_PASS,
+  });
 
+  const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Invoice/Invoice_2010.csv');
+  //console.log(fileBuffer)
+  await sftp.end();
+
+  const csvText = fileBuffer.toString('utf-8');
+  return parseCSV(csvText);
+}
 async function replacePendingOrder(purch_no_c, updatedOrderArray) {
   const sftp = new Client();
   try {
@@ -589,4 +604,4 @@ console.log('✅ Visit appended and file uploaded to SFTP.');
     await sftp.end();
   }
 }
-module.exports = {replacePendingOrder,uploadVisitsCSV,approveOrderAndUploadFile , fetchAndParsependingOrdersCSV,fetchAndParseDealerTargetCSV, fetchAndParseOrderHistoryCSV,fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
+module.exports = {fetchAndParseInvoiceHistory,replacePendingOrder,uploadVisitsCSV,approveOrderAndUploadFile , fetchAndParsependingOrdersCSV,fetchAndParseDealerTargetCSV, fetchAndParseOrderHistoryCSV,fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
