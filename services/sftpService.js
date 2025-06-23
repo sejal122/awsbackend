@@ -353,6 +353,34 @@ async function fetchAndParsependingOrdersCSV() {
  // return parseBrokenJsonFile(csvText)
 }
 const { createObjectCsvWriter } = require('csv-writer');
+async function writeOrderCSV(filePath, data) {
+  if (!data || data.length === 0) {
+    fs.writeFileSync(filePath, '');
+    return;
+  }
+
+  // ✅ Gather all unique keys across all rows to avoid missing columns like "Time"
+  const keySet = new Set();
+  data.forEach(row => {
+    Object.keys(row).forEach(key => keySet.add(key));
+  });
+
+  // Convert Set to array
+  const allKeys = Array.from(keySet);
+
+  // Force SR NO to appear first (if present)
+  const headers = ['SR NO', ...allKeys.filter(k => k !== 'SR NO')].map(key => ({
+    id: key,
+    title: key,
+  }));
+
+  const writer = createObjectCsvWriter({
+    path: filePath,
+    header: headers,
+  });
+
+  await writer.writeRecords(data);
+}
 
 async function writeCSV(filePath, data) {
   if (!data || data.length === 0) {
@@ -539,7 +567,7 @@ const cleanedFinalOrders = finalOrders.map(order => {
     //const updatedorderHistory=lastorderhistory.filter(order => order.purch_no_c !== doc_number);
 await writeCSV(temppendingorder, updatedPending);
 await writeCSV(pendingPath, cleanedFinalOrders);
-await writeCSV(orderstatustempPath, orderstatus.flat()); // flatten because you're pushing an array inside
+await writeOrderCSV(orderstatustempPath, orderstatus.flat()); // flatten because you're pushing an array inside
  // 7. Upload updated files to server
  await sftp.fastPut(temppendingorder, pendingordersoriginalpath);
  await sftp.fastPut(pendingPath, remotePath);
