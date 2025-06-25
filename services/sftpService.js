@@ -712,4 +712,4 @@ console.log('✅ Visit appended and file uploaded to SFTP.');
     await sftp.end();
   }
 }
-module.exports = {fetchAndParseInvoiceHistory,replacePendingOrder,uploadVisitsCSV,approveOrderAndUploadFile , fetchAndParsependingOrdersCSV,fetchAndParseDealerTargetCSV, fetchAndParseOrderHistoryCSV,fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
+module.exports = {RejectOrderAndUploadFile,fetchAndParseInvoiceHistory,replacePendingOrder,uploadVisitsCSV,approveOrderAndUploadFile , fetchAndParsependingOrdersCSV,fetchAndParseDealerTargetCSV, fetchAndParseOrderHistoryCSV,fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
