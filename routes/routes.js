@@ -18,11 +18,13 @@ const {getOrderHistory} =require('../controllers/orderHistoryController')
 const {dealerTarget}=require('../controllers/dealerTargetController')
 const {getpendingOrders}=require('../controllers/pendingOrderController')
 const { approveOrder } = require('../controllers/approveOrderController');
+const { rejectOrder } = require('../controllers/rejectOrderController');
 const { uploadVisits } = require('../controllers/uploadVisitsController');
 const { csklogin } = require('../controllers/cskloginController');
 const { replacependingordercontroller } = require('../controllers/replacependingorder');
 const { getInvoiceHistory } = require('../controllers/invoiceHistory');
 router.post('/approveOrder',approveOrder)
+router.post('/rejectOrder',rejectOrder)
 router.get('/dealers', getDealers);
 router.get('/products', getProducts);
 router.post('/upload-csv',appendData)
