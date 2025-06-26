@@ -11,7 +11,7 @@ const { RejectOrderAndUploadFile } = require('../services/sftpService');
 
 try {
     const data = await RejectOrderAndUploadFile(doc_number,approvedHistoryFormat);
-  
+   res.status(200).json(data);
   
   } catch (err) {
     console.error('Error rejecting order', err.message);
