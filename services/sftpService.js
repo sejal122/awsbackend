@@ -6,87 +6,55 @@ const path = require('path');
 const { Parser } = require('json2csv');
 const csv=require('csv-parser')
 
-async function RejectOrderAndUploadFile(doc_number,approvedHistoryFormat) {
-    const sftp = new Client();
-    try{
-      await sftp.connect({
-        host: process.env.SERVER_IP,
-        port: process.env.SERVER_PORT,
-        username: process.env.SERVER_USER,
-        password: process.env.SERVER_PASS,
-      });
-  console.log('---------approvedHistoryFormat------')
-  console.log(approvedHistoryFormat)
+async function RejectOrderAndUploadFile(doc_number, approvedHistoryFormat) {
+  const sftp = new Client();
 
-      //original and temp for pending orders
-      const pendingordersoriginalpath='/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/SO/pendingOrders.csv'
-      const temppendingorder=path.join(__dirname, "..", "uploads", "temppendingorder.csv");
-  
-      //original and temp for order status
-      const orderstatustempPath = path.join(__dirname, "..", "uploads", "orderstatus.csv");
-      const orderstatusoriginalpath='/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Price/ORDER STATUS.csv'
-  
-     
-     
-      //download pending orders, order status
-      await sftp.fastGet(pendingordersoriginalpath , temppendingorder);
-     
-      await sftp.fastGet(orderstatusoriginalpath , orderstatustempPath);
-  const rawCsv = fs.readFileSync(temppendingorder, 'utf-8');
-  //const pendingOrders = parsePendingOrderCSV(rawCsv);
-  const pendingOrders = await parsePendingOrderCSV(rawCsv);
-    //    const content = fs.readFileSync(pendingPath, 'utf-8');
- 
-  
-  const orderstatus = await parseCSVstatus(orderstatustempPath);
-  //console.log(orderstatus)
-     // console.log('------')
-   
-   // console.log(pendingOrders)
-     // console.log(finalOrders)
-     // console.log(orderstatus)
-    //   const pendingRaw = fs.readFileSync(temppendingorder, 'utf-8');
-  //console.log("📂 Raw Temp Pending Order File Content:\n", pendingRaw);
-  
-     // console.log("DOC_NUMBER RECEIVED:", doc_number);
-  //console.log("PENDING ORDER PURCH_NO_Cs:", pendingOrders.map(p => p.purch_no_c));
-  
-        // 3. Filter matching & non-matching orders
-    //   const approvedOrders = pendingOrders.filter(order => order.purch_no_c == doc_number);
-      const updatedPending = pendingOrders.filter(order => order.purch_no_c!== doc_number);
-  console.log('******')
-     
-      console.log(updatedPending)
-  
-         // 4. Determine next sr_no
-        
-     
-         // 5. Add sr_no to all approved orders
+  try {
+    await sftp.connect({
+      host: process.env.SERVER_IP,
+      port: process.env.SERVER_PORT,
+      username: process.env.SERVER_USER,
+      password: process.env.SERVER_PASS,
+    });
 
-  
-  
- 
-      //fs.writeFileSync(temppendingorder, JSON.stringify(updatedPending, null, 2));
-      //fs.writeFileSync(pendingPath, JSON.stringify(finalOrders, null, 2));
-     // fs.writeFileSync(orderstatustempPath, JSON.stringify(orderstatus, null, 2));
-      //const updatedorderHistory=lastorderhistory.filter(order => order.purch_no_c !== doc_number);
-  await writeCSV(temppendingorder, updatedPending);
- 
-  await writeOrderCSV(orderstatustempPath, orderstatus.flat()); // flatten because you're pushing an array inside
-   // 7. Upload updated files to server
-   await sftp.fastPut(temppendingorder, pendingordersoriginalpath);
-  
-   await sftp.fastPut(orderstatustempPath, orderstatusoriginalpath);
-  
-    }
-    catch(err){
-      console.error('Approval error:', err);
-     
-    }
-    finally {
-      sftp.end();
-    }
+    const pendingordersoriginalpath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/SO/pendingOrders.csv';
+    const temppendingorder = path.join(__dirname, "..", "uploads", "temppendingorder.csv");
+
+    const orderstatustempPath = path.join(__dirname, "..", "uploads", "orderstatus.csv");
+    const orderstatusoriginalpath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Price/ORDER STATUS.csv';
+
+    // Step 1: Download files
+    await sftp.fastGet(pendingordersoriginalpath, temppendingorder);
+    await sftp.fastGet(orderstatusoriginalpath, orderstatustempPath);
+
+    // Step 2: Parse files
+    const rawCsv = fs.readFileSync(temppendingorder, 'utf-8');
+    const pendingOrders = await parsePendingOrderCSV(rawCsv);
+    const orderstatus = await parseCSVstatus(orderstatustempPath);
+
+    // Step 3: Remove rejected order from pending list
+    const updatedPending = pendingOrders.filter(order => order.purch_no_c !== doc_number);
+
+    // Step 4: Add rejection entry to order status list
+    orderstatus.push(approvedHistoryFormat);
+
+    // Step 5: Write back updated data
+    await writeCSV(temppendingorder, updatedPending);
+    await writeOrderCSV(orderstatustempPath, orderstatus.flat());
+
+    // Step 6: Upload updated files
+    await sftp.fastPut(temppendingorder, pendingordersoriginalpath);
+    await sftp.fastPut(orderstatustempPath, orderstatusoriginalpath);
+    
+    return { success: true, message: 'Order rejected and files updated' }; // important!
+  } catch (err) {
+    console.error('Reject error:', err);
+    throw err;
+  } finally {
+    sftp.end();
   }
+}
+
 async function fetchAndParseInvoiceHistory() {
   const sftp = new Client();
   await sftp.connect({
