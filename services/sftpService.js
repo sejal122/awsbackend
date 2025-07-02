@@ -660,10 +660,12 @@ async function uploadVisitsCSV(visit){
       visit.checkOutTime,
       visit.VisitInlocation,
       visit.VisitOutlocation,
-      visit.duration
+      visit.journeyDistance,
+      visit.duration,
+      
     ].map(value =>  `"${(value ?? '').toString().replace(/"/g, '""')}"`).join(',') + '\n';
          const isFirstLine = existingData.trim().length === 0;
-const header = isFirstLine ? `"Date","SalespersonName","Dealer Name","Check-In","Check-Out","VisitInTime","VisitOutTime", "VisitInlocation" ,"VisitOutLocation" ,"Duration"\n` : '';
+const header = isFirstLine ? `"Date","SalespersonName","Dealer Name","Check-In","Check-Out","VisitInTime","VisitOutTime", "VisitInlocation" ,"VisitOutLocation" ,"journeyDistance","Duration"\n` : '';
 const updatedData = header + existingData.trimEnd() + '\n' + newLine;
   
 // Step 5: Write back to the temp file
