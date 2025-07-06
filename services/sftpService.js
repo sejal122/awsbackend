@@ -6,6 +6,56 @@ const path = require('path');
 const { Parser } = require('json2csv');
 const csv=require('csv-parser')
 
+async function saveComplaintToSFTP({ ID, Name, date, filePath, fileName }) {
+ const sftp = new Client();
+
+  try {
+    await sftp.connect({
+      host: process.env.SERVER_IP,
+      port: process.env.SERVER_PORT,
+      username: process.env.SERVER_USER,
+      password: process.env.SERVER_PASS,
+    });
+  const remotePhotoDir = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Complaints/photos';
+const csvRemotePath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Complaints/complaints.csv';
+  const localTempCsv = path.join(os.tmpdir(), 'Complaints_temp.csv');
+  try {
+    await sftp.connect(config);
+
+    // Upload photo to SFTP
+    const remotePhotoPath = `${remotePhotoDir}/${fileName}`;
+    await sftp.put(filePath, remotePhotoPath);
+    console.log('✅ Photo uploaded:', remotePhotoPath);
+
+    // Ensure CSV exists or create it locally
+    await sftp.fastGet(csvRemotePath, localTempCsv).catch(async () => {
+      await fs.writeFile(localTempCsv, `"DealerID","DealerName","Date","PhotoFileName","PhotoPath"\n`, 'utf8');
+    });
+
+    const newLine = [
+      ID,
+      Name,
+      date,
+      fileName,
+      remotePhotoPath
+    ].map(v => `"${v.replace(/"/g, '""')}"`).join(',') + '\n';
+
+    await fs.appendFile(localTempCsv, newLine, 'utf8');
+
+    // Upload updated CSV
+    await sftp.fastPut(localTempCsv, csvRemotePath);
+    console.log('✅ Complaint metadata saved');
+  } catch (err) {
+    console.error('❌ Failed to upload complaint:', err.message);
+    throw err;
+  } finally {
+    await sftp.end();
+  }
+}
+
+module.exports = { saveComplaintToSFTP };
+
+
 async function RejectOrderAndUploadFile(doc_number, approvedHistoryFormat) {
   const sftp = new Client();
 
@@ -682,4 +732,4 @@ console.log('✅ Visit appended and file uploaded to SFTP.');
     await sftp.end();
   }
 }
-module.exports = {RejectOrderAndUploadFile,fetchAndParseInvoiceHistory,replacePendingOrder,uploadVisitsCSV,approveOrderAndUploadFile , fetchAndParsependingOrdersCSV,fetchAndParseDealerTargetCSV, fetchAndParseOrderHistoryCSV,fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
+module.exports = {saveComplaintToSFTP,RejectOrderAndUploadFile,fetchAndParseInvoiceHistory,replacePendingOrder,uploadVisitsCSV,approveOrderAndUploadFile , fetchAndParsependingOrdersCSV,fetchAndParseDealerTargetCSV, fetchAndParseOrderHistoryCSV,fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
