@@ -8,6 +8,7 @@
 //   });
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
 const { getDealers } = require('../controllers/dealerController');
 const { getProducts } = require('../controllers/productsController');
 const { appendData } = require('../controllers/placeOrderController');
@@ -39,6 +40,16 @@ router.get('/pendingorderHistory',getpendingOrders)
 router.post('/upload-visitdata',uploadVisits)
 router.post('/handlecsklogin',csklogin)
 router.get('/invoicedata',getInvoiceHistory)
-router.post('/upload-complaint',postComplaint)
+const storage = multer.diskStorage({
+  destination: 'uploads/', // temporary local dir
+  filename: (req, file, cb) => {
+    const date = new Date().toISOString().slice(0, 10);
+    const name = `${date}_${req.body.ID || 'unknown'}${path.extname(file.originalname)}`;
+    cb(null, name);
+  }
+});
+
+const upload = multer({ storage });
+router.post('/upload-complaint', upload.single('photo'), postComplaint);
 
 module.exports = router;
