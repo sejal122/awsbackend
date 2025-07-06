@@ -19,7 +19,7 @@ const csvRemotePath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Complaints/compla
       port: process.env.SERVER_PORT,
       username: process.env.SERVER_USER,
       password: process.env.SERVER_PASS,
-
+   });
     // Upload photo to SFTP
     const remotePhotoPath = `${remotePhotoDir}/${fileName}`;
     await sftp.put(filePath, remotePhotoPath);
