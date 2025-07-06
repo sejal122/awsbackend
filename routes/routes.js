@@ -9,6 +9,7 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
+const path = require('path');
 const { getDealers } = require('../controllers/dealerController');
 const { getProducts } = require('../controllers/productsController');
 const { appendData } = require('../controllers/placeOrderController');
