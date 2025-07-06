@@ -9,18 +9,16 @@ const csv=require('csv-parser')
 async function saveComplaintToSFTP({ ID, Name, date, filePath, fileName }) {
  const sftp = new Client();
 
-  try {
-    await sftp.connect({
-      host: process.env.SERVER_IP,
-      port: process.env.SERVER_PORT,
-      username: process.env.SERVER_USER,
-      password: process.env.SERVER_PASS,
-    });
+
   const remotePhotoDir = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Complaints/photos';
 const csvRemotePath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Complaints/complaints.csv';
   const localTempCsv = path.join(os.tmpdir(), 'Complaints_temp.csv');
   try {
-    await sftp.connect(config);
+  await sftp.connect({
+      host: process.env.SERVER_IP,
+      port: process.env.SERVER_PORT,
+      username: process.env.SERVER_USER,
+      password: process.env.SERVER_PASS,
 
     // Upload photo to SFTP
     const remotePhotoPath = `${remotePhotoDir}/${fileName}`;
