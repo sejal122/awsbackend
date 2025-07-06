@@ -10,7 +10,7 @@ const postComplaint = async (req, res) => {
     }
 
     const filePath = file.path;
-    const fileName = file.filename;
+    const fileName = file.originalname;
 
     const data = await saveComplaintToSFTP({
       ID,
