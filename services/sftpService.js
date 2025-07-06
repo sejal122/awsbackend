@@ -28,7 +28,7 @@ const csvRemotePath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Complaints/compla
 
     // Ensure CSV exists or create it locally
     await sftp.fastGet(csvRemotePath, localTempCsv).catch(async () => {
-      await fs.writeFile(localTempCsv, `"DealerID","DealerName","Date","PhotoFileName","PhotoPath"\n`, 'utf8');
+      await fs.writeFile(localTempCsv, `"DealerID","DealerName","Date","PhotoFileName","PhotoPath"\n`, { encoding: 'utf8' });
     });
 
     const newLine = [
