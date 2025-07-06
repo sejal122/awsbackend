@@ -39,6 +39,6 @@ router.get('/pendingorderHistory',getpendingOrders)
 router.post('/upload-visitdata',uploadVisits)
 router.post('/handlecsklogin',csklogin)
 router.get('/invoicedata',getInvoiceHistory)
-router.post('/upload-complaint',postcomplaint)
+router.post('/upload-complaint',postComplaint)
 
 module.exports = router;
