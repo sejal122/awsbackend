@@ -51,7 +51,6 @@ const csvRemotePath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Complaints/compla
   }
 }
 
-module.exports = { saveComplaintToSFTP };
 
 
 async function RejectOrderAndUploadFile(doc_number, approvedHistoryFormat) {
