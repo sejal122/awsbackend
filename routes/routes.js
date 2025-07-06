@@ -23,6 +23,7 @@ const { uploadVisits } = require('../controllers/uploadVisitsController');
 const { csklogin } = require('../controllers/cskloginController');
 const { replacependingordercontroller } = require('../controllers/replacependingorder');
 const { getInvoiceHistory } = require('../controllers/invoiceHistory');
+const {postcomplaint}=require('../controllers/postComplaint');
 router.post('/approveOrder',approveOrder)
 router.post('/rejectOrder',rejectOrder)
 router.get('/dealers', getDealers);
@@ -38,4 +39,6 @@ router.get('/pendingorderHistory',getpendingOrders)
 router.post('/upload-visitdata',uploadVisits)
 router.post('/handlecsklogin',csklogin)
 router.get('/invoicedata',getInvoiceHistory)
+router.post('/uload-complaint',postcomplaint)
+
 module.exports = router;
