@@ -39,7 +39,7 @@ const csvRemotePath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Complaints/compla
       remotePhotoPath
     ].map(v => `"${v.replace(/"/g, '""')}"`).join(',') + '\n';
 
-    await fs.appendFile(localTempCsv, newLine, 'utf8');
+    await fs.appendFile(localTempCsv, newLine, { encoding: 'utf8' });
 
     // Upload updated CSV
     await sftp.fastPut(localTempCsv, csvRemotePath);
