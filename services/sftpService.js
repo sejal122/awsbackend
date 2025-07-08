@@ -11,7 +11,7 @@ async function saveComplaintToSFTP({ ID, Name, date, filePath, fileName }) {
  const sftp = new Client();
 
 
-  const remotePhotoDir = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Complaints';
+  const remotePhotoDir = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Complaints/Photos';
 const csvRemotePath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Complaints/complaints.csv';
   const localTempCsv = path.join(os.tmpdir(), 'Complaints_temp.csv');
   try {
