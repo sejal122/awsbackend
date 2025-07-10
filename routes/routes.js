@@ -41,6 +41,24 @@ router.get('/pendingorderHistory',getpendingOrders)
 router.post('/upload-visitdata',uploadVisits)
 router.post('/handlecsklogin',csklogin)
 router.get('/invoicedata',getInvoiceHistory)
+
+//shrirampur
+router.post('/approveOrder-Shrirampur',approveOrder)
+router.post('/rejectOrder-Shrirampur',rejectOrder)
+router.get('/dealers-Shrirampur', getDealers);
+router.get('/products-Shrirampur', getProducts);
+router.post('/upload-csv-Shrirampur',appendData)
+router.post('/update-order-Shrirampur',replacependingordercontroller)
+router.post('/login-Shrirampur',handleLogin)
+router.get('/outstanding-Shrirampur',getOutstanding)
+router.get('/sub-dealers-Shrirampur',getSubdealerData)
+router.get('/orderHistory-Shrirampur',getOrderHistory)
+router.get('/dealerTarget-Shrirampur',dealerTarget)
+router.get('/pendingorderHistory-Shrirampur',getpendingOrders)
+router.post('/upload-visitdata-Shrirampur',uploadVisits)
+router.post('/handlecsklogin-Shrirampur',csklogin)
+router.get('/invoicedata-Shrirampur',getInvoiceHistory)
+router.post('/upload-complaint-Shrirampur', upload.single('photo'), postComplaint);
 const storage = multer.diskStorage({
   destination: 'uploads/', // temporary local dir
   filename: (req, file, cb) => {
