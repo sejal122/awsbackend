@@ -25,9 +25,11 @@ const { rejectOrder } = require('../controllers/rejectOrderController');
 const { rejectOrderShrirampur } = require('../controllers/rejectOrderController');
 const { uploadVisits ,uploadVisitsShrirampur} = require('../controllers/uploadVisitsController');
 const { csklogin ,cskloginShrirampur} = require('../controllers/cskloginController');
-const { replacependingordercontroller ,replacePendingOrderShrirampur } = require('../controllers/replacependingorder');
+const { replacependingordercontroller , replacependingordercontrollerShrirampur } = require('../controllers/replacependingorder');
 const { getInvoiceHistory ,getInvoiceHistoryShrirampur} = require('../controllers/invoiceHistory');
 const {postComplaint,postComplaintShrirampur}=require('../controllers/postComplaintController');
+
+//SATARA
 router.post('/approveOrder',approveOrder)
 router.post('/rejectOrder',rejectOrder)
 router.get('/dealers', getDealersShrirampur);
@@ -62,7 +64,7 @@ console.log('DEBUG handleLogin type:', typeof appendDataShrirampur);
 
 console.log('DEBUG handleLogin type:', typeof handleLogin);
 
-router.post('/update-order-Shrirampur',replacePendingOrderShrirampur)
+router.post('/update-order-Shrirampur', replacependingordercontrollerShrirampur)
 console.log('DEBUG handleLogin type:', typeof replacePendingOrderShrirampur);
 
 router.post('/login-Shrirampur',handleLoginShrirampur)
