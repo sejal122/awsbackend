@@ -26,7 +26,8 @@
 //     }
 // }
 // module.exports = readCSVFileAsJSON;
-const { fetchAndParseCSV ,‎fetchAndParseCSVShrirampur} = require('../services/sftpService');
+const { fetchAndParseCSV, fetchAndParseCSVShrirampur } = require('../services/sftpService');
+
 const cacheManager = require('cache-manager');
 let cache;
 (async () => {
