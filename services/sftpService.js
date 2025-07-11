@@ -1176,7 +1176,7 @@ async function fetchAndParsependingOrdersCSVShrirampur() {
  return parsePendingOrderCSV(csvText);
  // return parseBrokenJsonFile(csvText)
 }
-const { createObjectCsvWriter } = require('csv-writer');
+
 async function writeOrderCSV(filePath, data) {
   if (!data || data.length === 0) {
     fs.writeFileSync(filePath, '');
