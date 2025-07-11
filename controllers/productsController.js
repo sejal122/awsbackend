@@ -35,7 +35,8 @@ const getProductsShrirampur = async (req, res) => {
   //console.log('in route')
 
       try {
-        const data = await ‎fetchAndParseProductsCSVShrirampur();
+    const data = await fetchAndParseProductsCSVShrirampur();
+
         
         await cache.set('products', data);
         res.json(data);
