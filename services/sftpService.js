@@ -951,8 +951,7 @@ async function fetchAndParseSubDealerCSVShrirampur() {
     password: process.env.SERVER_PASS,
   });
 
-  const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Shrirampur/Hierarchy/Dealer & Subdealer list From SAP.csv
-');
+  const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Shrirampur/Hierarchy/Dealer & Subdealer list From SAP.csv');
   //console.log(fileBuffer)
   await sftp.end();
 
