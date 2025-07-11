@@ -1,5 +1,5 @@
 
-const { fetchAndParseProductsCSV } = require('../services/sftpService');
+const { fetchAndParseProductsCSV ,‎fetchAndParseProductsCSVShrirampur} = require('../services/sftpService');
 
 const cacheManager = require('cache-manager');
 let cache;
@@ -29,5 +29,26 @@ const getProducts = async (req, res) => {
     
    
   };
+
+
+const getProductsShrirampur = async (req, res) => {
+  //console.log('in route')
+
+      try {
+        const data = await ‎fetchAndParseProductsCSVShrirampur();
+        
+        await cache.set('products', data);
+        res.json(data);
+       // console.log(data)
+      } catch (err) {
+        console.error('Error fetching products:', err.message);
+        if (!res.headersSent) {
+     res.status(500).json({ error: 'Failed to fetch products data' });
+    }
+        
+      }
+    
+   
+  };
   
-  module.exports = { getProducts };
+  module.exports = { getProducts ,getProductsShrirampur};
