@@ -10,25 +10,27 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
-const { getDealers } = require('../controllers/dealerController');
+const { getDealers ,getDealersShrirampur} = require('../controllers/dealerController');
 const { getProducts } = require('../controllers/productsController');
-const { appendData } = require('../controllers/placeOrderController');
-const {handleLogin} = require('../controllers/loginController')
-const {getOutstanding}= require('../controllers/outstandingController')
-const {getSubdealerData}=require('../controllers/subDealerController')
-const {getOrderHistory} =require('../controllers/orderHistoryController')
-const {dealerTarget}=require('../controllers/dealerTargetController')
-const {getpendingOrders}=require('../controllers/pendingOrderController')
+const { appendData ,appendDataShrirampur} = require('../controllers/placeOrderController');
+const {handleLogin,handleLoginShrirampur} = require('../controllers/loginController')
+const {getOutstanding,getOutstandingShrirampur}= require('../controllers/outstandingController')
+const {getSubdealerData,getSubdealerDataShrirampur}=require('../controllers/subDealerController')
+const {getOrderHistory,getOrderHistoryShrirampur} =require('../controllers/orderHistoryController')
+const {dealerTarget,dealerTargetShrirampur}=require('../controllers/dealerTargetController')
+const {getpendingOrders,getpendingOrdersShrirampur}=require('../controllers/pendingOrderController')
 const { approveOrder } = require('../controllers/approveOrderController');
+const { approveOrderShrirampur } = require('../controllers/approveOrderController');
 const { rejectOrder } = require('../controllers/rejectOrderController');
-const { uploadVisits } = require('../controllers/uploadVisitsController');
-const { csklogin } = require('../controllers/cskloginController');
-const { replacependingordercontroller } = require('../controllers/replacependingorder');
-const { getInvoiceHistory } = require('../controllers/invoiceHistory');
-const {postComplaint}=require('../controllers/postComplaintController');
+const { rejectOrderShrirampur } = require('../controllers/rejectOrderController');
+const { uploadVisits ,uploadVisitsShrirampur} = require('../controllers/uploadVisitsController');
+const { csklogin ,cskloginShrirampur} = require('../controllers/cskloginController');
+const { replacependingordercontroller ,replacePendingOrderShrirampur } = require('../controllers/replacependingorder');
+const { getInvoiceHistory ,getInvoiceHistoryShrirampur} = require('../controllers/invoiceHistory');
+const {postComplaint,postComplaintShrirampur}=require('../controllers/postComplaintController');
 router.post('/approveOrder',approveOrder)
 router.post('/rejectOrder',rejectOrder)
-router.get('/dealers', getDealers);
+router.get('/dealers', getDealersShrirampur);
 router.get('/products', getProducts);
 router.post('/upload-csv',appendData)
 router.post('/update-order',replacependingordercontroller)
@@ -43,22 +45,22 @@ router.post('/handlecsklogin',csklogin)
 router.get('/invoicedata',getInvoiceHistory)
 
 //shrirampur
-router.post('/approveOrder-Shrirampur',approveOrder)
-router.post('/rejectOrder-Shrirampur',rejectOrder)
-router.get('/dealers-Shrirampur', getDealers);
-router.get('/products-Shrirampur', getProducts);
-router.post('/upload-csv-Shrirampur',appendData)
-router.post('/update-order-Shrirampur',replacependingordercontroller)
-router.post('/login-Shrirampur',handleLogin)
-router.get('/outstanding-Shrirampur',getOutstanding)
-router.get('/sub-dealers-Shrirampur',getSubdealerData)
-router.get('/orderHistory-Shrirampur',getOrderHistory)
-router.get('/dealerTarget-Shrirampur',dealerTarget)
-router.get('/pendingorderHistory-Shrirampur',getpendingOrders)
-router.post('/upload-visitdata-Shrirampur',uploadVisits)
-router.post('/handlecsklogin-Shrirampur',csklogin)
-router.get('/invoicedata-Shrirampur',getInvoiceHistory)
-router.post('/upload-complaint-Shrirampur', upload.single('photo'), postComplaint);
+router.post('/approveOrder-Shrirampur',approveOrderShrirampur)
+router.post('/rejectOrder-Shrirampur',rejectOrderShrirampur)
+router.get('/dealers-Shrirampur', getDealersShrirampur);
+router.get('/products-Shrirampur', getProductsShrirampur);
+router.post('/upload-csv-Shrirampur',appendDataShrirampur)
+router.post('/update-order-Shrirampur',replacePendingOrderShrirampur)
+router.post('/login-Shrirampur',handleLoginShrirampur)
+router.get('/outstanding-Shrirampur',getOutstandingShrirampur)
+router.get('/sub-dealers-Shrirampur',getSubdealerDataShrirampur)
+router.get('/orderHistory-Shrirampur',getOrderHistoryShrirampur)
+router.get('/dealerTarget-Shrirampur',dealerTargetShrirampur)
+router.get('/pendingorderHistory-Shrirampur',getpendingOrdersShrirampur)
+router.post('/upload-visitdata-Shrirampur',uploadVisitsShrirampur)
+router.post('/handlecsklogin-Shrirampur',cskloginShrirampur)
+router.get('/invoicedata-Shrirampur',getInvoiceHistoryShrirampur)
+router.post('/upload-complaint-Shrirampur', upload.single('photo'), postComplaintShrirampur);
 const storage = multer.diskStorage({
   destination: 'uploads/', // temporary local dir
   filename: (req, file, cb) => {
