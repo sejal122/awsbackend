@@ -1252,7 +1252,7 @@ function parseBrokenJsonFile(filePath) {
   }
 }
 
-const { parse } = require('csv-parse/sync');
+
 
 async function parseCSVstatus(filePath) {
   try {
