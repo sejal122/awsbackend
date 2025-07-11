@@ -985,8 +985,7 @@ async function fetchAndParseProductsCSVShrirampur() {
     return null;
   }
 }
-const csvParser = require("csv-parser");
-const Papa = require('papaparse');
+
 function formatDate(dateString) {
   const d = new Date(dateString);
   const day = String(d.getDate()).padStart(2, "0");
