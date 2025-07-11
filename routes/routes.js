@@ -46,22 +46,51 @@ router.get('/invoicedata',getInvoiceHistory)
 
 //shrirampur
 router.post('/approveOrder-Shrirampur',approveOrderShrirampur)
+console.log('DEBUG handleLogin type:', typeof approveOrderShrirampur);
+
 router.post('/rejectOrder-Shrirampur',rejectOrderShrirampur)
+console.log('DEBUG handleLogin type:', typeof rejectOrderShrirampur);
+
 router.get('/dealers-Shrirampur', getDealersShrirampur);
+console.log('DEBUG handleLogin type:', typeof getDealersShrirampur);
+
 router.get('/products-Shrirampur', getProductsShrirampur);
+console.log('DEBUG handleLogin type:', typeof getProductsShrirampur);
+
 router.post('/upload-csv-Shrirampur',appendDataShrirampur)
+console.log('DEBUG handleLogin type:', typeof appendDataShrirampur);
+
 console.log('DEBUG handleLogin type:', typeof handleLogin);
 
 router.post('/update-order-Shrirampur',replacePendingOrderShrirampur)
+console.log('DEBUG handleLogin type:', typeof replacePendingOrderShrirampur);
+
 router.post('/login-Shrirampur',handleLoginShrirampur)
+console.log('DEBUG handleLogin type:', typeof handleLoginShrirampur);
+
 router.get('/outstanding-Shrirampur',getOutstandingShrirampur)
+console.log('DEBUG handleLogin type:', typeof getOutstandingShrirampur);
+
 router.get('/sub-dealers-Shrirampur',getSubdealerDataShrirampur)
+console.log('DEBUG handleLogin type:', typeof getSubdealerDataShrirampur);
+
 router.get('/orderHistory-Shrirampur',getOrderHistoryShrirampur)
+console.log('DEBUG handleLogin type:', typeof getOrderHistoryShrirampur);
+
 router.get('/dealerTarget-Shrirampur',dealerTargetShrirampur)
+console.log('DEBUG handleLogin type:', typeof dealerTargetShrirampur);
+
 router.get('/pendingorderHistory-Shrirampur',getpendingOrdersShrirampur)
+console.log('DEBUG handleLogin type:', typeof getpendingOrdersShrirampur);
+
 router.post('/upload-visitdata-Shrirampur',uploadVisitsShrirampur)
+console.log('DEBUG handleLogin type:', typeof uploadVisitsShrirampur);
+
 router.post('/handlecsklogin-Shrirampur',cskloginShrirampur)
+console.log('DEBUG handleLogin type:', typeof cskloginShrirampur);
+
 router.get('/invoicedata-Shrirampur',getInvoiceHistoryShrirampur)
+console.log('DEBUG handleLogin type:', typeof getInvoiceHistoryShrirampur);
 
 const storage = multer.diskStorage({
   destination: 'uploads/', // temporary local dir
