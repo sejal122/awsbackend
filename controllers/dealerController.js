@@ -1,31 +1,4 @@
-// async function readCSVFileAsJSON() {
-//     try {
-//       await sftp.connect(config);
-//       const remoteFilePath = '/DIR_MAGICAL/DIR_MAGICAL_Baramati/Customer/Customer_1010.csv';
-//       const fileBuffer = await sftp.get(remoteFilePath);
-//       const csvString = fileBuffer.toString('utf8');
-  
-//       const lines = csvString.trim().split('\n');
-//       const headers = lines[0].split(',').map(h => h.trim());
-      
-//       const jsonData = lines.slice(1).map(line => {
-//         const values = line.split(',').map(v => v.trim());
-//         const obj = {};
-//         headers.forEach((header, idx) => {
-//           obj[header] = values[idx] || '';
-//         });
-//         return obj;
-//       });
-  
-//       console.log('✅ Manually parsed JSON:', jsonData);
-//       await sftp.end();
-//       return jsonData;
-  
-//     } catch (err) {
-//       console.error('❌ Error:', err.message);
-//     }
-// }
-// module.exports = readCSVFileAsJSON;
+
 const { fetchAndParseCSV, fetchAndParseCSVShrirampur } = require('../services/sftpService');
 
 const cacheManager = require('cache-manager');
@@ -56,22 +29,17 @@ const getDealers = async (req, res) => {
  
 };
 const getDealersShrirampur = async (req, res) => {
-
-    try {
-      const data = await ‎fetchAndParseCSVShrirampur();
-      
-      await cache.set('dealers', data);
-      res.json(data);
-     // console.log(data)
-    } catch (err) {
-      console.error('Error fetching dealers:', err.message);
-      if (!res.headersSent) {
-     res.status(500).json({ error: 'Failed to fetch dealer data' });
-}
-  
+  try {
+    const data = await fetchAndParseCSVShrirampur();
+    await cache.set('dealers_shrirampur', data);
+    res.json(data);
+  } catch (err) {
+    console.error('Error fetching dealers:', err.message);
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Failed to fetch dealer data' });
     }
-  
- 
+  }
 };
+
 
 module.exports = { getDealers ,getDealersShrirampur};
