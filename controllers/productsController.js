@@ -1,5 +1,5 @@
 
-const {fetchAndParseProductsCSV,‎fetchAndParseProductsCSVShrirampur} = require('../services/sftpService');
+const { fetchAndParseProductsCSV, fetchAndParseProductsCSVShrirampur } = require('../services/sftpService');
 
 const cacheManager = require('cache-manager');
 let cache;
