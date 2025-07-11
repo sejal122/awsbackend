@@ -1151,7 +1151,7 @@ async function fetchOutstandingAndParseCSVShrirampur() {
     password: process.env.SERVER_PASS,
   });
 
-  const fileBuffer = await sftp.get(' /DIR_SALESTRENDZ/DIR_SALESTRENDZ_Shrirampur/on-account/custopen.csv ');
+  const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Shrirampur/on-account/custopen.csv');
   //console.log(fileBuffer)
   await sftp.end();
 
