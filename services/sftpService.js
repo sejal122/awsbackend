@@ -1167,7 +1167,7 @@ async function fetchAndParsependingOrdersCSVShrirampur() {
     password: process.env.SERVER_PASS,
   });
 
-  const fileBuffer = await sftp.get( /DIR_SALESTRENDZ/DIR_SALESTRENDZ_Shrirampur/SO/pendingOrders.csv');
+  const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Shrirampur/SO/pendingOrders.csv');
   //console.log(fileBuffer)
   await sftp.end();
 
@@ -1464,5 +1464,4 @@ console.log('✅ Visit appended and file uploaded to SFTP.');
 
 module.exports = {uploadVisitsCSVShrirampur, approveOrderAndUploadFileShrirampur ,fetchAndParsependingOrdersCSVShrirampur,
 fetchOutstandingAndParseCSVShrirampur , verifyDealerShrirampur , placeOrderAndUploadFileShrirampur, fetchAndParseProductsCSVShrirampur , fetchAndParseSubDealerCSVShrirampur,fetchAndParseCSVShrirampur,
-fetchAndParseOrderHistoryCSVShrirampur , replacePendingOrderShrirampur , fetchAndParseInvoiceHistoryShrirampur,
-RejectOrderAndUploadFileShrirampur, saveComplaintToSFTPShrirampur,saveComplaintToSFTP,RejectOrderAndUploadFile,fetchAndParseInvoiceHistory,replacePendingOrder,uploadVisitsCSV,approveOrderAndUploadFile , fetchAndParsependingOrdersCSV,fetchAndParseDealerTargetCSV, fetchAndParseOrderHistoryCSV,fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
+fetchAndParseOrderHistoryCSVShrirampur , replacePendingOrderShrirampur , fetchAndParseInvoiceHistoryShrirampur, RejectOrderAndUploadFileShrirampur, saveComplaintToSFTPShrirampur,saveComplaintToSFTP,RejectOrderAndUploadFile,fetchAndParseInvoiceHistory,replacePendingOrder,uploadVisitsCSV,approveOrderAndUploadFile , fetchAndParsependingOrdersCSV,fetchAndParseDealerTargetCSV, fetchAndParseOrderHistoryCSV,fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
