@@ -1,4 +1,4 @@
-const { fetchAndParseDealerTargetCSV } = require('../services/sftpService');
+const { fetchAndParseDealerTargetCSV,fetchAndParseDealerTargetCSVShrirampur } = require('../services/sftpService');
  const dealerTarget =async(req,res)=>{
     try {
         const data = await fetchAndParseDealerTargetCSV();
@@ -11,4 +11,16 @@ const { fetchAndParseDealerTargetCSV } = require('../services/sftpService');
       }
 }
 
-module.exports={dealerTarget}
+
+ const dealerTargetShrirampur =async(req,res)=>{
+    try {
+        const data = await fetchAndParseDealerTargetCSVShrirampur();
+        
+        res.json(data);
+       // console.log(data)
+      } catch (err) {
+        console.error('Error fetching outstanding:', err.message);
+        res.status(500).json({ error: 'Failed to fetch outstanding data' });
+      }
+}
+module.exports={dealerTarget,dealerTargetShrirampur}
