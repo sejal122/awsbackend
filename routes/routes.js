@@ -50,6 +50,8 @@ router.post('/rejectOrder-Shrirampur',rejectOrderShrirampur)
 router.get('/dealers-Shrirampur', getDealersShrirampur);
 router.get('/products-Shrirampur', getProductsShrirampur);
 router.post('/upload-csv-Shrirampur',appendDataShrirampur)
+console.log('DEBUG handleLogin type:', typeof handleLogin);
+
 router.post('/update-order-Shrirampur',replacePendingOrderShrirampur)
 router.post('/login-Shrirampur',handleLoginShrirampur)
 router.get('/outstanding-Shrirampur',getOutstandingShrirampur)
