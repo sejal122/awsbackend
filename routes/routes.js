@@ -62,7 +62,7 @@ router.get('/pendingorderHistory-Shrirampur',getpendingOrdersShrirampur)
 router.post('/upload-visitdata-Shrirampur',uploadVisitsShrirampur)
 router.post('/handlecsklogin-Shrirampur',cskloginShrirampur)
 router.get('/invoicedata-Shrirampur',getInvoiceHistoryShrirampur)
-router.post('/upload-complaint-Shrirampur', upload.single('photo'), postComplaintShrirampur);
+
 const storage = multer.diskStorage({
   destination: 'uploads/', // temporary local dir
   filename: (req, file, cb) => {
@@ -74,5 +74,5 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 router.post('/upload-complaint', upload.single('photo'), postComplaint);
-
+router.post('/upload-complaint-Shrirampur', upload.single('photo'), postComplaintShrirampur);
 module.exports = router;
