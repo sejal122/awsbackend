@@ -1,4 +1,4 @@
-const { uploadVisitsCSV } = require('../services/sftpService');
+const { uploadVisitsCSV ,uploadVisitsCSVShrirampur} = require('../services/sftpService');
 const uploadVisits=async(req,res)=>{
     try {
         const visitJson = req.body
@@ -11,4 +11,16 @@ const uploadVisits=async(req,res)=>{
       }
 }
 
-module.exports = { uploadVisits };
+
+const uploadVisitsShrirampur=async(req,res)=>{
+    try {
+        const visitJson = req.body
+        const data = await uploadVisitsCSVShrirampur(visitJson);
+        res.json(data);
+        console.log(data)
+      } catch (err) {
+        console.error('Error uploading visits:', err.message);
+        res.status(500).json({ error: 'Failed to upload visits' });
+      }
+}
+module.exports = { uploadVisits ,uploadVisitsShrirampur };
