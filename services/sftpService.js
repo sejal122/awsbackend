@@ -798,7 +798,7 @@ async function RejectOrderAndUploadFileShrirampur(doc_number, approvedHistoryFor
     const temppendingorder = path.join(__dirname, "..", "uploads", "temppendingorder.csv");
 
     const orderstatustempPath = path.join(__dirname, "..", "uploads", "orderstatus.csv");
-    const orderstatusoriginalpath = '/ /DIR_SALESTRENDZ/DIR_SALESTRENDZ_Shrirampur/SO/STATUS/orders_1020.csv';
+    const orderstatusoriginalpath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Shrirampur/SO/STATUS/orders_1020.csv';
 
     // Step 1: Download files
     await sftp.fastGet(pendingordersoriginalpath, temppendingorder);
@@ -901,7 +901,7 @@ async function fetchAndParseDealerTargetCSVShrirampur() {
     password: process.env.SERVER_PASS,
   });
 
-  const fileBuffer = await sftp.get(' /DIR_SALESTRENDZ/DIR_SALESTRENDZ_Shrirampur/targets/SALES Target Vs Achievement.csv ');
+  const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Shrirampur/targets/SALES Target Vs Achievement.csv ');
   //console.log(fileBuffer)
   await sftp.end();
 
@@ -917,7 +917,7 @@ async function fetchAndParseOrderHistoryCSVShrirampur() {
     password: process.env.SERVER_PASS,
   });
 
-  const fileBuffer = await sftp.get(' /DIR_SALESTRENDZ/DIR_SALESTRENDZ_Shrirampur/SO/STATUS/orders_1020.csv');
+  const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Shrirampur/SO/STATUS/orders_1020.csv');
   //console.log(fileBuffer)
   await sftp.end();
 
@@ -1296,7 +1296,7 @@ console.log(approvedHistoryFormat)
 
     //original and temp for order status
     const orderstatustempPath = path.join(__dirname, "..", "uploads", "orderstatus.csv");
-    const orderstatusoriginalpath=' /DIR_SALESTRENDZ/DIR_SALESTRENDZ_Shrirampur/SO/STATUS/orders_1020.csv'
+    const orderstatusoriginalpath='/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Shrirampur/SO/STATUS/orders_1020.csv'
 
     //original and temp for final order
     const fileName = `orders_1020.csv`;
@@ -1419,7 +1419,7 @@ async function uploadVisitsCSVShrirampur(visit){
  
 
 
-    const visitsoriginalpath=' /DIR_SALESTRENDZ/DIR_SALESTRENDZ_Shrirampur//Reports/Visits.csv  '
+    const visitsoriginalpath='/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Shrirampur//Reports/Visits.csv  '
     const tempvisits=path.join(__dirname, "..", "uploads", "tempvisits.csv");
 
     await sftp.fastGet(visitsoriginalpath, tempvisits);
@@ -1524,7 +1524,7 @@ async function RejectOrderAndUploadFileBaramati(doc_number, approvedHistoryForma
     const temppendingorder = path.join(__dirname, "..", "uploads", "temppendingorder.csv");
 
     const orderstatustempPath = path.join(__dirname, "..", "uploads", "orderstatus.csv");
-    const orderstatusoriginalpath = '/ /DIR_SALESTRENDZ/DIR_SALESTRENDZ_Baramati/SO/STATUS/orders_1010.csv';
+    const orderstatusoriginalpath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Baramati/SO/STATUS/orders_1010.csv';
 
     // Step 1: Download files
     await sftp.fastGet(pendingordersoriginalpath, temppendingorder);
@@ -1627,7 +1627,7 @@ async function fetchAndParseDealerTargetCSVBaramati() {
     password: process.env.SERVER_PASS,
   });
 
-  const fileBuffer = await sftp.get(' /DIR_SALESTRENDZ/DIR_SALESTRENDZ_Baramati/targets/SALES Target Vs Achievement.csv ');
+  const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Baramati/targets/SALES Target Vs Achievement.csv ');
   //console.log(fileBuffer)
   await sftp.end();
 
@@ -1643,7 +1643,7 @@ async function fetchAndParseOrderHistoryCSVBaramati() {
     password: process.env.SERVER_PASS,
   });
 
-  const fileBuffer = await sftp.get(' /DIR_SALESTRENDZ/DIR_SALESTRENDZ_Baramati/SO/STATUS/orders_1010.csv');
+  const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Baramati/SO/STATUS/orders_1010.csv');
   //console.log(fileBuffer)
   await sftp.end();
 
@@ -2022,7 +2022,7 @@ console.log(approvedHistoryFormat)
 
     //original and temp for order status
     const orderstatustempPath = path.join(__dirname, "..", "uploads", "orderstatus.csv");
-    const orderstatusoriginalpath=' /DIR_SALESTRENDZ/DIR_SALESTRENDZ_Baramati/SO/STATUS/orders_1010.csv'
+    const orderstatusoriginalpath='/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Baramati/SO/STATUS/orders_1010.csv'
 
     //original and temp for final order
     const fileName = `orders_1010.csv`;
