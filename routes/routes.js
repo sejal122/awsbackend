@@ -10,24 +10,24 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
-const { getDealers ,getDealersShrirampur} = require('../controllers/dealerController');
-const { getProducts,getProductsShrirampur } = require('../controllers/productsController');
-const { appendData ,appendDataShrirampur} = require('../controllers/placeOrderController');
-const {handleLogin,handleLoginShrirampur} = require('../controllers/loginController')
-const {getOutstanding,getOutstandingShrirampur}= require('../controllers/outstandingController')
-const {getSubdealerData,getSubdealerDataShrirampur}=require('../controllers/subDealerController')
-const {getOrderHistory,getOrderHistoryShrirampur} =require('../controllers/orderHistoryController')
-const {dealerTarget,dealerTargetShrirampur}=require('../controllers/dealerTargetController')
-const {getpendingOrders,getpendingOrdersShrirampur}=require('../controllers/pendingOrderController')
+const { getDealers ,getDealersShrirampur,getDealersBaramati} = require('../controllers/dealerController');
+const { getProducts,getProductsShrirampur,getProductsBaramati} = require('../controllers/productsController');
+const { appendData ,appendDataShrirampur,appendDataBaramati} = require('../controllers/placeOrderController');
+const {handleLogin,handleLoginShrirampur,handleLoginBaramati} = require('../controllers/loginController')
+const {getOutstanding,getOutstandingShrirampur,getOutstandingBaramati}= require('../controllers/outstandingController')
+const {getSubdealerData,getSubdealerDataShrirampur,getSubdealerDataBaramati}=require('../controllers/subDealerController')
+const {getOrderHistory,getOrderHistoryShrirampur,getOrderHistoryBaramati} =require('../controllers/orderHistoryController')
+const {dealerTarget,dealerTargetShrirampur,dealerTargetBaramati}=require('../controllers/dealerTargetController')
+const {getpendingOrders,getpendingOrdersShrirampur,getpendingOrdersBaramati}=require('../controllers/pendingOrderController')
 const { approveOrder } = require('../controllers/approveOrderController');
-const { approveOrderShrirampur } = require('../controllers/approveOrderController');
+const { approveOrderShrirampur,approveOrderBaramati } = require('../controllers/approveOrderController');
 const { rejectOrder } = require('../controllers/rejectOrderController');
-const { rejectOrderShrirampur } = require('../controllers/rejectOrderController');
-const { uploadVisits ,uploadVisitsShrirampur} = require('../controllers/uploadVisitsController');
-const { csklogin ,cskloginShrirampur} = require('../controllers/cskloginController');
-const { replacependingordercontroller , replacependingordercontrollerShrirampur } = require('../controllers/replacependingorder');
-const { getInvoiceHistory ,getInvoiceHistoryShrirampur} = require('../controllers/invoiceHistory');
-const {postComplaint,postComplaintShrirampur}=require('../controllers/postComplaintController');
+const { rejectOrderShrirampur,rejectOrderBaramati } = require('../controllers/rejectOrderController');
+const { uploadVisits ,uploadVisitsShrirampur,uploadVisitsBaramati} = require('../controllers/uploadVisitsController');
+const { csklogin ,cskloginShrirampur,cskloginBaramati} = require('../controllers/cskloginController');
+const { replacependingordercontroller , replacependingordercontrollerShrirampur,replacependingordercontrollerBaramati } = require('../controllers/replacependingorder');
+const { getInvoiceHistory ,getInvoiceHistoryShrirampur,getInvoiceHistoryBaramati} = require('../controllers/invoiceHistory');
+const {postComplaint,postComplaintShrirampur,postComplaintBaramati}=require('../controllers/postComplaintController');
 
 //SATARA
 router.post('/approveOrder',approveOrder)
@@ -106,4 +106,30 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 router.post('/upload-complaint', upload.single('photo'), postComplaint);
 router.post('/upload-complaint-Shrirampur', upload.single('photo'), postComplaintShrirampur);
+router.post('/upload-complaint-Baramati', upload.single('photo'), postComplaintBaramati);
+
+//BARAMATI
+router.post('/approveOrder-Baramati',approveOrderBaramati)
+router.post('/rejectOrder-Baramati',rejectOrderBaramati)
+router.get('/dealers-Baramati', getDealersShrirampurBaramati);
+router.get('/products-Baramati', getProductsBaramati);
+router.post('/upload-csv-Baramati',appendDataBaramati)
+router.post('/update-order-Baramati',replacependingordercontrollerBaramati)
+router.post('/login-Baramati',handleLoginBaramati)
+router.get('/outstanding-Baramati',getOutstandingBaramati)
+router.get('/sub-dealers-Baramati',getSubdealerDataBaramati)
+router.get('/orderHistory-Baramati',getOrderHistoryBaramati)
+router.get('/dealerTarget-Baramati',dealerTargetBaramati)
+router.get('/pendingorderHistory-Baramati',getpendingOrdersBaramati)
+router.post('/upload-visitdata-Baramati',uploadVisitsBaramati)
+router.post('/handlecsklogin-Baramati',cskloginBaramati)
+router.get('/invoicedata-Baramati',getInvoiceHistoryBaramati)
+
+
+
+
+
+
+
+
 module.exports = router;
