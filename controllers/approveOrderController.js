@@ -53,7 +53,7 @@ try {
     console.log(doc_number)
 
 try {
-    const data = await approveOrderAndUploadFileShrirampur(doc_number,approvedHistoryFormat);
+    const data = await approveOrderAndUploadFileBaramati(doc_number,approvedHistoryFormat);
   
   
     res.json(data);
