@@ -111,7 +111,7 @@ router.post('/upload-complaint-Baramati', upload.single('photo'), postComplaintB
 //BARAMATI
 router.post('/approveOrder-Baramati',approveOrderBaramati)
 router.post('/rejectOrder-Baramati',rejectOrderBaramati)
-router.get('/dealers-Baramati', getDealersShrirampurBaramati);
+router.get('/dealers-Baramati', getDealersBaramati);
 router.get('/products-Baramati', getProductsBaramati);
 router.post('/upload-csv-Baramati',appendDataBaramati)
 router.post('/update-order-Baramati',replacependingordercontrollerBaramati)
