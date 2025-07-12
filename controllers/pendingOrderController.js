@@ -1,4 +1,4 @@
-const { fetchAndParsependingOrdersCSV ,fetchAndParsependingOrdersCSVShrirampur} = require("../services/sftpService");
+const { fetchAndParsependingOrdersCSV ,fetchAndParsependingOrdersCSVShrirampur,fetchAndParsependingOrdersCSVBaramati} = require("../services/sftpService");
 
 const getpendingOrders=async(req,res)=>{
     try {
@@ -23,4 +23,16 @@ const getpendingOrdersShrirampur=async(req,res)=>{
         res.status(500).json({ error: 'Failed to fetch pending order data' });
       }
 }
-module.exports = { getpendingOrders ,getpendingOrdersShrirampur};
+
+const getpendingOrdersBaramati=async(req,res)=>{
+    try {
+        const data = await fetchAndParsependingOrdersCSVBaramati();
+        
+        res.json(data);
+        console.log(data)
+      } catch (err) {
+        console.error('Error fetching pending orders:', err.message);
+        res.status(500).json({ error: 'Failed to fetch pending order data' });
+      }
+}
+module.exports = { getpendingOrders ,getpendingOrdersShrirampur,getpendingOrdersBaramati};
