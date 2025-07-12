@@ -61,7 +61,7 @@ const phone=identifier
 console.log("phone")
 console.log(req.body)
 try {
-    let dealers = await fetchAndParseCSVShrirampur();
+    let dealers = await fetchAndParseCSVBaramati();
     console.log(dealers)
     // console.log("dealers") // Should return array of dealer objects
     // console.log(dealers)
