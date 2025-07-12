@@ -1,4 +1,4 @@
-const { fetchOutstandingAndParseCSV ,fetchOutstandingAndParseCSVShrirampur} = require('../services/sftpService');
+const { fetchOutstandingAndParseCSV ,fetchOutstandingAndParseCSVShrirampur,fetchOutstandingAndParseCSVBaramati} = require('../services/sftpService');
  const getOutstanding =async(req,res)=>{
     try {
         const data = await fetchOutstandingAndParseCSV();
@@ -28,4 +28,19 @@ const { fetchOutstandingAndParseCSV ,fetchOutstandingAndParseCSVShrirampur} = re
        
       }
 }
-module.exports={getOutstanding,getOutstandingShrirampur}
+
+ const getOutstandingBaramati =async(req,res)=>{
+    try {
+        const data = await fetchOutstandingAndParseCSVShrirampur();
+        
+        res.json(data);
+        //console.log(data)
+      } catch (err) {
+        console.error('Error fetching outstanding:', err.message);
+      if (!res.headersSent) {
+      res.status(500).json({ error: 'Failed to fetch outstanding data' });
+    }
+       
+      }
+}
+module.exports={getOutstanding,getOutstandingShrirampur,getOutstandingBaramati}
