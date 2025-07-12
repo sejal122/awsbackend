@@ -1,5 +1,5 @@
 
-const { fetchAndParseCSV, fetchAndParseCSVShrirampur } = require('../services/sftpService');
+const { fetchAndParseCSV, fetchAndParseCSVShrirampur,fetchAndParseCSVBaramati } = require('../services/sftpService');
 
 const cacheManager = require('cache-manager');
 let cache;
@@ -41,5 +41,16 @@ const getDealersShrirampur = async (req, res) => {
   }
 };
 
-
-module.exports = { getDealers ,getDealersShrirampur};
+const getDealersBaramati = async (req, res) => {
+  try {
+    const data = await fetchAndParseCSVBaramati();
+    await cache.set('dealers_shrirampur', data);
+    res.json(data);
+  } catch (err) {
+    console.error('Error fetching dealers:', err.message);
+    if (!res.headersSent) {
+      res.status(500).json({ error: 'Failed to fetch dealer data' });
+    }
+  }
+};
+module.exports = { getDealers ,getDealersShrirampur,getDealersBaramati};
