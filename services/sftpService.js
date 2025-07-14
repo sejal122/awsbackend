@@ -1659,7 +1659,7 @@ async function fetchAndParseCSVBaramati() {
     password: process.env.SERVER_PASS,
   });
 
-  const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Baramati/Customer/Dealers.csv');
+  const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Baramati/Customer/Dealers_1010.csv');
   console.log(fileBuffer)
   await sftp.end();
 
@@ -1853,7 +1853,7 @@ async function verifyDealerBaramati() {
     });
   
  
-    const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Baramati/Customer/Dealers.csv');
+    const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Baramati/Customer/Dealers_1010.csv');
     //console.log(fileBuffer)
     await sftp.end();
   
