@@ -958,6 +958,25 @@ async function fetchAndParseSubDealerCSVShrirampur() {
   const csvText = fileBuffer.toString('utf-8');
   return parseCSV(csvText);
 }
+function parseCSVshrirampurproducts(csvString) {
+  const delimiter = csvString.includes('\t') ? '\t' : ',';
+
+  return parse(csvString, {
+    columns: (headerRow) =>
+      headerRow.map(h =>
+        h.replace(/\r?\n/g, ' ') // Replace line breaks with space
+         .replace(/\s+/g, ' ')    // Replace multiple spaces with single space
+         .trim()
+      ),
+    skip_empty_lines: true,
+    relax_quotes: true,
+    relax_column_count: true,
+    trim: true,
+    delimiter,
+  });
+}
+
+
 
 async function fetchAndParseProductsCSVShrirampur() {
  const sftp = new Client();
@@ -973,7 +992,7 @@ async function fetchAndParseProductsCSVShrirampur() {
   await sftp.end();
 
   const csvText = fileBuffer.toString('utf-8');
-  return parseCSV(csvText);
+  return parseCSVshrirampurproducts(csvText);
 }
    function cleanAndParse(str) {
   try {
