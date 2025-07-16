@@ -1320,7 +1320,7 @@ console.log(approvedHistoryFormat)
     //original and temp for final order
     const fileName = `orders_1020.csv`;
     const pendingPath = path.join(__dirname,"..", 'uploads', 'Orders.csv');
-    const remotePath = `DIR_SALESTRENDZ/DIR_SALESTRENDZ_Shrirampur/Orders/data/${fileName}`;
+    const remotePath = `/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Shrirampur/Orders/data/${fileName}`;
    
     //download pending orders, order status
     await sftp.fastGet(pendingordersoriginalpath , temppendingorder);
