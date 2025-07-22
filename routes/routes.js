@@ -32,7 +32,7 @@ const {postComplaint,postComplaintShrirampur,postComplaintBaramati}=require('../
 //SATARA
 router.post('/approveOrder',approveOrder)
 router.post('/rejectOrder',rejectOrder)
-router.get('/dealers', getDealersShrirampur);
+router.get('/dealers', getDealers);
 router.get('/products', getProducts);
 router.post('/upload-csv',appendData)
 router.post('/update-order',replacependingordercontroller)
