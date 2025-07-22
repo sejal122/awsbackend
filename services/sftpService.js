@@ -1718,7 +1718,7 @@ async function fetchAndParseProductsCSVBaramati() {
   await sftp.end();
 
   const csvText = fileBuffer.toString('utf-8');
-  return parseCSV(csvText);
+  return parseCSVshrirampurproducts(csvText);
 }
    function cleanAndParse(str) {
   try {
