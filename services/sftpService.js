@@ -1068,7 +1068,7 @@ async function placeOrderAndUploadFileShrirampur(invoiceData) {
 
         flattenedRows.push({
           "Doc type": "ZOR",
-          "Sales org": "2000",
+          "Sales org": "1010",
           "Sales off(Headquarter)": "",
           "Dist channel": "10",
           "Division": "10",
@@ -1092,7 +1092,7 @@ async function placeOrderAndUploadFileShrirampur(invoiceData) {
           "Ship_Region": "",
           "bill_to": "",
           "payer": "",
-          "plant": "2010",
+          "plant": "1020",
           "itm_number": (index + 1) * 10,
           "material": product["Material CODE"] || "",
           "target_qty": quantity,
@@ -1794,7 +1794,7 @@ async function placeOrderAndUploadFileBaramati(invoiceData) {
 
         flattenedRows.push({
           "Doc type": "ZOR",
-          "Sales org": "2000",
+          "Sales org": "1000",
           "Sales off(Headquarter)": "",
           "Dist channel": "10",
           "Division": "10",
@@ -1818,7 +1818,7 @@ async function placeOrderAndUploadFileBaramati(invoiceData) {
           "Ship_Region": "",
           "bill_to": "",
           "payer": "",
-          "plant": "2010",
+          "plant": "1010",
           "itm_number": (index + 1) * 10,
           "material": product["Material CODE"] || "",
           "target_qty": quantity,
