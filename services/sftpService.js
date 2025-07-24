@@ -2028,8 +2028,7 @@ async function approveOrderAndUploadFileBaramati(doc_number,approvedHistoryForma
       username: process.env.SERVER_USER,
       password: process.env.SERVER_PASS,
     });
-console.log('---------approvedHistoryFormat------')
-console.log(approvedHistoryFormat)
+
     function cleanValue(val) {
   if (val === null || val === undefined) return '';
   if (typeof val === 'string' && val.trim().replace(/"/g, '') === '') return '';
@@ -2047,7 +2046,7 @@ console.log(approvedHistoryFormat)
     const fileName = `orders_1010.csv`;
     const pendingPath = path.join(__dirname,"..", 'uploads', 'Orders.csv');
     const remotePath = `DIR_SALESTRENDZ/DIR_SALESTRENDZ_Baramati/Orders/data/${fileName}`;
-   
+   console.log(remotePath)
     //download pending orders, order status
     await sftp.fastGet(pendingordersoriginalpath , temppendingorder);
     await sftp.fastGet(remotePath , pendingPath);
@@ -2066,10 +2065,10 @@ const finalOrders = fs.existsSync(pendingPath)
 const orderstatus = await parseCSVstatus(orderstatustempPath);
 //console.log(orderstatus)
    // console.log('------')
-    console.log('------****************----------')
+    //console.log('------****************----------')
     const rawFinalCsv = fs.readFileSync(pendingPath, 'utf-8');
-console.log("📂 Raw Final Orders CSV:\n", rawFinalCsv);
-     console.log('------****************----------')
+//console.log("📂 Raw Final Orders CSV:\n", rawFinalCsv);
+    // console.log('------****************----------')
  // console.log(pendingOrders)
    // console.log(finalOrders)
    // console.log(orderstatus)
