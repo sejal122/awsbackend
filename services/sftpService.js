@@ -2045,7 +2045,7 @@ async function approveOrderAndUploadFileBaramati(doc_number,approvedHistoryForma
     //original and temp for final order
     const fileName = `orders_1010.csv`;
     const pendingPath = path.join(__dirname,"..", 'uploads', 'Orders.csv');
-    const remotePath = `DIR_SALESTRENDZ/DIR_SALESTRENDZ_Baramati/Orders/data/${fileName}`;
+    const remotePath = `/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Baramati/Orders/data/${fileName}`;
    console.log(remotePath)
     //download pending orders, order status
     await sftp.fastGet(pendingordersoriginalpath , temppendingorder);
