@@ -19,7 +19,7 @@ async function uploadLeadCSV(lead) {
       password: process.env.SERVER_PASS,
     });
 
-    const leadsOriginalPath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Leads/leads_1010.csv';
+    const leadsOriginalPath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Leads/Leads_2010.csv';
     const tempLeads = path.join(__dirname, "..", "uploads", "templeads.csv");
 
     // Step 1: Download existing file from SFTP
