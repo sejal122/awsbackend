@@ -8,6 +8,68 @@ const csv=require('csv-parser')
 const os = require('os');
 
 //SATARA PLANT
+async function uploadLeadCSV(lead) {
+ const newfs = require('fs/promises');
+  const sftp = new Client();
+  try {
+    await sftp.connect({
+      host: process.env.SERVER_IP,
+      port: process.env.SERVER_PORT,
+      username: process.env.SERVER_USER,
+      password: process.env.SERVER_PASS,
+    });
+
+    const leadsOriginalPath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Leads/leads_1010.csv';
+    const tempLeads = path.join(__dirname, "..", "uploads", "templeads.csv");
+
+    // Step 1: Download existing file from SFTP
+    await sftp.fastGet(leadsOriginalPath, tempLeads);
+
+    // Step 2: Read existing file content
+    const existingData = await newfs.readFile(tempLeads, 'utf-8');
+
+    // Step 3: Construct the new line
+    const newLine = [
+      lead.id,
+      lead.salesmanId,
+      lead.sectorName,
+      lead.subSectorName,
+      lead.email,
+      lead.companyName,
+      lead.monthlyConsumption,
+      lead.competitor,
+      lead.potential,
+      lead.ownerName,
+      lead.address,
+      lead.productNames,
+      JSON.stringify(lead.followups || []) // Store remarks as stringified JSON
+    ]
+      .map(value => `"${(value ?? '').toString().replace(/"/g, '""')}"`)
+      .join(',') + '\n';
+
+    // Step 4: Append to existing data (add headers if file is empty)
+    const isFirstLine = existingData.trim().length === 0;
+    const header = isFirstLine
+      ? `"ID","SalesmanName","Sector Name","Sub Sector Name","Email","Company Name","Monthly consumption","Competitor","Potential","Owner Name","Address","Product names","Followups"\n`
+      : '';
+
+    const updatedData = header + existingData.trimEnd() + '\n' + newLine;
+
+    // Step 5: Write back to the temp file
+    await newfs.writeFile(tempLeads, updatedData, { encoding: 'utf8' });
+
+    // Step 6: Upload updated file back to SFTP
+    await sftp.fastPut(tempLeads, leadsOriginalPath);
+
+    console.log('✅ Lead appended and file uploaded to SFTP.');
+  } catch (err) {
+    console.error('❌ Error saving lead to SFTP:', err.message);
+    throw err;
+  } finally {
+    await sftp.end();
+  }
+}
+
 async function saveComplaintToSFTP({ ID, Name, date, filePath, fileName }) {
  const sftp = new Client();
 
@@ -2205,6 +2267,6 @@ console.log('✅ Visit appended and file uploaded to SFTP.');
 
 
 
-module.exports = {RejectOrderAndUploadFileShrirampur,saveComplaintToSFTPShrirampur , fetchAndParseDealerTargetCSVShrirampur , fetchAndParseOrderHistoryCSVShrirampur , fetchAndParseCSVShrirampur , fetchAndParseSubDealerCSVShrirampur , fetchAndParseProductsCSVShrirampur , placeOrderAndUploadFileShrirampur,verifyDealerShrirampur,fetchAndParsependingOrdersCSVShrirampur,
+module.exports = {uploadLeadCSV,RejectOrderAndUploadFileShrirampur,saveComplaintToSFTPShrirampur , fetchAndParseDealerTargetCSVShrirampur , fetchAndParseOrderHistoryCSVShrirampur , fetchAndParseCSVShrirampur , fetchAndParseSubDealerCSVShrirampur , fetchAndParseProductsCSVShrirampur , placeOrderAndUploadFileShrirampur,verifyDealerShrirampur,fetchAndParsependingOrdersCSVShrirampur,
 approveOrderAndUploadFileShrirampur , uploadVisitsCSVShrirampur,fetchOutstandingAndParseCSVShrirampur,RejectOrderAndUploadFileBaramati,fetchAndParseInvoiceHistoryBaramati,replacePendingOrderBaramati,fetchAndParseDealerTargetCSVBaramati,fetchAndParseOrderHistoryCSVBaramati,fetchAndParseCSVBaramati,fetchAndParseSubDealerCSVBaramati,fetchAndParseProductsCSVBaramati,placeOrderAndUploadFileBaramati,verifyDealerBaramati,fetchOutstandingAndParseCSVBaramati,fetchAndParsependingOrdersCSVBaramati , approveOrderAndUploadFileBaramati,uploadVisitsCSVBaramati,saveComplaintToSFTPBaramati,uploadVisitsCSVBaramati, approveOrderAndUploadFileBaramati ,fetchAndParsependingOrdersCSVBaramati,fetchAndParseDealerTargetCSVBaramati,
 fetchOutstandingAndParseCSVBaramati , verifyDealerBaramati , placeOrderAndUploadFileBaramati, fetchAndParseProductsCSVBaramati , fetchAndParseSubDealerCSVBaramati,fetchAndParseCSVBaramati,fetchAndParseOrderHistoryCSVBaramati , replacePendingOrderBaramati , fetchAndParseInvoiceHistoryBaramati, RejectOrderAndUploadFileBaramati, saveComplaintToSFTPBaramati,saveComplaintToSFTP,RejectOrderAndUploadFile,fetchAndParseInvoiceHistory,replacePendingOrder,uploadVisitsCSV,approveOrderAndUploadFile , fetchAndParsependingOrdersCSV,fetchAndParseDealerTargetCSV, fetchAndParseOrderHistoryCSV,fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
