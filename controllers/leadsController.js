@@ -1,8 +1,8 @@
-const { uploadLeadsCSV } = require('../services/sftpService');
+const { uploadLeadCSV } = require('../services/sftpService');
 const LeadController=async(req,res)=>{
     try {
         const visitJson = req.body
-        const data = await uploadLeadsCSV(visitJson);
+        const data = await uploadLeadCSV(visitJson);
         res.json(data);
         console.log(data)
       } catch (err) {
