@@ -11,7 +11,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const { getDealers ,getDealersShrirampur,getDealersBaramati} = require('../controllers/dealerController');
-
+const {LeadController} = require('../controllers/LeadController');
 const { getProducts,getProductsShrirampur,getProductsBaramati} = require('../controllers/productsController');
 const { appendData ,appendDataShrirampur,appendDataBaramati} = require('../controllers/placeOrderController');
 const {handleLogin,handleLoginShrirampur,handleLoginBaramati} = require('../controllers/loginController')
@@ -31,7 +31,7 @@ const { getInvoiceHistory ,getInvoiceHistoryShrirampur,getInvoiceHistoryBaramati
 const {postComplaint,postComplaintShrirampur,postComplaintBaramati}=require('../controllers/postComplaintController');
 
 //SATARA
-router.post('/leads',uploadLeadCSV)
+router.post('/leads',LeadController)
 router.post('/approveOrder',approveOrder)
 router.post('/rejectOrder',rejectOrder)
 router.get('/dealers', getDealers);
