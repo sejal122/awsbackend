@@ -1,7 +1,8 @@
-const uploadLeadCSV=async(req,res)=>{
+const { uploadLeadsCSV } = require('../services/sftpService');
+const LeadController=async(req,res)=>{
     try {
         const visitJson = req.body
-        const data = await uploadVisitsCSV(visitJson);
+        const data = await uploadLeadsCSV(visitJson);
         res.json(data);
         console.log(data)
       } catch (err) {
@@ -10,4 +11,4 @@ const uploadLeadCSV=async(req,res)=>{
       }
 }
 
-module.exports = { uploadLeadCSV };
+module.exports = { LeadController };
