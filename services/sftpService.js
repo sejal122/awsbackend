@@ -68,7 +68,7 @@ async function uploadLeadCSV(lead) {
     // Step 4: Append to existing data (add headers if file is empty)
     const isFirstLine = existingData.trim().length === 0;
     const header = isFirstLine
-      ? `"ID","SalesmanName","Sector Name","Sub Sector Name","Email","Company Name","Monthly consumption","Competitor","Potential","Owner Name","Address","Product names","Followups"\n`
+      ? `"id","SalesmanName","Sector Name","Sub Sector Name","Email","Company Name","Monthly consumption","Competitor","Potential","Owner Name","Address","Product names","Followups"\n`
       : '';
 
     const updatedData = header + existingData.trimEnd() + '\n' + newLine;
