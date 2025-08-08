@@ -9,7 +9,7 @@ const os = require('os');
 
 //SATARA PLANT
 async function fetchLeadsCSV() {
- 
+   const sftp = new Client();
   await sftp.connect({
     host: process.env.SERVER_IP,
     port: process.env.SERVER_PORT,
