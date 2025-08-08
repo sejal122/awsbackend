@@ -9,8 +9,8 @@ const getLeads = async (req, res) => {
         res.json(data);
         console.log(data)
       } catch (err) {
-        console.error('Error fetching dealers:', err.message);
-        res.status(500).json({ error: 'Failed to fetch dealer data' });
+        console.error('Error fetching leads:', err.message);
+        res.status(500).json({ error: 'Failed to fetch leads data' });
       }
     
    
