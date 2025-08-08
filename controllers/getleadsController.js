@@ -1,10 +1,11 @@
 const { fetchLeadsCSV } = require('../services/sftpService');
 const getLeads = async (req, res) => {
-    
+      console.log("in getleadsc");
       try {
+          
         const data = await fetchLeadsCSV();
         
-         console.log("in getleadsc");
+       
         res.json(data);
         console.log(data)
       } catch (err) {
