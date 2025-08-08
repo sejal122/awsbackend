@@ -4,7 +4,7 @@ const getLeads = async (req, res) => {
       try {
         const data = await fetchLeadsCSV();
         
-        await cache.set('dealers', data);
+     
         res.json(data);
         console.log(data)
       } catch (err) {
