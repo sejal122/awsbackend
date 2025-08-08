@@ -22,6 +22,7 @@ async function fetchLeadsCSV() {
   await sftp.end();
 
   const csvText = fileBuffer.toString('utf-8');
+ console.log(csvText);
   return parseCSV(csvText);
 }
 
