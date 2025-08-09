@@ -27,7 +27,7 @@ async function fetchLeadsCSV() {
 }
 
 async function uploadLeadCSV(lead) {
- const newfs = require('fs/promises');
+  const newfs = require('fs/promises');
   const sftp = new Client();
   try {
     await sftp.connect({
@@ -46,24 +46,33 @@ async function uploadLeadCSV(lead) {
     // Step 2: Read existing file content
     const existingData = await newfs.readFile(tempLeads, 'utf-8');
 
+    // Utility to sanitize a CSV value
+    const sanitize = (val) => {
+      if (val == null) return '';
+      let str = val.toString().trim();
+      // Remove surrounding quotes if they exist
+      if (str.startsWith('"') && str.endsWith('"')) {
+        str = str.slice(1, -1);
+      }
+      return `"${str.replace(/"/g, '""')}"`; // escape internal quotes and wrap
+    };
+
     // Step 3: Construct the new line
     const newLine = [
       lead.id,
-      lead.salesmanId,
-      lead.sectorName,
-      lead.subSectorName,
-      lead.email,
-      lead.companyName,
-      lead.monthlyConsumption,
-      lead.competitor,
-      lead.potential,
-      lead.ownerName,
-      lead.address,
-      lead.productNames,
-      JSON.stringify(lead.followups || []) // Store remarks as stringified JSON
-    ]
-      .map(value => `"${(value ?? '').toString().replace(/"/g, '""')}"`)
-      .join(',') + '\n';
+      lead.salesmanName || lead.salesmanId || '',
+      lead.sectorName || '',
+      lead.subSectorName || '',
+      lead.email || '',
+      lead.companyName || '',
+      lead.monthlyConsumption || '',
+      lead.competitor || '',
+      lead.potential || '',
+      lead.ownerName || '',
+      lead.address || '',
+      lead.productNames || '',
+      JSON.stringify(lead.followups || [])
+    ].map(sanitize).join(',') + '\n';
 
     // Step 4: Append to existing data (add headers if file is empty)
     const isFirstLine = existingData.trim().length === 0;
