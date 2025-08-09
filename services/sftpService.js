@@ -26,88 +26,49 @@ async function fetchLeadsCSV() {
   return parseCSV(csvText);
 }
 
-async function uploadLeadCSV(lead) {
-  const newfs = require('fs/promises');
-  const path = require('path');
-  const csvParse = require('csv-parse/sync');
-  const Client = require('ssh2-sftp-client');
-  const sftp = new Client();
+const fs = require("fs");
+const csvParser = require("csv-parse");
 
-  // Mapping between JSON keys and CSV headers
-  const headerMap = {
-    id: "id",
-    salesmanName: "Salesman Name",
-    sectorName: "Sector Name",
-    subSectorName: "Sub Sector Name",
-    email: "Email",
-    companyName: "Company Name",
-    monthlyConsumption: "Monthly Consumption",
-    competitor: "Competitor",
-    potential: "Potential",
-    ownerName: "Owner Name",
-    address: "Address",
-    productNames: "Product Names",
-    followups: "Followups"
-  };
-
+async function uploadLeadsCsv(sftp, remotePath) {
   try {
-    await sftp.connect({
-      host: process.env.SERVER_IP,
-      port: process.env.SERVER_PORT,
-      username: process.env.SERVER_USER,
-      password: process.env.SERVER_PASS,
+    const fileContent = await sftp.get(remotePath);
+    const csvData = fileContent.toString("utf-8");
+
+    return new Promise((resolve, reject) => {
+      csvParser(
+        csvData,
+        {
+          columns: true, // maps each row into an object using headers
+          skip_empty_lines: true,
+          trim: true,
+          relax_column_count: true, // allows more/fewer columns than header
+        },
+        (err, records) => {
+          if (err) {
+            return reject("CSV Parse Error: " + err.message);
+          }
+
+          // Normalize records (handle shifting issue)
+          const headers = Object.keys(records[0] || {});
+          const cleanRecords = records.map((row, idx) => {
+            const cleanRow = {};
+            headers.forEach((header) => {
+              cleanRow[header] = row[header] ? row[header].trim() : "";
+            });
+            return cleanRow;
+          });
+
+          console.log("Parsed Leads:", cleanRecords.length);
+          resolve(cleanRecords);
+        }
+      );
     });
-
-    const leadsOriginalPath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Leads/Leads_2010.csv';
-    const tempLeads = path.join(__dirname, "..", "uploads", "templeads.csv");
-
-    // Step 1: Download existing CSV
-    await sftp.fastGet(leadsOriginalPath, tempLeads);
-    const existingData = await newfs.readFile(tempLeads, 'utf-8');
-
-    let records = [];
-    let headers = Object.values(headerMap); // default order
-
-    if (existingData.trim()) {
-      records = csvParse.parse(existingData, { columns: true, skip_empty_lines: true });
-      headers = Object.keys(records[0]); // use existing file’s column order if present
-    }
-
-    // Step 2: Convert new lead to match CSV headers
-    const newRow = {};
-    headers.forEach(header => {
-      const jsonKey = Object.keys(headerMap).find(k => headerMap[k] === header);
-      let value = lead[jsonKey] ?? '';
-
-      // Special handling for followups array
-      if (jsonKey === 'followups' && Array.isArray(value)) {
-        value = JSON.stringify(value);
-      }
-
-      newRow[header] = value.toString().replace(/"/g, '""');
-    });
-
-    // Step 3: Append and rebuild CSV
-    records.push(newRow);
-    const csvLines = [headers.join(',')];
-    for (const row of records) {
-      csvLines.push(headers.map(h => `"${row[h] ?? ''}"`).join(','));
-    }
-
-    const updatedCSV = csvLines.join('\n');
-
-    // Step 4: Save and upload back
-    await newfs.writeFile(tempLeads, updatedCSV, 'utf8');
-    await sftp.fastPut(tempLeads, leadsOriginalPath);
-
-    console.log('✅ Lead appended correctly with matching header order.');
-  } catch (err) {
-    console.error('❌ Error saving lead to SFTP:', err.message);
-    throw err;
-  } finally {
-    await sftp.end();
+  } catch (error) {
+    console.error("Error uploading leads:", error.message || error);
+    throw error;
   }
 }
+
 
 
 
