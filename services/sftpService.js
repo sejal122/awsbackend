@@ -26,8 +26,6 @@ async function fetchLeadsCSV() {
   return parseLeads(csvText);
 }
 
-
-
 async function uploadLeadCSV(leadData) {
   const sftp = new Client();
   const headerMap = {
@@ -61,7 +59,7 @@ async function uploadLeadCSV(leadData) {
 
     let existingRows = [];
 
-    // Step 1: Check if file exists and read it
+    // Step 1: Download existing CSV if exists
     const fileExists = await sftp.exists(remotePath);
     if (fileExists) {
       await sftp.fastGet(remotePath, tempPath);
@@ -75,28 +73,36 @@ async function uploadLeadCSV(leadData) {
       });
     }
 
-    // Step 2: Map incoming leadData to match CSV headers exactly
+    // Step 2: Ensure followups is always an array
+    if (!Array.isArray(leadData.followups)) {
+      if (leadData.followups) {
+        // Wrap single followup into array
+        leadData.followups = [leadData.followups];
+      } else {
+        // Empty array if nothing passed
+        leadData.followups = [];
+      }
+    }
+
+    // Step 3: Map incoming leadData to match CSV headers
     const newLeadRow = {};
     for (const key in headerMap) {
       if (Object.prototype.hasOwnProperty.call(headerMap, key)) {
         let value = leadData[key] ?? "";
-        if (Array.isArray(value)) {
+        if (key === "followups") {
+          // Always stringify the array
           value = JSON.stringify(value);
         }
         newLeadRow[headerMap[key]] = value;
       }
     }
 
-    // Step 3: Merge old + new rows
+    // Step 4: Merge and keep header order consistent
     const allRows = [...existingRows, newLeadRow];
-
-    // Step 4: Generate CSV with consistent header order
-    const json2csvParser = new Parser({
-      fields: Object.values(headerMap),
-    });
+    const json2csvParser = new Parser({ fields: Object.values(headerMap) });
     const csv = json2csvParser.parse(allRows);
 
-    // Step 5: Save locally and upload back
+    // Step 5: Save locally and upload
     fs.writeFileSync(tempPath, csv, "utf8");
     await sftp.put(tempPath, remotePath);
     await sftp.end();
