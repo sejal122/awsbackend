@@ -33,7 +33,6 @@ async function uploadLeadCSV(lead) {
   const Client = require('ssh2-sftp-client');
   const sftp = new Client();
 
-  // Mapping between JSON keys and CSV headers
   const headerMap = {
     id: "id",
     salesmanName: "Salesman Name",
@@ -50,11 +49,10 @@ async function uploadLeadCSV(lead) {
     followups: "Followups"
   };
 
-  // Utility: safely escape CSV values
+  // Escape for CSV exactly once
   const escapeCSV = (val) => {
     if (val == null) return '""';
-    let str = val.toString().replace(/"/g, '""'); // double all quotes
-    return `"${str}"`; // wrap in quotes no matter what
+    return `"${val.toString().replace(/"/g, '""')}"`;
   };
 
   try {
@@ -68,45 +66,42 @@ async function uploadLeadCSV(lead) {
     const leadsOriginalPath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Leads/Leads_2010.csv';
     const tempLeads = path.join(__dirname, "..", "uploads", "templeads.csv");
 
-    // Step 1: Download existing CSV
     await sftp.fastGet(leadsOriginalPath, tempLeads);
     const existingData = await newfs.readFile(tempLeads, 'utf-8');
 
     let records = [];
-    let headers = Object.values(headerMap); // default header order
+    let headers = Object.values(headerMap);
 
     if (existingData.trim()) {
       records = csvParse.parse(existingData, { columns: true, skip_empty_lines: true, relax_column_count: true });
-      headers = Object.keys(records[0]); // keep existing file’s order
+      headers = Object.keys(records[0]); // keep original order
     }
 
-    // Step 2: Map new lead data to CSV headers
+    // Build new row from lead
     const newRow = {};
     headers.forEach(header => {
       const jsonKey = Object.keys(headerMap).find(k => headerMap[k] === header);
       let value = lead[jsonKey] ?? '';
-
       if (jsonKey === 'followups' && Array.isArray(value)) {
         value = JSON.stringify(value);
       }
-
-      newRow[header] = escapeCSV(value);
+      newRow[header] = value;
     });
 
-    // Step 3: Append and rebuild CSV
+    // Rebuild CSV
     const csvLines = [headers.join(',')];
+    // Old rows: escape fresh from parsed plain values
     for (const row of records) {
       csvLines.push(headers.map(h => escapeCSV(row[h] ?? '')).join(','));
     }
-    csvLines.push(headers.map(h => newRow[h]).join(','));
+    // New row: escape once
+    csvLines.push(headers.map(h => escapeCSV(newRow[h] ?? '')).join(','));
 
     const updatedCSV = csvLines.join('\n');
-
-    // Step 4: Save and upload back
     await newfs.writeFile(tempLeads, updatedCSV, 'utf8');
     await sftp.fastPut(tempLeads, leadsOriginalPath);
 
-    console.log('✅ Lead appended correctly with matching header order.');
+    console.log('✅ Lead appended correctly without double-escaping.');
   } catch (err) {
     console.error('❌ Error saving lead to SFTP:', err.message);
     throw err;
@@ -114,6 +109,7 @@ async function uploadLeadCSV(lead) {
     await sftp.end();
   }
 }
+
 
 
 
