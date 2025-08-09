@@ -25,10 +25,13 @@ async function fetchLeadsCSV() {
  console.log(csvText);
   return parseCSV(csvText);
 }
-
 async function uploadLeadCSV(lead) {
   const newfs = require('fs/promises');
+  const path = require('path');
+  const csvParse = require('csv-parse/sync');
+  const Client = require('ssh2-sftp-client');
   const sftp = new Client();
+
   try {
     await sftp.connect({
       host: process.env.SERVER_IP,
@@ -40,55 +43,47 @@ async function uploadLeadCSV(lead) {
     const leadsOriginalPath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Leads/Leads_2010.csv';
     const tempLeads = path.join(__dirname, "..", "uploads", "templeads.csv");
 
-    // Step 1: Download existing file from SFTP
+    // Download existing file
     await sftp.fastGet(leadsOriginalPath, tempLeads);
-
-    // Step 2: Read existing file content
     const existingData = await newfs.readFile(tempLeads, 'utf-8');
 
-    // Utility to sanitize a CSV value
-    const sanitize = (val) => {
-      if (val == null) return '';
-      let str = val.toString().trim();
-      // Remove surrounding quotes if they exist
-      if (str.startsWith('"') && str.endsWith('"')) {
-        str = str.slice(1, -1);
-      }
-      return `"${str.replace(/"/g, '""')}"`; // escape internal quotes and wrap
-    };
+    let records = [];
+    let headers = [];
 
-    // Step 3: Construct the new line
-    const newLine = [
-      lead.id,
-      lead.salesmanName || lead.salesmanId || '',
-      lead.sectorName || '',
-      lead.subSectorName || '',
-      lead.email || '',
-      lead.companyName || '',
-      lead.monthlyConsumption || '',
-      lead.competitor || '',
-      lead.potential || '',
-      lead.ownerName || '',
-      lead.address || '',
-      lead.productNames || '',
-      JSON.stringify(lead.followups || [])
-    ].map(sanitize).join(',') + '\n';
+    if (existingData.trim()) {
+      // Parse existing CSV
+      records = csvParse.parse(existingData, { columns: true, skip_empty_lines: true });
+      headers = Object.keys(records[0]); // preserve existing column order
+    } else {
+      // File empty → define default headers
+      headers = [
+        "id","SalesmanName","Sector Name","Sub Sector Name","Email","Company Name",
+        "Monthly consumption","Competitor","Potential","Owner Name","Address",
+        "Product names","Followups"
+      ];
+    }
 
-    // Step 4: Append to existing data (add headers if file is empty)
-    const isFirstLine = existingData.trim().length === 0;
-    const header = isFirstLine
-      ? `"id","SalesmanName","Sector Name","Sub Sector Name","Email","Company Name","Monthly consumption","Competitor","Potential","Owner Name","Address","Product names","Followups"\n`
-      : '';
+    // Build new row matching the header order
+    const newRow = {};
+    headers.forEach(h => {
+      newRow[h] = lead[h] ?? ''; // match exactly to header name
+    });
 
-    const updatedData = header + existingData.trimEnd() + '\n' + newLine;
+    records.push(newRow);
 
-    // Step 5: Write back to the temp file
-    await newfs.writeFile(tempLeads, updatedData, { encoding: 'utf8' });
+    // Convert back to CSV
+    const csvLines = [headers.join(',')];
+    for (const row of records) {
+      csvLines.push(headers.map(h => `"${String(row[h] ?? '').replace(/"/g, '""')}"`).join(','));
+    }
 
-    // Step 6: Upload updated file back to SFTP
+    const updatedCSV = csvLines.join('\n');
+
+    // Save and upload
+    await newfs.writeFile(tempLeads, updatedCSV, 'utf8');
     await sftp.fastPut(tempLeads, leadsOriginalPath);
 
-    console.log('✅ Lead appended and file uploaded to SFTP.');
+    console.log('✅ Lead appended with correct field alignment.');
   } catch (err) {
     console.error('❌ Error saving lead to SFTP:', err.message);
     throw err;
@@ -96,6 +91,7 @@ async function uploadLeadCSV(lead) {
     await sftp.end();
   }
 }
+
 
 async function saveComplaintToSFTP({ ID, Name, date, filePath, fileName }) {
  const sftp = new Client();
