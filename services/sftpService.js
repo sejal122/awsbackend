@@ -25,12 +25,30 @@ async function fetchLeadsCSV() {
  console.log(csvText);
   return parseCSV(csvText);
 }
+
 async function uploadLeadCSV(lead) {
   const newfs = require('fs/promises');
   const path = require('path');
   const csvParse = require('csv-parse/sync');
   const Client = require('ssh2-sftp-client');
   const sftp = new Client();
+
+  // Mapping between JSON keys and CSV headers
+  const headerMap = {
+    id: "id",
+    salesmanName: "Salesman Name",
+    sectorName: "Sector Name",
+    subSectorName: "Sub Sector Name",
+    email: "Email",
+    companyName: "Company Name",
+    monthlyConsumption: "Monthly Consumption",
+    competitor: "Competitor",
+    potential: "Potential",
+    ownerName: "Owner Name",
+    address: "Address",
+    productNames: "Product Names",
+    followups: "Followups"
+  };
 
   try {
     await sftp.connect({
@@ -43,47 +61,46 @@ async function uploadLeadCSV(lead) {
     const leadsOriginalPath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Leads/Leads_2010.csv';
     const tempLeads = path.join(__dirname, "..", "uploads", "templeads.csv");
 
-    // Download existing file
+    // Step 1: Download existing CSV
     await sftp.fastGet(leadsOriginalPath, tempLeads);
     const existingData = await newfs.readFile(tempLeads, 'utf-8');
 
     let records = [];
-    let headers = [];
+    let headers = Object.values(headerMap); // default order
 
     if (existingData.trim()) {
-      // Parse existing CSV
       records = csvParse.parse(existingData, { columns: true, skip_empty_lines: true });
-      headers = Object.keys(records[0]); // preserve existing column order
-    } else {
-      // File empty → define default headers
-      headers = [
-        "id","SalesmanName","Sector Name","Sub Sector Name","Email","Company Name",
-        "Monthly consumption","Competitor","Potential","Owner Name","Address",
-        "Product names","Followups"
-      ];
+      headers = Object.keys(records[0]); // use existing file’s column order if present
     }
 
-    // Build new row matching the header order
+    // Step 2: Convert new lead to match CSV headers
     const newRow = {};
-    headers.forEach(h => {
-      newRow[h] = lead[h] ?? ''; // match exactly to header name
+    headers.forEach(header => {
+      const jsonKey = Object.keys(headerMap).find(k => headerMap[k] === header);
+      let value = lead[jsonKey] ?? '';
+
+      // Special handling for followups array
+      if (jsonKey === 'followups' && Array.isArray(value)) {
+        value = JSON.stringify(value);
+      }
+
+      newRow[header] = value.toString().replace(/"/g, '""');
     });
 
+    // Step 3: Append and rebuild CSV
     records.push(newRow);
-
-    // Convert back to CSV
     const csvLines = [headers.join(',')];
     for (const row of records) {
-      csvLines.push(headers.map(h => `"${String(row[h] ?? '').replace(/"/g, '""')}"`).join(','));
+      csvLines.push(headers.map(h => `"${row[h] ?? ''}"`).join(','));
     }
 
     const updatedCSV = csvLines.join('\n');
 
-    // Save and upload
+    // Step 4: Save and upload back
     await newfs.writeFile(tempLeads, updatedCSV, 'utf8');
     await sftp.fastPut(tempLeads, leadsOriginalPath);
 
-    console.log('✅ Lead appended with correct field alignment.');
+    console.log('✅ Lead appended correctly with matching header order.');
   } catch (err) {
     console.error('❌ Error saving lead to SFTP:', err.message);
     throw err;
@@ -91,6 +108,7 @@ async function uploadLeadCSV(lead) {
     await sftp.end();
   }
 }
+
 
 
 async function saveComplaintToSFTP({ ID, Name, date, filePath, fileName }) {
