@@ -23,7 +23,7 @@ async function fetchLeadsCSV() {
 
   const csvText = fileBuffer.toString('utf-8');
  console.log(csvText);
-  return parseCSV(csvText);
+  return parseCSVstatus(csvText);
 }
 
 async function uploadLeadCSV(lead) {
