@@ -119,7 +119,6 @@ async function uploadLeadCSV(leadData) {
 
 
 
-
 async function saveComplaintToSFTP({ ID, Name, date, filePath, fileName }) {
  const sftp = new Client();
 
