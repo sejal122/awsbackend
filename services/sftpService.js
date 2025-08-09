@@ -1,5 +1,5 @@
 const Client = require('ssh2-sftp-client');
-const { parseCSV,parseOutstandingCSV,parsePendingOrderCSV ,parsefinalorderCSV} = require('../utils/csvParser');
+const { parseCSV,parseOutstandingCSV,parsePendingOrderCSV ,parsefinalorderCSV,parseLeads} = require('../utils/csvParser');
 require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
