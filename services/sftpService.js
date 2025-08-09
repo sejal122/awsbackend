@@ -26,11 +26,7 @@ async function fetchLeadsCSV() {
   return parseCSV(csvText);
 }
 
-const Client = require('ssh2-sftp-client');
-const fs = require('fs');
-const path = require('path');
-const csvParser = require('csv-parser');
-const { Parser } = require('json2csv');
+
 
 async function uploadLeadCSV(leadData) {
   const sftp = new Client();
