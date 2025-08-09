@@ -24,6 +24,40 @@
 //   }
   
 //   module.exports = { parseCSV };
+const csvParser = require('csv-parser');
+const { Readable } = require('stream');
+
+function parseLeads(csvString) {
+  return new Promise((resolve, reject) => {
+    const results = [];
+
+    Readable.from(csvString)
+      .pipe(csvParser({ skipEmptyLines: true }))
+      .on('data', (row) => {
+        // Clean each field
+        const cleanedRow = {};
+        for (const key in row) {
+          let val = row[key];
+          if (typeof val === 'string') {
+            // Remove wrapping quotes if present
+            val = val.replace(/^"(.*)"$/, '$1');
+            // Try parsing JSON for fields like Followups
+            try {
+              const parsed = JSON.parse(val);
+              val = parsed;
+            } catch (err) {
+              // keep as string
+            }
+          }
+          cleanedRow[key] = val;
+        }
+        results.push(cleanedRow);
+      })
+      .on('end', () => resolve(results))
+      .on('error', reject);
+  });
+}
+
 function parseCSV(csvString) {
   const lines = csvString.trim().split('\n');
 
