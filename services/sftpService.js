@@ -26,8 +26,6 @@ async function fetchLeadsCSV() {
   return parseCSV(csvText);
 }
 
-const fs = require("fs");
-const csvParser = require("csv-parse");
 
 async function uploadLeadsCsv(sftp, remotePath) {
   try {
