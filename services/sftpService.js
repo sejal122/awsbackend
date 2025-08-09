@@ -49,7 +49,6 @@ async function uploadLeadCSV(lead) {
     followups: "Followups"
   };
 
-  // Escape for CSV exactly once
   const escapeCSV = (val) => {
     if (val == null) return '""';
     return `"${val.toString().replace(/"/g, '""')}"`;
@@ -74,34 +73,40 @@ async function uploadLeadCSV(lead) {
 
     if (existingData.trim()) {
       records = csvParse.parse(existingData, { columns: true, skip_empty_lines: true, relax_column_count: true });
-      headers = Object.keys(records[0]); // keep original order
+      headers = Object.keys(records[0]);
     }
 
-    // Build new row from lead
     const newRow = {};
     headers.forEach(header => {
-      const jsonKey = Object.keys(headerMap).find(k => headerMap[k] === header);
-      let value = lead[jsonKey] ?? '';
+      const cleanHeader = header.trim().toLowerCase();
+      const jsonKey = Object.keys(headerMap).find(k => headerMap[k].trim().toLowerCase() === cleanHeader);
+
+      let value = '';
+      if (jsonKey && lead[jsonKey] !== undefined) {
+        value = lead[jsonKey];
+      } else if (lead[header] !== undefined) { 
+        // fallback: direct match if JSON already has same key as CSV header
+        value = lead[header];
+      }
+
       if (jsonKey === 'followups' && Array.isArray(value)) {
         value = JSON.stringify(value);
       }
-      newRow[header] = value;
+
+      newRow[header] = value ?? '';
     });
 
-    // Rebuild CSV
     const csvLines = [headers.join(',')];
-    // Old rows: escape fresh from parsed plain values
     for (const row of records) {
       csvLines.push(headers.map(h => escapeCSV(row[h] ?? '')).join(','));
     }
-    // New row: escape once
     csvLines.push(headers.map(h => escapeCSV(newRow[h] ?? '')).join(','));
 
     const updatedCSV = csvLines.join('\n');
     await newfs.writeFile(tempLeads, updatedCSV, 'utf8');
     await sftp.fastPut(tempLeads, leadsOriginalPath);
 
-    console.log('✅ Lead appended correctly without double-escaping.');
+    console.log('✅ Lead appended correctly with header matching.');
   } catch (err) {
     console.error('❌ Error saving lead to SFTP:', err.message);
     throw err;
