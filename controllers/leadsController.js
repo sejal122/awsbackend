@@ -1,6 +1,7 @@
 const { uploadLeadCSV } = require('../services/sftpService');
 const LeadController=async(req,res)=>{
     try {
+        console.log(req.body);
         const visitJson = req.body
         const data = await uploadLeadCSV(visitJson);
         res.json(data);
