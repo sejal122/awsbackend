@@ -207,4 +207,4 @@ function parsefinalorderCSV(content) {
 
   return records;
 }
-module.exports = {parsefinalorderCSV,parseCSV,parseOutstandingCSV,parsePendingOrderCSV};
+module.exports = {parseLeads,parsefinalorderCSV,parseCSV,parseOutstandingCSV,parsePendingOrderCSV};
