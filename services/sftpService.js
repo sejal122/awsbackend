@@ -26,15 +26,16 @@ async function fetchLeadsCSV() {
   return parseCSV(csvText);
 }
 
-async function uploadLeadCSV(lead) {
-  const newfs = require('fs/promises');
-  const path = require('path');
-  const csvParse = require('csv-parse/sync');
-  const Client = require('ssh2-sftp-client');
-  const sftp = new Client();
+const Client = require('ssh2-sftp-client');
+const fs = require('fs');
+const path = require('path');
+const csvParser = require('csv-parser');
+const { Parser } = require('json2csv');
 
+async function uploadLeadCSV(leadData) {
+  const sftp = new Client();
   const headerMap = {
-    id: "id",
+    id: "ID",
     salesmanName: "Salesman Name",
     sectorName: "Sector Name",
     subSectorName: "Sub Sector Name",
@@ -46,12 +47,8 @@ async function uploadLeadCSV(lead) {
     ownerName: "Owner Name",
     address: "Address",
     productNames: "Product Names",
-    followups: "Followups"
-  };
-
-  const escapeCSV = (val) => {
-    if (val == null) return '""';
-    return `"${val.toString().replace(/"/g, '""')}"`;
+    followups: "Followups",
+    createdAt: "Created At"
   };
 
   try {
@@ -62,56 +59,57 @@ async function uploadLeadCSV(lead) {
       password: process.env.SERVER_PASS,
     });
 
-    const leadsOriginalPath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Leads/Leads_2010.csv';
-    const tempLeads = path.join(__dirname, "..", "uploads", "templeads.csv");
+    const fileName = `Leads_2010.csv`;
+    const tempPath = path.join(__dirname, "..", "uploads", fileName);
+    const remotePath = `/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Leads/${fileName}`;
 
-    await sftp.fastGet(leadsOriginalPath, tempLeads);
-    const existingData = await newfs.readFile(tempLeads, 'utf-8');
+    let existingRows = [];
 
-    let records = [];
-    let headers = Object.values(headerMap);
+    // Step 1: Check if file exists and read it
+    const fileExists = await sftp.exists(remotePath);
+    if (fileExists) {
+      await sftp.fastGet(remotePath, tempPath);
 
-    if (existingData.trim()) {
-      records = csvParse.parse(existingData, { columns: true, skip_empty_lines: true, relax_column_count: true });
-      headers = Object.keys(records[0]);
+      await new Promise((resolve, reject) => {
+        fs.createReadStream(tempPath)
+          .pipe(csvParser())
+          .on("data", (row) => existingRows.push(row))
+          .on("end", resolve)
+          .on("error", reject);
+      });
     }
 
-    const newRow = {};
-    headers.forEach(header => {
-      const cleanHeader = header.trim().toLowerCase();
-      const jsonKey = Object.keys(headerMap).find(k => headerMap[k].trim().toLowerCase() === cleanHeader);
-
-      let value = '';
-      if (jsonKey && lead[jsonKey] !== undefined) {
-        value = lead[jsonKey];
-      } else if (lead[header] !== undefined) { 
-        // fallback: direct match if JSON already has same key as CSV header
-        value = lead[header];
+    // Step 2: Map incoming leadData to match CSV headers exactly
+    const newLeadRow = {};
+    for (const key in headerMap) {
+      if (Object.prototype.hasOwnProperty.call(headerMap, key)) {
+        let value = leadData[key] ?? "";
+        if (Array.isArray(value)) {
+          value = JSON.stringify(value);
+        }
+        newLeadRow[headerMap[key]] = value;
       }
+    }
 
-      if (jsonKey === 'followups' && Array.isArray(value)) {
-        value = JSON.stringify(value);
-      }
+    // Step 3: Merge old + new rows
+    const allRows = [...existingRows, newLeadRow];
 
-      newRow[header] = value ?? '';
+    // Step 4: Generate CSV with consistent header order
+    const json2csvParser = new Parser({
+      fields: Object.values(headerMap),
     });
+    const csv = json2csvParser.parse(allRows);
 
-    const csvLines = [headers.join(',')];
-    for (const row of records) {
-      csvLines.push(headers.map(h => escapeCSV(row[h] ?? '')).join(','));
-    }
-    csvLines.push(headers.map(h => escapeCSV(newRow[h] ?? '')).join(','));
-
-    const updatedCSV = csvLines.join('\n');
-    await newfs.writeFile(tempLeads, updatedCSV, 'utf8');
-    await sftp.fastPut(tempLeads, leadsOriginalPath);
-
-    console.log('✅ Lead appended correctly with header matching.');
-  } catch (err) {
-    console.error('❌ Error saving lead to SFTP:', err.message);
-    throw err;
-  } finally {
+    // Step 5: Save locally and upload back
+    fs.writeFileSync(tempPath, csv, "utf8");
+    await sftp.put(tempPath, remotePath);
     await sftp.end();
+
+    console.log("✅ Lead CSV uploaded successfully.");
+    return { success: true };
+  } catch (err) {
+    console.error("❌ SFTP Error:", err);
+    return { success: false, error: err.message };
   }
 }
 
