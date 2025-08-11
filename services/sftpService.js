@@ -6,6 +6,7 @@ const path = require('path');
 const { Parser } = require('json2csv');
 const csv=require('csv-parser')
 const os = require('os');
+const { stringify } = require('csv-stringify/sync');
 
 //SATARA PLANT
 
@@ -55,7 +56,7 @@ async function addFollowupCSV(leadID, followup) {
     leads[leadIndex].Followups = JSON.stringify(followups);
 
     // Write back to CSV
-    const csvData = JSON.stringify(leads, { header: true });
+    const csvData = stringify(leads, { header: true });
     fs.writeFileSync(tempLocal, csvData);
     await sftp.fastPut(tempLocal, remotePath);
 
