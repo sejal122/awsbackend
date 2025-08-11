@@ -15,10 +15,10 @@ async function addFollowupCSV(leadID, followup) {
  const sftp = new Client();
   try {
     await sftp.connect({
-      host: process.env.SFTP_HOST,
-      port: process.env.SFTP_PORT,
-      username: process.env.SFTP_USER,
-      password: process.env.SFTP_PASS
+      host: process.env.SERVER_IP,
+    port: process.env.SERVER_PORT,
+    username: process.env.SERVER_USER,
+    password: process.env.SERVER_PASS,
     });
 
     // Download CSV
