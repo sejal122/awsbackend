@@ -67,10 +67,7 @@ try {
     sftp.end();
     if (fs.existsSync(tempLocal)) fs.unlinkSync(tempLocal);
   }
-});
 
-
-   
 }
 
 async function fetchLeadsCSV() {
