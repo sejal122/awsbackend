@@ -52,9 +52,10 @@ async function addFollowupCSV(leadID, followup) {
     }
 
     // Append new followup
-    followups.push(followup);
-    leads[leadIndex].Followups = JSON.stringify(followups);
-
+    //followups.push(followup);
+   // leads[leadIndex].Followups = JSON.stringify(followups);
+followups.push(`${followup.date}: ${followup.note}`);
+leads[leadIndex].Followups = followups.join(" | ");
     // Write back to CSV
     const csvData = stringify(leads, { header: true });
     fs.writeFileSync(tempLocal, csvData);
