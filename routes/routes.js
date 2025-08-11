@@ -12,6 +12,7 @@ const multer = require('multer');
 const path = require('path');
 const { getDealers ,getDealersShrirampur,getDealersBaramati} = require('../controllers/dealerController');
 const {LeadController} = require('../controllers/leadsController');
+const {addFollowupController} = require('../controllers/addFollowupController');
 const {getLeads} = require('../controllers/getleadsController');
 const { getProducts,getProductsShrirampur,getProductsBaramati} = require('../controllers/productsController');
 const { appendData ,appendDataShrirampur,appendDataBaramati} = require('../controllers/placeOrderController');
@@ -33,6 +34,7 @@ const {postComplaint,postComplaintShrirampur,postComplaintBaramati}=require('../
 
 //SATARA
 router.post('/leads',LeadController)
+router.post('/add-followup',addFollowupController)
 router.get('/get-leads',getLeads)
 router.post('/approveOrder',approveOrder)
 router.post('/rejectOrder',rejectOrder)
