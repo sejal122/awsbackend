@@ -7,8 +7,9 @@ console.log("------------ id ----------")
       return res.status(400).json({ error: 'leadId and followup are required' });
     }
     try {
-        const data = await addFollowupCSV(leadID,followup);
-        console.log(data)
+       const data = await addFollowupCSV(leadID, followup);
+        return res.json({ success: true, lead: data });
+        console.log(data);
       } catch (err) {
         console.error('Error updating leads:', err.message);
         res.status(500).json({ error: 'Failed to update leads data' });
