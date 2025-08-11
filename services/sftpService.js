@@ -55,7 +55,7 @@ async function addFollowupCSV(leadID, followup) {
     leads[leadIndex].Followups = JSON.stringify(followups);
 
     // Write back to CSV
-    const csvData = stringify(leads, { header: true });
+    const csvData = JSON.stringify(leads, { header: true });
     fs.writeFileSync(tempLocal, csvData);
     await sftp.fastPut(tempLocal, remotePath);
 
