@@ -9,22 +9,22 @@ const os = require('os');
 
 //SATARA PLANT
 
-async function addFollowupCSV(leadID,followup) {
-   
-try {
-    // 1️⃣ Connect to SFTP
+async function addFollowupCSV(leadID, followup) {
+  const remotePath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Leads/Leads_2010.csv';
+  const tempLocal = path.join(__dirname, 'Leads_2010_temp.csv');
+
+  try {
     await sftp.connect({
       host: process.env.SFTP_HOST,
       port: process.env.SFTP_PORT,
       username: process.env.SFTP_USER,
       password: process.env.SFTP_PASS
     });
-  const remotePath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Leads/Leads_2010.csv';
-  const tempLocal = path.join(__dirname, 'Leads_2010_temp.csv');
-    // 2️⃣ Download CSV
+
+    // Download CSV
     await sftp.fastGet(remotePath, tempLocal);
 
-    // 3️⃣ Read CSV into memory
+    // Read CSV
     const leads = [];
     await new Promise((resolve, reject) => {
       fs.createReadStream(tempLocal)
@@ -34,40 +34,34 @@ try {
         .on('error', reject);
     });
 
-    // 4️⃣ Find and update followup
-    const leadIndex = leads.findIndex(l => l.id === String(leadId));
+    // Find matching lead by "ID" column
+    const leadIndex = leads.findIndex(l => String(l.ID) === String(leadID));
     if (leadIndex === -1) {
-      return res.status(404).json({ error: 'Lead not found' });
+      throw new Error('Lead not found');
     }
 
+    // Parse followups from CSV
     let followups = [];
     try {
-      followups = leads[leadIndex].followup ? JSON.parse(leads[leadIndex].followup) : [];
+      followups = leads[leadIndex].Followups ? JSON.parse(leads[leadIndex].Followups) : [];
     } catch {
       followups = [];
     }
 
+    // Append new followup
     followups.push(followup);
-    leads[leadIndex].followup = JSON.stringify(followups);
+    leads[leadIndex].Followups = JSON.stringify(followups);
 
-    // 5️⃣ Convert back to CSV
+    // Write back to CSV
     const csvData = stringify(leads, { header: true });
-
-    // 6️⃣ Save locally & upload via SFTP
     fs.writeFileSync(tempLocal, csvData);
     await sftp.fastPut(tempLocal, remotePath);
 
-    // 7️⃣ Return updated lead
-    res.json(leads[leadIndex]);
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Failed to add followup' });
+    return leads[leadIndex];
   } finally {
     sftp.end();
     if (fs.existsSync(tempLocal)) fs.unlinkSync(tempLocal);
   }
-
 }
 
 async function fetchLeadsCSV() {
