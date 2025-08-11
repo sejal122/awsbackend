@@ -8,6 +8,71 @@ const csv=require('csv-parser')
 const os = require('os');
 
 //SATARA PLANT
+
+async function addFollowup(leadID,followup) {
+   
+try {
+    // 1️⃣ Connect to SFTP
+    await sftp.connect({
+      host: process.env.SFTP_HOST,
+      port: process.env.SFTP_PORT,
+      username: process.env.SFTP_USER,
+      password: process.env.SFTP_PASS
+    });
+  const remotePath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Leads/Leads_2010.csv';
+  const tempLocal = path.join(__dirname, 'Leads_2010_temp.csv');
+    // 2️⃣ Download CSV
+    await sftp.fastGet(remotePath, tempLocal);
+
+    // 3️⃣ Read CSV into memory
+    const leads = [];
+    await new Promise((resolve, reject) => {
+      fs.createReadStream(tempLocal)
+        .pipe(csv())
+        .on('data', (row) => leads.push(row))
+        .on('end', resolve)
+        .on('error', reject);
+    });
+
+    // 4️⃣ Find and update followup
+    const leadIndex = leads.findIndex(l => l.id === String(leadId));
+    if (leadIndex === -1) {
+      return res.status(404).json({ error: 'Lead not found' });
+    }
+
+    let followups = [];
+    try {
+      followups = leads[leadIndex].followup ? JSON.parse(leads[leadIndex].followup) : [];
+    } catch {
+      followups = [];
+    }
+
+    followups.push(followup);
+    leads[leadIndex].followup = JSON.stringify(followups);
+
+    // 5️⃣ Convert back to CSV
+    const csvData = stringify(leads, { header: true });
+
+    // 6️⃣ Save locally & upload via SFTP
+    fs.writeFileSync(tempLocal, csvData);
+    await sftp.fastPut(tempLocal, remotePath);
+
+    // 7️⃣ Return updated lead
+    res.json(leads[leadIndex]);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to add followup' });
+  } finally {
+    sftp.end();
+    if (fs.existsSync(tempLocal)) fs.unlinkSync(tempLocal);
+  }
+});
+
+
+   
+}
+
 async function fetchLeadsCSV() {
    const sftp = new Client();
   await sftp.connect({
@@ -2316,6 +2381,6 @@ console.log('✅ Visit appended and file uploaded to SFTP.');
 
 
 
-module.exports = {fetchLeadsCSV,uploadLeadCSV,RejectOrderAndUploadFileShrirampur,saveComplaintToSFTPShrirampur , fetchAndParseDealerTargetCSVShrirampur , fetchAndParseOrderHistoryCSVShrirampur , fetchAndParseCSVShrirampur , fetchAndParseSubDealerCSVShrirampur , fetchAndParseProductsCSVShrirampur , placeOrderAndUploadFileShrirampur,verifyDealerShrirampur,fetchAndParsependingOrdersCSVShrirampur,
+module.exports = {addFollowup,fetchLeadsCSV,uploadLeadCSV,RejectOrderAndUploadFileShrirampur,saveComplaintToSFTPShrirampur , fetchAndParseDealerTargetCSVShrirampur , fetchAndParseOrderHistoryCSVShrirampur , fetchAndParseCSVShrirampur , fetchAndParseSubDealerCSVShrirampur , fetchAndParseProductsCSVShrirampur , placeOrderAndUploadFileShrirampur,verifyDealerShrirampur,fetchAndParsependingOrdersCSVShrirampur,
 approveOrderAndUploadFileShrirampur , uploadVisitsCSVShrirampur,fetchOutstandingAndParseCSVShrirampur,RejectOrderAndUploadFileBaramati,fetchAndParseInvoiceHistoryBaramati,replacePendingOrderBaramati,fetchAndParseDealerTargetCSVBaramati,fetchAndParseOrderHistoryCSVBaramati,fetchAndParseCSVBaramati,fetchAndParseSubDealerCSVBaramati,fetchAndParseProductsCSVBaramati,placeOrderAndUploadFileBaramati,verifyDealerBaramati,fetchOutstandingAndParseCSVBaramati,fetchAndParsependingOrdersCSVBaramati , approveOrderAndUploadFileBaramati,uploadVisitsCSVBaramati,saveComplaintToSFTPBaramati,uploadVisitsCSVBaramati, approveOrderAndUploadFileBaramati ,fetchAndParsependingOrdersCSVBaramati,fetchAndParseDealerTargetCSVBaramati,
 fetchOutstandingAndParseCSVBaramati , verifyDealerBaramati , placeOrderAndUploadFileBaramati, fetchAndParseProductsCSVBaramati , fetchAndParseSubDealerCSVBaramati,fetchAndParseCSVBaramati,fetchAndParseOrderHistoryCSVBaramati , replacePendingOrderBaramati , fetchAndParseInvoiceHistoryBaramati, RejectOrderAndUploadFileBaramati, saveComplaintToSFTPBaramati,saveComplaintToSFTP,RejectOrderAndUploadFile,fetchAndParseInvoiceHistory,replacePendingOrder,uploadVisitsCSV,approveOrderAndUploadFile , fetchAndParsependingOrdersCSV,fetchAndParseDealerTargetCSV, fetchAndParseOrderHistoryCSV,fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
