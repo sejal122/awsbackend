@@ -1,7 +1,8 @@
 const { addFollowupCSV } = require('../services/sftpService');
 const addFollowupController = async (req, res) => {
     const { leadID, followup } = req.body;
-
+console.log("------------ id ----------")
+    console.log(leadID);
     if (!leadID || !followup) {
       return res.status(400).json({ error: 'leadId and followup are required' });
     }
