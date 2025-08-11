@@ -12,7 +12,7 @@ const os = require('os');
 async function addFollowupCSV(leadID, followup) {
   const remotePath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Leads/Leads_2010.csv';
   const tempLocal = path.join(__dirname, 'Leads_2010_temp.csv');
-
+ const sftp = new Client();
   try {
     await sftp.connect({
       host: process.env.SFTP_HOST,
