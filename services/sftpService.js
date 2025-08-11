@@ -10,6 +10,8 @@ const os = require('os');
 //SATARA PLANT
 
 async function addFollowupCSV(leadID, followup) {
+  console.log("****** id *****");
+  console.log(leadID);
   const remotePath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Leads/Leads_2010.csv';
   const tempLocal = path.join(__dirname, 'Leads_2010_temp.csv');
  const sftp = new Client();
