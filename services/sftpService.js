@@ -50,7 +50,8 @@ async function addFollowupCSV(leadID, followup) {
     } catch {
       followups = [];
     }
-
+console.log("++++++ followups");
+    console.log(followups);
     // Append new followup
     //followups.push(followup);
    // leads[leadIndex].Followups = JSON.stringify(followups);
