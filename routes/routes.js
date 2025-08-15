@@ -21,7 +21,7 @@ const {getOutstanding,getOutstandingShrirampur,getOutstandingBaramati}= require(
 const {getSubdealerData,getSubdealerDataShrirampur,getSubdealerDataBaramati}=require('../controllers/subDealerController')
 const {getOrderHistory,getOrderHistoryShrirampur,getOrderHistoryBaramati} =require('../controllers/orderHistoryController')
 const {dealerTarget,dealerTargetShrirampur,dealerTargetBaramati}=require('../controllers/dealerTargetController')
-const {getpendingOrders,getpendingOrdersShrirampur,getpendingOrdersBaramati}=require('../controllers/pendingOrderController')
+const {getpendingOrders,getpendingOrdersShrirampur,getpendingOrdersBaramati,getpendingOrdersFinal}=require('../controllers/pendingOrderController')
 const { approveOrder,approveOrderFinal } = require('../controllers/approveOrderController');
 const { approveOrderShrirampur,approveOrderBaramati } = require('../controllers/approveOrderController');
 const { rejectOrder } = require('../controllers/rejectOrderController');
@@ -49,6 +49,7 @@ router.get('/sub-dealers',getSubdealerData)
 router.get('/orderHistory',getOrderHistory)
 router.get('/dealerTarget',dealerTarget)
 router.get('/pendingorderHistory',getpendingOrders)
+router.get('/pendingorderHistory-final',getpendingOrdersFinal)
 router.post('/upload-visitdata',uploadVisits)
 router.post('/handlecsklogin',csklogin)
 router.get('/invoicedata',getInvoiceHistory)
