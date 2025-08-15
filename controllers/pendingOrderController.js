@@ -1,5 +1,17 @@
 const { fetchAndParsependingOrdersCSV ,fetchAndParsependingOrdersCSVShrirampur,fetchAndParsependingOrdersCSVBaramati} = require("../services/sftpService");
 
+
+const getpendingOrdersFinal=async(req,res)=>{
+    try {
+        const data = await fetchAndParsependingOrdersCSVFinal();
+        
+        res.json(data);
+        console.log(data)
+      } catch (err) {
+        console.error('Error fetching pending orders:', err.message);
+        res.status(500).json({ error: 'Failed to fetch pending order data' });
+      }
+}
 const getpendingOrders=async(req,res)=>{
     try {
         const data = await fetchAndParsependingOrdersCSV();
