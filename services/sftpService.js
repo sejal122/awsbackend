@@ -613,7 +613,7 @@ async function fetchAndParsependingOrdersCSVFinal() {
     password: process.env.SERVER_PASS,
   });
 
-  const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Approval/order_2010.csv');
+  const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Approval/orders_2010.csv');
   //console.log(fileBuffer)
   await sftp.end();
 
@@ -764,7 +764,7 @@ console.log(approvedHistoryFormat)
 
 
     //original and temp for final order
-    const fileName = `order_2010.csv`;
+    const fileName = `orders_2010.csv`;
     const pendingPath = path.join(__dirname,"..", 'uploads', 'Orders.csv');
     const remotePath = `/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Approval/${fileName}`;
    
