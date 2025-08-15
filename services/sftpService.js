@@ -719,8 +719,141 @@ async function parseCSVstatus(filePath) {
     return [];
   }
 }
-
 async function approveOrderAndUploadFile(doc_number,approvedHistoryFormat) {
+  const sftp = new Client();
+  try{
+    await sftp.connect({
+      host: process.env.SERVER_IP,
+      port: process.env.SERVER_PORT,
+      username: process.env.SERVER_USER,
+      password: process.env.SERVER_PASS,
+    });
+console.log('---------approvedHistoryFormat------')
+console.log(approvedHistoryFormat)
+    function cleanValue(val) {
+  if (val === null || val === undefined) return '';
+  if (typeof val === 'string' && val.trim().replace(/"/g, '') === '') return '';
+  return val;
+}
+    //original and temp for pending orders
+    const pendingordersoriginalpath='/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/SO/pendingOrders.csv'
+    const temppendingorder=path.join(__dirname, "..", "uploads", "temppendingorder.csv");
+
+    //original and temp for order status
+    const orderstatustempPath = path.join(__dirname, "..", "uploads", "orderstatus.csv");
+    const orderstatusoriginalpath='/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Price/ORDER STATUS.csv'
+
+
+
+    //original and temp for final order
+    const fileName = `order_2010.csv`;
+    const pendingPath = path.join(__dirname,"..", 'uploads', 'Orders.csv');
+    const remotePath = `/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Approval/${fileName}`;
+   
+    //download pending orders, order status
+    await sftp.fastGet(pendingordersoriginalpath , temppendingorder);
+    await sftp.fastGet(remotePath , pendingPath);
+    await sftp.fastGet(orderstatusoriginalpath , orderstatustempPath);
+const rawCsv = fs.readFileSync(temppendingorder, 'utf-8');
+//const pendingOrders = parsePendingOrderCSV(rawCsv);
+const pendingOrders = await parsePendingOrderCSV(rawCsv);
+     const content = fs.readFileSync(pendingPath, 'utf-8');
+const finalOrders = fs.existsSync(pendingPath)
+  ? await parsefinalorderCSV(content)
+  : [];
+    
+    const rawOrderStatusCSV = fs.readFileSync(orderstatustempPath, 'utf-8');
+//console.log("📂 Raw ORDER STATUS CSV:\n", rawOrderStatusCSV);
+
+const orderstatus = await parseCSVstatus(orderstatustempPath);
+//console.log(orderstatus)
+   // console.log('------')
+    console.log('------****************----------')
+    const rawFinalCsv = fs.readFileSync(pendingPath, 'utf-8');
+console.log("📂 Raw Final Orders CSV:\n", rawFinalCsv);
+     console.log('------****************----------')
+ // console.log(pendingOrders)
+   // console.log(finalOrders)
+   // console.log(orderstatus)
+    const pendingRaw = fs.readFileSync(temppendingorder, 'utf-8');
+//console.log("📂 Raw Temp Pending Order File Content:\n", pendingRaw);
+
+   // console.log("DOC_NUMBER RECEIVED:", doc_number);
+//console.log("PENDING ORDER PURCH_NO_Cs:", pendingOrders.map(p => p.purch_no_c));
+
+      // 3. Filter matching & non-matching orders
+    const approvedOrders = pendingOrders.filter(order => order.purch_no_c == doc_number);
+    const updatedPending = pendingOrders.filter(order => order.purch_no_c!== doc_number);
+console.log('******')
+    console.log(approvedOrders)
+    console.log(updatedPending)
+
+       // 4. Determine next sr_no
+       const existingSrNos = finalOrders.map(o => o['SR NO']).filter(Boolean);
+       const maxSrNo = existingSrNos.length > 0 ? Math.max(...existingSrNos) : 0;
+       const nextSrNo = maxSrNo + 1;
+   
+       // 5. Add sr_no to all approved orders
+const approvedWithSrNo = approvedOrders.map(order => {
+  const cleaned = {};
+
+  // 1. Add SR NO first
+  cleaned['SR NO'] = nextSrNo;
+
+  // 2. Add rest of the keys except Cond Type - ZPR0 and Cond Value
+  for (let key in order) {
+    if (key === 'SR NO') continue; // skip if already set manually
+    if (key === 'Cond Type - ZPR0' || key === 'Cond Value') {
+      cleaned[key] = ''; // blank out for final order
+    } else {
+      cleaned[key] = cleanValue(order[key]);
+    }
+  }
+
+  return cleaned;
+});
+
+    finalOrders.push(...approvedWithSrNo);
+    if (Array.isArray(approvedHistoryFormat)) {
+  orderstatus.push(...approvedHistoryFormat);
+} else {
+  orderstatus.push(approvedHistoryFormat);
+}
+
+const cleanedFinalOrders = finalOrders.map(order => {
+  const cleaned = {};
+  for (let key in order) {
+     if (key === 'Cond Type - ZPR0' || key === 'Cond Value') {
+      cleaned[key] = ''; // force blank
+    } else {
+      cleaned[key] = cleanValue(order[key]);
+    }
+    cleaned[key] = cleanValue(order[key]);
+  }
+  return cleaned;
+});
+    //fs.writeFileSync(temppendingorder, JSON.stringify(updatedPending, null, 2));
+    //fs.writeFileSync(pendingPath, JSON.stringify(finalOrders, null, 2));
+   // fs.writeFileSync(orderstatustempPath, JSON.stringify(orderstatus, null, 2));
+    //const updatedorderHistory=lastorderhistory.filter(order => order.purch_no_c !== doc_number);
+await writeCSV(temppendingorder, updatedPending);
+await writeCSV(pendingPath, cleanedFinalOrders);
+await writeOrderCSV(orderstatustempPath, orderstatus.flat()); // flatten because you're pushing an array inside
+ // 7. Upload updated files to server
+ await sftp.fastPut(temppendingorder, pendingordersoriginalpath);
+ await sftp.fastPut(pendingPath, remotePath);
+ await sftp.fastPut(orderstatustempPath, orderstatusoriginalpath);
+
+  }
+  catch(err){
+    console.error('Approval error:', err);
+   
+  }
+  finally {
+    sftp.end();
+  }
+}
+async function AreaInchargeapproveOrderAndUploadFile(doc_number,approvedHistoryFormat) {
   const sftp = new Client();
   try{
     await sftp.connect({
