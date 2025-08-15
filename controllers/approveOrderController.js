@@ -1,7 +1,29 @@
 //import { placeOrderAndUploadFile } from "../services/sftpService";
 
-const { approveOrderAndUploadFile,approveOrderAndUploadFileShrirampur ,approveOrderAndUploadFileBaramati} = require('../services/sftpService');
+const { approveOrderAndUploadFile,approveOrderAndUploadFileShrirampur ,approveOrderAndUploadFileBaramati,AreaInchargeapproveOrderAndUploadFile} = require('../services/sftpService');
 
+
+ const  approveOrderFinal=async (req,res)=> {
+
+    const {  doc_number,approvedHistoryFormat } = req.body;
+    console.log(approvedHistoryFormat)
+    console.log(doc_number)
+
+try {
+    const data = await AreaInchargeapproveOrderAndUploadFile(doc_number,approvedHistoryFormat);
+  
+  
+    res.json(data);
+    console.log(data)
+  } catch (err) {
+    console.error('Error approving order', err.message);
+ 
+ if (!res.headersSent) {
+     res.status(500).json({ error:  'Error approving order' });
+    }
+    
+  }
+}
  const  approveOrder=async (req,res)=> {
 
     const {  doc_number,approvedHistoryFormat } = req.body;
@@ -68,6 +90,7 @@ try {
   }
 }
 module.exports = {
+ approveOrderFinal,
   approveOrder,
   approveOrderShrirampur,approveOrderBaramati
 };
