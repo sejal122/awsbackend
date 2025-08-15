@@ -47,4 +47,4 @@ const getpendingOrdersBaramati=async(req,res)=>{
         res.status(500).json({ error: 'Failed to fetch pending order data' });
       }
 }
-module.exports = { getpendingOrders ,getpendingOrdersShrirampur,getpendingOrdersBaramati};
+module.exports = { getpendingOrders ,getpendingOrdersShrirampur,getpendingOrdersBaramati,getpendingOrdersFinal};
