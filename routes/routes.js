@@ -22,7 +22,7 @@ const {getSubdealerData,getSubdealerDataShrirampur,getSubdealerDataBaramati}=req
 const {getOrderHistory,getOrderHistoryShrirampur,getOrderHistoryBaramati} =require('../controllers/orderHistoryController')
 const {dealerTarget,dealerTargetShrirampur,dealerTargetBaramati}=require('../controllers/dealerTargetController')
 const {getpendingOrders,getpendingOrdersShrirampur,getpendingOrdersBaramati}=require('../controllers/pendingOrderController')
-const { approveOrder } = require('../controllers/approveOrderController');
+const { approveOrder,approveOrderFinal } = require('../controllers/approveOrderController');
 const { approveOrderShrirampur,approveOrderBaramati } = require('../controllers/approveOrderController');
 const { rejectOrder } = require('../controllers/rejectOrderController');
 const { rejectOrderShrirampur,rejectOrderBaramati } = require('../controllers/rejectOrderController');
@@ -37,6 +37,7 @@ router.post('/leads',LeadController)
 router.post('/add-followup',addFollowupController)
 router.get('/get-leads',getLeads)
 router.post('/approveOrder',approveOrder)
+router.post('/approveOrder-final',approveOrderFinal)
 router.post('/rejectOrder',rejectOrder)
 router.get('/dealers', getDealers);
 router.get('/products', getProducts);
