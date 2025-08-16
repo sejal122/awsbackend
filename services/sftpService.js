@@ -9,6 +9,101 @@ const os = require('os');
 const { stringify } = require('csv-stringify/sync');
 
 //SATARA PLANT
+async function uploadGothaVisitCSV(gothaData) {
+  const sftp = new Client();
+
+  // Mapping your form fields to CSV headers
+  const headerMap = {
+    department: "Department / Sector",
+    ownerName: "Full Name of Gotha Owner / Dairy / Dealer",
+    villageName: "Name of Village",
+    whatsappNumber: "WhatsApp Number",
+    alternateNumber: "Alternate Mobile Number",
+    dailyMilkCollection: "Daily Milk Collection (liters)",
+    cows: "Total Cows",
+    milkingCows: "Milking Cows",
+    dryCows: "Dry Cows",
+    pregnantCows: "Pregnant Cows",
+    preg1to3: "Pregnancy 1-3 Month",
+    preg4to6: "Pregnancy 4-6 Month",
+    preg7to9: "Pregnancy 7-9 Month",
+    heiferCows: "Heifer Cows",
+    calves: "Calves (Cow)",
+    calf1to3: "Calf 1-3 Month",
+    calf4to6: "Calf 4-6 Month",
+    buffaloes: "Total Buffaloes",
+    milkingBuffaloes: "Milking Buffaloes",
+    dryBuffaloes: "Dry Buffaloes",
+    dryBuff9: "Dry Buffaloes 9 Month",
+    dryBuff10: "Dry Buffaloes 10 Month",
+    pregnantBuffaloes: "Pregnant Buffaloes",
+    buffPreg1to3: "Buffalo Pregnancy 1-3 Month",
+    buffPreg4to6: "Buffalo Pregnancy 4-6 Month",
+    buffPreg7to10: "Buffalo Pregnancy 7-10 Month",
+    heiferBuffaloes: "Heifer Buffaloes",
+    femaleCalvesBuff: "Female Calves (Buffalo)",
+    traditionalFeed: "Traditional Feed Used",
+    packagingSize: "Packaging Size (kg)",
+    monthlyBags: "Monthly Required Bags",
+    usedHF: "Used Hindustan Feeds (Yes/No)",
+    opinion: "Opinion / Reason",
+    createdAt: "Created At",
+  };
+
+  try {
+    await sftp.connect({
+      host: process.env.SERVER_IP,
+      port: process.env.SERVER_PORT,
+      username: process.env.SERVER_USER,
+      password: process.env.SERVER_PASS,
+    });
+
+    const fileName = `GothaVisits.csv`;
+    const tempPath = path.join(__dirname, "..", "uploads", fileName);
+    const remotePath = `/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Gotha-Visit/${fileName}`;
+
+    let existingRows = [];
+
+    // Step 1: Download existing CSV if exists
+    const fileExists = await sftp.exists(remotePath);
+    if (fileExists) {
+      await sftp.fastGet(remotePath, tempPath);
+
+      await new Promise((resolve, reject) => {
+        fs.createReadStream(tempPath)
+          .pipe(csvParser())
+          .on("data", (row) => existingRows.push(row))
+          .on("end", resolve)
+          .on("error", reject);
+      });
+    }
+
+    // Step 2: Prepare new row from gothaData
+    const newRow = {};
+    for (const key in headerMap) {
+      if (Object.prototype.hasOwnProperty.call(headerMap, key)) {
+        newRow[headerMap[key]] = gothaData[key] ?? "";
+      }
+    }
+
+    // Step 3: Merge rows
+    const allRows = [...existingRows, newRow];
+    const json2csvParser = new Parser({ fields: Object.values(headerMap) });
+    const csv = json2csvParser.parse(allRows);
+
+    // Step 4: Save locally and upload
+    fs.writeFileSync(tempPath, csv, "utf8");
+    await sftp.put(tempPath, remotePath);
+    await sftp.end();
+
+    console.log("✅ Gotha Visit CSV uploaded successfully.");
+    return { success: true };
+  } catch (err) {
+    console.error("❌ SFTP Error:", err);
+    return { success: false, error: err.message };
+  }
+}
+
 
 async function addFollowupCSV(leadID, followup) {
   console.log("****** id *****");
