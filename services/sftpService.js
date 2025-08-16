@@ -13,43 +13,49 @@ async function uploadGothaVisitCSV(gothaData) {
   const sftp = new Client();
 
   // Mapping your form fields to CSV headers
-  const headerMap = {
-    department: "Department / Sector",
-    ownerName: "Full Name of Gotha Owner / Dairy / Dealer",
-    villageName: "Name of Village",
-    whatsappNumber: "WhatsApp Number",
-    alternateNumber: "Alternate Mobile Number",
-    dailyMilkCollection: "Daily Milk Collection (liters)",
-    cows: "Total Cows",
-    milkingCows: "Milking Cows",
-    dryCows: "Dry Cows",
-    pregnantCows: "Pregnant Cows",
-    preg1to3: "Pregnancy 1-3 Month",
-    preg4to6: "Pregnancy 4-6 Month",
-    preg7to9: "Pregnancy 7-9 Month",
-    heiferCows: "Heifer Cows",
-    calves: "Calves (Cow)",
-    calf1to3: "Calf 1-3 Month",
-    calf4to6: "Calf 4-6 Month",
-    buffaloes: "Total Buffaloes",
-    milkingBuffaloes: "Milking Buffaloes",
-    dryBuffaloes: "Dry Buffaloes",
-    dryBuff9: "Dry Buffaloes 9 Month",
-    dryBuff10: "Dry Buffaloes 10 Month",
-    pregnantBuffaloes: "Pregnant Buffaloes",
-    buffPreg1to3: "Buffalo Pregnancy 1-3 Month",
-    buffPreg4to6: "Buffalo Pregnancy 4-6 Month",
-    buffPreg7to10: "Buffalo Pregnancy 7-10 Month",
-    heiferBuffaloes: "Heifer Buffaloes",
-    femaleCalvesBuff: "Female Calves (Buffalo)",
-    traditionalFeed: "Traditional Feed Used",
-    packagingSize: "Packaging Size (kg)",
-    monthlyBags: "Monthly Required Bags",
-    usedHF: "Used Hindustan Feeds (Yes/No)",
-    opinion: "Opinion / Reason",
-    createdAt: "Created At",
-  };
+ const headerMap = {
+  department: "Department / Sector",
+  ownerName: "Full Name of Gotha Owner / Dairy / Dealer",
+  villageName: "Name of Village",
+  whatsappNumber: "WhatsApp Number",
+  alternateNumber: "Alternate Mobile Number",
+  dailyMilkCollection: "Daily Milk Collection (liters)",
 
+  // Cows
+  totalCows: "Total Cows",
+  milkingCows: "Milking Cows",
+  dryCows: "Dry Cows",
+  pregnantCows: "Pregnant Cows",
+  pregnancy1to3: "Pregnancy 1-3 Month",
+  pregnancy4to6: "Pregnancy 4-6 Month",
+  pregnancy7to9: "Pregnancy 7-9 Month",
+  heiferCows: "Heifer Cows",
+  calves: "Calves (Cow)",
+  calf1to3: "Calf 1-3 Month",
+  calf4to6: "Calf 4-6 Month",
+
+  // Buffaloes
+  totalBuffaloes: "Total Buffaloes",
+  milkingBuffaloes: "Milking Buffaloes",
+  dryBuffaloes: "Dry Buffaloes",
+  dryBuffalo9: "Dry Buffaloes 9 Month",
+  dryBuffalo10: "Dry Buffaloes 10 Month",
+  pregnantBuffaloes: "Pregnant Buffaloes",
+  buffaloPreg1to3: "Buffalo Pregnancy 1-3 Month",
+  buffaloPreg4to6: "Buffalo Pregnancy 4-6 Month",
+  buffaloPreg7to10: "Buffalo Pregnancy 7-10 Month",
+  heiferBuffaloes: "Heifer Buffaloes",
+  femaleCalvesBuffalo: "Female Calves (Buffalo)",
+
+  // Feed info
+  traditionalFeed: "Traditional Feed Used",
+  packagingSize: "Packaging Size (kg)",
+  monthlyBags: "Monthly Required Bags",
+  usedHindustanFeed: "Used Hindustan Feeds (Yes/No)",
+  opinionOrReason: "Opinion / Reason",
+
+  createdAt: "Created At",
+};
   try {
     await sftp.connect({
       host: process.env.SERVER_IP,
