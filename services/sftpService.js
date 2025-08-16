@@ -888,7 +888,7 @@ console.log(approvedHistoryFormat)
   return val;
 }
     //original and temp for pending orders
-    const pendingordersoriginalpath='/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/SO/pendingOrders.csv'
+    const pendingordersoriginalpath='/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Approval/order_2010.csv'
     const temppendingorder=path.join(__dirname, "..", "uploads", "temppendingorder.csv");
 
     //original and temp for order status
