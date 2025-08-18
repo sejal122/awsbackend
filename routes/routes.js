@@ -31,10 +31,11 @@ const { csklogin ,cskloginShrirampur,cskloginBaramati} = require('../controllers
 const { replacependingordercontroller , replacependingordercontrollerShrirampur,replacependingordercontrollerBaramati } = require('../controllers/replacependingorder');
 const { getInvoiceHistory ,getInvoiceHistoryShrirampur,getInvoiceHistoryBaramati} = require('../controllers/invoiceHistory');
 const {postComplaint,postComplaintShrirampur,postComplaintBaramati}=require('../controllers/postComplaintController');
-const {GothaController}=require('../controllers/gothaVisitsController');
+const {GothaController,getGotha}=require('../controllers/gothaVisitsController');
 //SATARA
 router.post('/leads',LeadController)
 router.post('/gotha',GothaController)
+router.post('/get-gotha',getGotha)
 router.post('/add-followup',addFollowupController)
 router.get('/get-leads',getLeads)
 router.post('/approveOrder',approveOrder)
