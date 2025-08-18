@@ -9,6 +9,27 @@ const os = require('os');
 const { stringify } = require('csv-stringify/sync');
 
 //SATARA PLANT
+ async function fetchGothaCSV() {
+  const sftp = new Client();
+  await sftp.connect({
+    host: process.env.SERVER_IP,
+    port: process.env.SERVER_PORT,
+    username: process.env.SERVER_USER,
+    password: process.env.SERVER_PASS,
+  });
+
+  // ⚠️ Update file path if different
+  const fileBuffer = await sftp.get(
+    "/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Gotha-Visit/GothaVisits.csv"
+  );
+
+  await sftp.end();
+
+  const csvText = fileBuffer.toString("utf-8");
+  console.log("Gotha CSV Raw:", csvText);
+
+  return parseLeads(csvText); // ✅ Reuse parser
+}
 
 async function addGothaFollowupCSV(gothaID, followup) {
   console.log("****** Gotha Visit ID *****");
@@ -2696,6 +2717,6 @@ console.log('✅ Visit appended and file uploaded to SFTP.');
 
 
 
-module.exports = {addGothaFollowupCSV,uploadGothaVisitCSV,fetchAndParsependingOrdersCSVFinal,AreaInchargeapproveOrderAndUploadFile,addFollowupCSV,fetchLeadsCSV,uploadLeadCSV,RejectOrderAndUploadFileShrirampur,saveComplaintToSFTPShrirampur , fetchAndParseDealerTargetCSVShrirampur , fetchAndParseOrderHistoryCSVShrirampur , fetchAndParseCSVShrirampur , fetchAndParseSubDealerCSVShrirampur , fetchAndParseProductsCSVShrirampur , placeOrderAndUploadFileShrirampur,verifyDealerShrirampur,fetchAndParsependingOrdersCSVShrirampur,
+module.exports = {fetchGothaCSV,addGothaFollowupCSV,uploadGothaVisitCSV,fetchAndParsependingOrdersCSVFinal,AreaInchargeapproveOrderAndUploadFile,addFollowupCSV,fetchLeadsCSV,uploadLeadCSV,RejectOrderAndUploadFileShrirampur,saveComplaintToSFTPShrirampur , fetchAndParseDealerTargetCSVShrirampur , fetchAndParseOrderHistoryCSVShrirampur , fetchAndParseCSVShrirampur , fetchAndParseSubDealerCSVShrirampur , fetchAndParseProductsCSVShrirampur , placeOrderAndUploadFileShrirampur,verifyDealerShrirampur,fetchAndParsependingOrdersCSVShrirampur,
 approveOrderAndUploadFileShrirampur , uploadVisitsCSVShrirampur,fetchOutstandingAndParseCSVShrirampur,RejectOrderAndUploadFileBaramati,fetchAndParseInvoiceHistoryBaramati,replacePendingOrderBaramati,fetchAndParseDealerTargetCSVBaramati,fetchAndParseOrderHistoryCSVBaramati,fetchAndParseCSVBaramati,fetchAndParseSubDealerCSVBaramati,fetchAndParseProductsCSVBaramati,placeOrderAndUploadFileBaramati,verifyDealerBaramati,fetchOutstandingAndParseCSVBaramati,fetchAndParsependingOrdersCSVBaramati , approveOrderAndUploadFileBaramati,uploadVisitsCSVBaramati,saveComplaintToSFTPBaramati,uploadVisitsCSVBaramati, approveOrderAndUploadFileBaramati ,fetchAndParsependingOrdersCSVBaramati,fetchAndParseDealerTargetCSVBaramati,
 fetchOutstandingAndParseCSVBaramati , verifyDealerBaramati , placeOrderAndUploadFileBaramati, fetchAndParseProductsCSVBaramati , fetchAndParseSubDealerCSVBaramati,fetchAndParseCSVBaramati,fetchAndParseOrderHistoryCSVBaramati , replacePendingOrderBaramati , fetchAndParseInvoiceHistoryBaramati, RejectOrderAndUploadFileBaramati, saveComplaintToSFTPBaramati,saveComplaintToSFTP,RejectOrderAndUploadFile,fetchAndParseInvoiceHistory,replacePendingOrder,uploadVisitsCSV,approveOrderAndUploadFile , fetchAndParsependingOrdersCSV,fetchAndParseDealerTargetCSV, fetchAndParseOrderHistoryCSV,fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
