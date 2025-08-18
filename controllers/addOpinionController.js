@@ -3,7 +3,7 @@ const addOpinionController = async (req, res) => {
     const { leadID, followup } = req.body;
 console.log("------------ id ----------")
     console.log(leadID);
-    console.log(followup);
+    console.log(followup.note);
     if (!leadID || !followup) {
       return res.status(400).json({ error: 'gothaId and opinion are required' });
     }
