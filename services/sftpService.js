@@ -10,71 +10,6 @@ const { stringify } = require('csv-stringify/sync');
 
 //SATARA PLANT
 
-async function addOpinionReasonCSV(visitID, followup) {
-  console.log("****** Visit ID *****");
-  console.log(visitID);
-
-  // Path for Gotha visits CSV
-  const remotePath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Gotha-Visit/GothaVisits.csv';
-  const tempLocal = path.join(__dirname, 'GothaVisits_2010_temp.csv');
-  const sftp = new Client();
-
-  try {
-    await sftp.connect({
-      host: process.env.SERVER_IP,
-      port: process.env.SERVER_PORT,
-      username: process.env.SERVER_USER,
-      password: process.env.SERVER_PASS,
-    });
-
-    // Download CSV
-    await sftp.fastGet(remotePath, tempLocal);
-
-    // Read CSV
-    const visits = [];
-    await new Promise((resolve, reject) => {
-      fs.createReadStream(tempLocal)
-        .pipe(csv())
-        .on('data', (row) => visits.push(row))
-        .on('end', resolve)
-        .on('error', reject);
-    });
-
-    // Find matching visit by "ID" column
-    const visitIndex = visits.findIndex(v => String(v.ID) === String(visitID));
-    if (visitIndex === -1) {
-      throw new Error('Visit not found');
-    }
-
-   // Parse existing Opinion/Reason entries
-let reasons = [];
-try {
-  reasons = leads[leadIndex]["Opinion / Reason"] 
-    ? leads[leadIndex]["Opinion / Reason"].split(" | ") 
-    : [];
-} catch {
-  reasons = [];
-}
-
-// Append new reason/followup
-reasons.push(`${followup.date}: ${followup.note}`);
-leads[leadIndex]["Opinion / Reason"] = reasons.join(" | ");
-
-    // Write back to CSV
-    const csvData = stringify(visits, { header: true });
-    fs.writeFileSync(tempLocal, csvData);
-    await sftp.fastPut(tempLocal, remotePath);
-
-    return visits[visitIndex];
-  } finally {
-    sftp.end();
-    if (fs.existsSync(tempLocal)) fs.unlinkSync(tempLocal);
-  }
-}
-
-
-
-
  async function fetchGothaCSV() {
   const sftp = new Client();
   await sftp.connect({
@@ -167,6 +102,7 @@ async function uploadGothaVisitCSV(gothaData) {
 
   // Mapping your form fields to CSV headers
  const headerMap = {
+   id: "ID",
   department: "Department / Sector",
   ownerName: "Full Name of Gotha Owner / Dairy / Dealer",
   villageName: "Name of Village",
@@ -2783,6 +2719,6 @@ console.log('✅ Visit appended and file uploaded to SFTP.');
 
 
 
-module.exports = {addOpinionReasonCSV,fetchGothaCSV,addGothaFollowupCSV,uploadGothaVisitCSV,fetchAndParsependingOrdersCSVFinal,AreaInchargeapproveOrderAndUploadFile,addFollowupCSV,fetchLeadsCSV,uploadLeadCSV,RejectOrderAndUploadFileShrirampur,saveComplaintToSFTPShrirampur , fetchAndParseDealerTargetCSVShrirampur , fetchAndParseOrderHistoryCSVShrirampur , fetchAndParseCSVShrirampur , fetchAndParseSubDealerCSVShrirampur , fetchAndParseProductsCSVShrirampur , placeOrderAndUploadFileShrirampur,verifyDealerShrirampur,fetchAndParsependingOrdersCSVShrirampur,
+module.exports = {fetchGothaCSV,addGothaFollowupCSV,uploadGothaVisitCSV,fetchAndParsependingOrdersCSVFinal,AreaInchargeapproveOrderAndUploadFile,addFollowupCSV,fetchLeadsCSV,uploadLeadCSV,RejectOrderAndUploadFileShrirampur,saveComplaintToSFTPShrirampur , fetchAndParseDealerTargetCSVShrirampur , fetchAndParseOrderHistoryCSVShrirampur , fetchAndParseCSVShrirampur , fetchAndParseSubDealerCSVShrirampur , fetchAndParseProductsCSVShrirampur , placeOrderAndUploadFileShrirampur,verifyDealerShrirampur,fetchAndParsependingOrdersCSVShrirampur,
 approveOrderAndUploadFileShrirampur , uploadVisitsCSVShrirampur,fetchOutstandingAndParseCSVShrirampur,RejectOrderAndUploadFileBaramati,fetchAndParseInvoiceHistoryBaramati,replacePendingOrderBaramati,fetchAndParseDealerTargetCSVBaramati,fetchAndParseOrderHistoryCSVBaramati,fetchAndParseCSVBaramati,fetchAndParseSubDealerCSVBaramati,fetchAndParseProductsCSVBaramati,placeOrderAndUploadFileBaramati,verifyDealerBaramati,fetchOutstandingAndParseCSVBaramati,fetchAndParsependingOrdersCSVBaramati , approveOrderAndUploadFileBaramati,uploadVisitsCSVBaramati,saveComplaintToSFTPBaramati,uploadVisitsCSVBaramati, approveOrderAndUploadFileBaramati ,fetchAndParsependingOrdersCSVBaramati,fetchAndParseDealerTargetCSVBaramati,
 fetchOutstandingAndParseCSVBaramati , verifyDealerBaramati , placeOrderAndUploadFileBaramati, fetchAndParseProductsCSVBaramati , fetchAndParseSubDealerCSVBaramati,fetchAndParseCSVBaramati,fetchAndParseOrderHistoryCSVBaramati , replacePendingOrderBaramati , fetchAndParseInvoiceHistoryBaramati, RejectOrderAndUploadFileBaramati, saveComplaintToSFTPBaramati,saveComplaintToSFTP,RejectOrderAndUploadFile,fetchAndParseInvoiceHistory,replacePendingOrder,uploadVisitsCSV,approveOrderAndUploadFile , fetchAndParsependingOrdersCSV,fetchAndParseDealerTargetCSV, fetchAndParseOrderHistoryCSV,fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
