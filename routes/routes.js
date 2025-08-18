@@ -33,8 +33,10 @@ const { getInvoiceHistory ,getInvoiceHistoryShrirampur,getInvoiceHistoryBaramati
 const {postComplaint,postComplaintShrirampur,postComplaintBaramati}=require('../controllers/postComplaintController');
 const {GothaController}=require('../controllers/gothaVisitsController');
 const {getGotha}=require('../controllers/getGothaController');
+const {addOpinionController}=require('../controllers/addOpinionController');
 //SATARA
 router.post('/leads',LeadController)
+router.post('/add-followup-gotha',addOpinionController)
 router.post('/gotha',GothaController)
 router.get('/get-gotha',getGotha)
 router.post('/add-followup',addFollowupController)
