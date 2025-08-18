@@ -31,7 +31,8 @@ const { csklogin ,cskloginShrirampur,cskloginBaramati} = require('../controllers
 const { replacependingordercontroller , replacependingordercontrollerShrirampur,replacependingordercontrollerBaramati } = require('../controllers/replacependingorder');
 const { getInvoiceHistory ,getInvoiceHistoryShrirampur,getInvoiceHistoryBaramati} = require('../controllers/invoiceHistory');
 const {postComplaint,postComplaintShrirampur,postComplaintBaramati}=require('../controllers/postComplaintController');
-const {GothaController,getGotha}=require('../controllers/gothaVisitsController');
+const {GothaController}=require('../controllers/gothaVisitsController');
+const {getGotha}=require('../controllers/getGothaController');
 //SATARA
 router.post('/leads',LeadController)
 router.post('/gotha',GothaController)
