@@ -36,7 +36,7 @@ const {getGotha}=require('../controllers/getGothaController');
 //SATARA
 router.post('/leads',LeadController)
 router.post('/gotha',GothaController)
-router.post('/get-gotha',getGotha)
+router.get('/get-gotha',getGotha)
 router.post('/add-followup',addFollowupController)
 router.get('/get-leads',getLeads)
 router.post('/approveOrder',approveOrder)
