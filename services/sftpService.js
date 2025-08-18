@@ -32,9 +32,9 @@ const { stringify } = require('csv-stringify/sync');
   return parseLeads(csvText); // ✅ Reuse parser
 }
 
-async function addGothaFollowupCSV(gothaID, followup) {
+async function addGothaFollowupCSV(leadID, followup) {
   console.log("****** Gotha Visit ID *****");
-  console.log(gothaID);
+  console.log(leadID);
 
   const remotePath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Satara/Gotha-Visit/GothaVisits.csv';
   const tempLocal = path.join(__dirname, 'GothaVisit_2010_temp.csv');
@@ -62,7 +62,7 @@ async function addGothaFollowupCSV(gothaID, followup) {
     });
 
     // Find matching gotha visit by "ID" column
-    const visitIndex = gothaVisits.findIndex(v => String(v.ID) === String(gothaID));
+    const visitIndex = gothaVisits.findIndex(v => String(v.ID) === String(leadID));
     if (visitIndex === -1) {
       throw new Error('Gotha Visit not found');
     }
