@@ -1,5 +1,5 @@
 const { addGothaFollowupCSV } = require('../services/sftpService');
-const addFollowupController = async (req, res) => {
+const addOpinionController = async (req, res) => {
     const { leadID, followup } = req.body;
 console.log("------------ id ----------")
     console.log(leadID);
@@ -16,4 +16,4 @@ console.log("------------ id ----------")
         res.status(500).json({ error: 'Failed to update gotha data' });
       }
   };
-  module.exports = { addFollowupController };
+  module.exports = { addOpinionController };
