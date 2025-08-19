@@ -278,9 +278,11 @@ async function fetchLeadsCSV() {
 }
 
 async function uploadLeadCSV(leadData) {
+ console.log("---leaddata---")
+ console.log(leadData)
   const sftp = new Client();
   const headerMap = {
-    salesmanID:leadData.salesmanID,
+    salesmanID:"salesmanID",
     id: "ID",
     salesmanName: "Salesman Name",
     sectorName: "Sector Name",
