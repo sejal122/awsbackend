@@ -1,4 +1,4 @@
-const { uploadLeadCSV } = require('../services/sftpService');
+const { uploadLeadCSV ,uploadLeadBaramatiCSV} = require('../services/sftpService');
 const LeadController=async(req,res)=>{
     try {
         console.log("---------------------")
@@ -13,4 +13,18 @@ const LeadController=async(req,res)=>{
       }
 }
 
-module.exports = { LeadController };
+const LeadControllerBaramati=async(req,res)=>{
+    try {
+        console.log("---------------------")
+        console.log(req.body);
+        const visitJson = req.body
+        const data = await uploadLeadBaramatiCSV(visitJson);
+        res.json(data);
+        console.log(data)
+      } catch (err) {
+        console.error('Error uploading leads:', err.message);
+        res.status(500).json({ error: 'Failed to upload leads' });
+      }
+}
+
+module.exports = { LeadController,LeadControllerBaramati };
