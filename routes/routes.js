@@ -11,9 +11,9 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const { getDealers ,getDealersShrirampur,getDealersBaramati} = require('../controllers/dealerController');
-const {LeadController} = require('../controllers/leadsController');
-const {addFollowupController} = require('../controllers/addFollowupController');
-const {getLeads} = require('../controllers/getleadsController');
+const {LeadController,LeadControllerBaramati} = require('../controllers/leadsController');
+const {addFollowupController,addFollowupControllerBaramati} = require('../controllers/addFollowupController');
+const {getLeads,getLeadsBaramati} = require('../controllers/getleadsController');
 const { getProducts,getProductsShrirampur,getProductsBaramati} = require('../controllers/productsController');
 const { appendData ,appendDataShrirampur,appendDataBaramati} = require('../controllers/placeOrderController');
 const {handleLogin,handleLoginShrirampur,handleLoginBaramati} = require('../controllers/loginController')
@@ -37,6 +37,11 @@ const {addOpinionController}=require('../controllers/addOpinionController');
 //SATARA
 router.post('/leads',LeadController)
 router.post('/add-followup-gotha',addOpinionController)
+
+router.post('/leads-baramati',LeadControllerBaramati)
+router.post('/add-followup-baramati',addFollowupControllerBaramati)
+router.get('/get-leads-baramati',getLeadsBaramati)
+
 router.post('/gotha',GothaController)
 router.get('/get-gotha',getGotha)
 router.post('/add-followup',addFollowupController)
