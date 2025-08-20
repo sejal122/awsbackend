@@ -1997,6 +1997,182 @@ console.log('✅ Visit appended and file uploaded to SFTP.');
 
 //BARAMATI
 
+async function fetchLeadsBaramatiCSV() {
+   const sftp = new Client();
+  await sftp.connect({
+    host: process.env.SERVER_IP,
+    port: process.env.SERVER_PORT,
+    username: process.env.SERVER_USER,
+    password: process.env.SERVER_PASS,
+  });
+
+  const fileBuffer = await sftp.get('/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Baramati/Leads/Leads_1010.csv');
+  //console.log(fileBuffer)
+  await sftp.end();
+
+  const csvText = fileBuffer.toString('utf-8');
+ console.log(csvText);
+  return parseLeads(csvText);
+}
+
+
+
+
+async function uploadLeadBaramatiCSV(leadData) {
+ console.log("---leaddata---")
+ console.log(leadData)
+  const sftp = new Client();
+  const headerMap = {
+    salesmanID:"salesmanID",
+    id: "ID",
+    salesmanName: "Salesman Name",
+    sectorName: "Sector Name",
+    subSectorName: "Sub Sector Name",
+    email: "Email",
+    companyName: "Company Name",
+    monthlyConsumption: "Monthly Consumption",
+    competitor: "Competitor",
+    potential: "Potential",
+    ownerName: "Owner Name",
+    address: "Address",
+    productNames: "Product Names",
+    followups: "Followups",
+    createdAt: "Created At"
+  };
+
+  try {
+    await sftp.connect({
+      host: process.env.SERVER_IP,
+      port: process.env.SERVER_PORT,
+      username: process.env.SERVER_USER,
+      password: process.env.SERVER_PASS,
+    });
+
+    const fileName = `Leads_1010.csv`;
+    const tempPath = path.join(__dirname, "..", "uploads", fileName);
+    const remotePath = `/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Baramati/Leads/${fileName}`;
+
+    let existingRows = [];
+
+    // Step 1: Download existing CSV if exists
+    const fileExists = await sftp.exists(remotePath);
+    if (fileExists) {
+      await sftp.fastGet(remotePath, tempPath);
+
+      await new Promise((resolve, reject) => {
+        fs.createReadStream(tempPath)
+          .pipe(csvParser())
+          .on("data", (row) => existingRows.push(row))
+          .on("end", resolve)
+          .on("error", reject);
+      });
+    }
+
+    // Step 2: Ensure followups is always an array
+    if (!Array.isArray(leadData.followups)) {
+      if (leadData.followups) {
+        // Wrap single followup into array
+        leadData.followups = [leadData.followups];
+      } else {
+        // Empty array if nothing passed
+        leadData.followups = [];
+      }
+    }
+
+    // Step 3: Map incoming leadData to match CSV headers
+    const newLeadRow = {};
+    for (const key in headerMap) {
+      if (Object.prototype.hasOwnProperty.call(headerMap, key)) {
+        let value = leadData[key] ?? "";
+        if (key === "followups") {
+          // Always stringify the array
+          value = JSON.stringify(value);
+        }
+        newLeadRow[headerMap[key]] = value;
+      }
+    }
+
+    // Step 4: Merge and keep header order consistent
+    const allRows = [...existingRows, newLeadRow];
+    const json2csvParser = new Parser({ fields: Object.values(headerMap) });
+    const csv = json2csvParser.parse(allRows);
+
+    // Step 5: Save locally and upload
+    fs.writeFileSync(tempPath, csv, "utf8");
+    await sftp.put(tempPath, remotePath);
+    await sftp.end();
+
+    console.log("✅ Lead CSV uploaded successfully.");
+    return { success: true };
+  } catch (err) {
+    console.error("❌ SFTP Error:", err);
+    return { success: false, error: err.message };
+  }
+}
+
+
+
+
+async function addFollowupBaramatiCSV(leadID, followup) {
+  console.log("****** id *****");
+  console.log(leadID);
+  const remotePath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Baramati/Leads/Leads_1010.csv';
+  const tempLocal = path.join(__dirname, 'Leads_2010_temp.csv');
+ const sftp = new Client();
+  try {
+    await sftp.connect({
+      host: process.env.SERVER_IP,
+    port: process.env.SERVER_PORT,
+    username: process.env.SERVER_USER,
+    password: process.env.SERVER_PASS,
+    });
+
+    // Download CSV
+    await sftp.fastGet(remotePath, tempLocal);
+
+    // Read CSV
+    const leads = [];
+    await new Promise((resolve, reject) => {
+      fs.createReadStream(tempLocal)
+        .pipe(csv())
+        .on('data', (row) => leads.push(row))
+        .on('end', resolve)
+        .on('error', reject);
+    });
+
+    // Find matching lead by "ID" column
+    const leadIndex = leads.findIndex(l => String(l.ID) === String(leadID));
+    if (leadIndex === -1) {
+      throw new Error('Lead not found');
+    }
+
+    // Parse followups from CSV
+    let followups = [];
+    try {
+      followups = leads[leadIndex].Followups ? JSON.parse(leads[leadIndex].Followups) : [];
+    } catch {
+      followups = [];
+    }
+console.log("++++++ followups");
+    console.log(followups);
+    // Append new followup
+    //followups.push(followup);
+   // leads[leadIndex].Followups = JSON.stringify(followups);
+followups.push(`${followup.date}: ${followup.note}`);
+leads[leadIndex].Followups = followups.join(" | ");
+    // Write back to CSV
+    const csvData = stringify(leads, { header: true });
+    fs.writeFileSync(tempLocal, csvData);
+    await sftp.fastPut(tempLocal, remotePath);
+
+    return leads[leadIndex];
+  } finally {
+    sftp.end();
+    if (fs.existsSync(tempLocal)) fs.unlinkSync(tempLocal);
+  }
+}
+
+
 async function saveComplaintToSFTPBaramati({ ID, Name, date, filePath, fileName }) {
  const sftp = new Client();
 
@@ -2721,6 +2897,6 @@ console.log('✅ Visit appended and file uploaded to SFTP.');
 
 
 
-module.exports = {fetchGothaCSV,addGothaFollowupCSV,uploadGothaVisitCSV,fetchAndParsependingOrdersCSVFinal,AreaInchargeapproveOrderAndUploadFile,addFollowupCSV,fetchLeadsCSV,uploadLeadCSV,RejectOrderAndUploadFileShrirampur,saveComplaintToSFTPShrirampur , fetchAndParseDealerTargetCSVShrirampur , fetchAndParseOrderHistoryCSVShrirampur , fetchAndParseCSVShrirampur , fetchAndParseSubDealerCSVShrirampur , fetchAndParseProductsCSVShrirampur , placeOrderAndUploadFileShrirampur,verifyDealerShrirampur,fetchAndParsependingOrdersCSVShrirampur,
+module.exports = {fetchLeadsBaramatiCSV,uploadLeadBaramatiCSV,addFollowupBaramatiCSV,fetchGothaCSV,addGothaFollowupCSV,uploadGothaVisitCSV,fetchAndParsependingOrdersCSVFinal,AreaInchargeapproveOrderAndUploadFile,addFollowupCSV,fetchLeadsCSV,uploadLeadCSV,RejectOrderAndUploadFileShrirampur,saveComplaintToSFTPShrirampur , fetchAndParseDealerTargetCSVShrirampur , fetchAndParseOrderHistoryCSVShrirampur , fetchAndParseCSVShrirampur , fetchAndParseSubDealerCSVShrirampur , fetchAndParseProductsCSVShrirampur , placeOrderAndUploadFileShrirampur,verifyDealerShrirampur,fetchAndParsependingOrdersCSVShrirampur,
 approveOrderAndUploadFileShrirampur , uploadVisitsCSVShrirampur,fetchOutstandingAndParseCSVShrirampur,RejectOrderAndUploadFileBaramati,fetchAndParseInvoiceHistoryBaramati,replacePendingOrderBaramati,fetchAndParseDealerTargetCSVBaramati,fetchAndParseOrderHistoryCSVBaramati,fetchAndParseCSVBaramati,fetchAndParseSubDealerCSVBaramati,fetchAndParseProductsCSVBaramati,placeOrderAndUploadFileBaramati,verifyDealerBaramati,fetchOutstandingAndParseCSVBaramati,fetchAndParsependingOrdersCSVBaramati , approveOrderAndUploadFileBaramati,uploadVisitsCSVBaramati,saveComplaintToSFTPBaramati,uploadVisitsCSVBaramati, approveOrderAndUploadFileBaramati ,fetchAndParsependingOrdersCSVBaramati,fetchAndParseDealerTargetCSVBaramati,
 fetchOutstandingAndParseCSVBaramati , verifyDealerBaramati , placeOrderAndUploadFileBaramati, fetchAndParseProductsCSVBaramati , fetchAndParseSubDealerCSVBaramati,fetchAndParseCSVBaramati,fetchAndParseOrderHistoryCSVBaramati , replacePendingOrderBaramati , fetchAndParseInvoiceHistoryBaramati, RejectOrderAndUploadFileBaramati, saveComplaintToSFTPBaramati,saveComplaintToSFTP,RejectOrderAndUploadFile,fetchAndParseInvoiceHistory,replacePendingOrder,uploadVisitsCSV,approveOrderAndUploadFile , fetchAndParsependingOrdersCSV,fetchAndParseDealerTargetCSV, fetchAndParseOrderHistoryCSV,fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
