@@ -32,6 +32,180 @@ const { stringify } = require('csv-stringify/sync');
   return parseLeads(csvText); // ✅ Reuse parser
 }
 
+
+//baramati
+async function uploadGothaVisitCSVBaramati(gothaData) {
+  const sftp = new Client();
+
+  // Mapping your form fields to CSV headers
+const headerMap = {
+    id: "ID",
+
+    // From Excel fields
+    village: "Village",
+    ownerName: "Owner Name",
+    mobile: "Mobile Number",
+    cows: "Cows",
+    calves: "Calves",
+    buffaloes: "Buffaloes",
+    goats: "Goats",
+    dailyMilkProduction: "Daily Milk Production (liters)",
+    housingType: "Housing Type (Open/Closed)",
+    milchFeedCompanyProduct: "Milch Feed (Company/Product)",
+    milchFeedSaraki: "Milch Feed - Saraki",
+    milchFeedMaize: "Milch Feed - Maize",
+    milchFeedWheat: "Milch Feed - Wheat",
+    calfFeedCompanyProduct: "Calf Feed (Company/Product)",
+    calfFeedSarakiMaizeWheat: "Calf Feed - Saraki/Maize/Wheat",
+    mineralMixtureCompany: "Mineral Mixture (Company Name)",
+    mineralMixtureUsage: "Mineral Mixture Usage (Regular/Irregular)",
+    fodderGreen: "Fodder Type - Green",
+    fodderDry: "Fodder Type - Dry",
+
+    // Keep these as extra
+    opinionOrReason: "Opinion / Reason",
+    createdAt: "Created At",
+  };
+  try {
+    await sftp.connect({
+      host: process.env.SERVER_IP,
+      port: process.env.SERVER_PORT,
+      username: process.env.SERVER_USER,
+      password: process.env.SERVER_PASS,
+    });
+
+    const fileName = `GothaVisits.csv`;
+    const tempPath = path.join(__dirname, "..", "uploads", fileName);
+    const remotePath = `/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Baramati/Gotha-Visits/${fileName}`;
+
+    let existingRows = [];
+
+    // Step 1: Download existing CSV if exists
+    const fileExists = await sftp.exists(remotePath);
+    if (fileExists) {
+      await sftp.fastGet(remotePath, tempPath);
+
+      await new Promise((resolve, reject) => {
+        fs.createReadStream(tempPath)
+          .pipe(csvParser())
+          .on("data", (row) => existingRows.push(row))
+          .on("end", resolve)
+          .on("error", reject);
+      });
+    }
+
+    // Step 2: Prepare new row from gothaData
+    const newRow = {};
+    for (const key in headerMap) {
+      if (Object.prototype.hasOwnProperty.call(headerMap, key)) {
+        newRow[headerMap[key]] = gothaData[key] ?? "";
+      }
+    }
+
+    // Step 3: Merge rows
+    const allRows = [...existingRows, newRow];
+    const json2csvParser = new Parser({ fields: Object.values(headerMap) });
+    const csv = json2csvParser.parse(allRows);
+
+    // Step 4: Save locally and upload
+    fs.writeFileSync(tempPath, csv, "utf8");
+    await sftp.put(tempPath, remotePath);
+    await sftp.end();
+
+    console.log("✅ Gotha Visit CSV uploaded successfully.");
+    return { success: true };
+  } catch (err) {
+    console.error("❌ SFTP Error:", err);
+    return { success: false, error: err.message };
+  }
+}
+
+
+async function addGothaFollowupCSVBaramati(leadID, followup) {
+  console.log("****** Gotha Visit ID *****");
+  console.log(leadID);
+
+  const remotePath = '/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Baramati/Gotha-Visits/GothaVisits.csv';
+  const tempLocal = path.join(__dirname, 'GothaVisit_2010_temp.csv');
+
+  const sftp = new Client();
+  try {
+    await sftp.connect({
+      host: process.env.SERVER_IP,
+      port: process.env.SERVER_PORT,
+      username: process.env.SERVER_USER,
+      password: process.env.SERVER_PASS,
+    });
+
+    // Download CSV
+    await sftp.fastGet(remotePath, tempLocal);
+
+    // Read CSV
+    const gothaVisits = [];
+    await new Promise((resolve, reject) => {
+      fs.createReadStream(tempLocal)
+        .pipe(csv())
+        .on('data', (row) => gothaVisits.push(row))
+        .on('end', resolve)
+        .on('error', reject);
+    });
+
+    // Find matching gotha visit by "ID" column
+    const visitIndex = gothaVisits.findIndex(v => String(v.ID) === String(leadID));
+    if (visitIndex === -1) {
+      throw new Error('Gotha Visit not found');
+    }
+
+    // Parse existing opinionOrReason
+    let opinions = [];
+    try {
+      opinions = gothaVisits[visitIndex]["Opinion / Reason"] 
+        ? gothaVisits[visitIndex]["Opinion / Reason"].split(" | ") 
+        : [];
+    } catch {
+      opinions = [];
+    }
+
+    console.log("++++++ Existing Opinions / Reasons");
+    console.log(opinions);
+
+    // Append new opinion/reason
+    opinions.push(`${followup.date}: ${followup.note}`);
+    gothaVisits[visitIndex]["Opinion / Reason"] = opinions.join(" | ");
+
+    // Write back to CSV
+    const csvData = stringify(gothaVisits, { header: true });
+    fs.writeFileSync(tempLocal, csvData);
+    await sftp.fastPut(tempLocal, remotePath);
+
+    return gothaVisits[visitIndex];
+  } finally {
+    sftp.end();
+    if (fs.existsSync(tempLocal)) fs.unlinkSync(tempLocal);
+  }
+}
+ async function fetchGothaCSVBaramati() {
+  const sftp = new Client();
+  await sftp.connect({
+    host: process.env.SERVER_IP,
+    port: process.env.SERVER_PORT,
+    username: process.env.SERVER_USER,
+    password: process.env.SERVER_PASS,
+  });
+
+  // ⚠️ Update file path if different
+  const fileBuffer = await sftp.get(
+    "/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Baramati/Gotha-Visits/GothaVisits.csv"
+  );
+
+  await sftp.end();
+
+  const csvText = fileBuffer.toString("utf-8");
+  console.log("Gotha CSV Raw:", csvText);
+
+  return parseLeads(csvText); // ✅ Reuse parser
+}
+
 async function addGothaFollowupCSV(leadID, followup) {
   console.log("****** Gotha Visit ID *****");
   console.log(leadID);
@@ -2897,6 +3071,6 @@ console.log('✅ Visit appended and file uploaded to SFTP.');
 
 
 
-module.exports = {fetchLeadsBaramatiCSV,uploadLeadBaramatiCSV,addFollowupBaramatiCSV,fetchGothaCSV,addGothaFollowupCSV,uploadGothaVisitCSV,fetchAndParsependingOrdersCSVFinal,AreaInchargeapproveOrderAndUploadFile,addFollowupCSV,fetchLeadsCSV,uploadLeadCSV,RejectOrderAndUploadFileShrirampur,saveComplaintToSFTPShrirampur , fetchAndParseDealerTargetCSVShrirampur , fetchAndParseOrderHistoryCSVShrirampur , fetchAndParseCSVShrirampur , fetchAndParseSubDealerCSVShrirampur , fetchAndParseProductsCSVShrirampur , placeOrderAndUploadFileShrirampur,verifyDealerShrirampur,fetchAndParsependingOrdersCSVShrirampur,
+module.exports = {addGothaFollowupCSV,uploadGothaVisitCSVBaramati,fetchGothaCSVBaramati,fetchLeadsBaramatiCSV,uploadLeadBaramatiCSV,addFollowupBaramatiCSV,fetchGothaCSV,addGothaFollowupCSV,uploadGothaVisitCSV,fetchAndParsependingOrdersCSVFinal,AreaInchargeapproveOrderAndUploadFile,addFollowupCSV,fetchLeadsCSV,uploadLeadCSV,RejectOrderAndUploadFileShrirampur,saveComplaintToSFTPShrirampur , fetchAndParseDealerTargetCSVShrirampur , fetchAndParseOrderHistoryCSVShrirampur , fetchAndParseCSVShrirampur , fetchAndParseSubDealerCSVShrirampur , fetchAndParseProductsCSVShrirampur , placeOrderAndUploadFileShrirampur,verifyDealerShrirampur,fetchAndParsependingOrdersCSVShrirampur,
 approveOrderAndUploadFileShrirampur , uploadVisitsCSVShrirampur,fetchOutstandingAndParseCSVShrirampur,RejectOrderAndUploadFileBaramati,fetchAndParseInvoiceHistoryBaramati,replacePendingOrderBaramati,fetchAndParseDealerTargetCSVBaramati,fetchAndParseOrderHistoryCSVBaramati,fetchAndParseCSVBaramati,fetchAndParseSubDealerCSVBaramati,fetchAndParseProductsCSVBaramati,placeOrderAndUploadFileBaramati,verifyDealerBaramati,fetchOutstandingAndParseCSVBaramati,fetchAndParsependingOrdersCSVBaramati , approveOrderAndUploadFileBaramati,uploadVisitsCSVBaramati,saveComplaintToSFTPBaramati,uploadVisitsCSVBaramati, approveOrderAndUploadFileBaramati ,fetchAndParsependingOrdersCSVBaramati,fetchAndParseDealerTargetCSVBaramati,
 fetchOutstandingAndParseCSVBaramati , verifyDealerBaramati , placeOrderAndUploadFileBaramati, fetchAndParseProductsCSVBaramati , fetchAndParseSubDealerCSVBaramati,fetchAndParseCSVBaramati,fetchAndParseOrderHistoryCSVBaramati , replacePendingOrderBaramati , fetchAndParseInvoiceHistoryBaramati, RejectOrderAndUploadFileBaramati, saveComplaintToSFTPBaramati,saveComplaintToSFTP,RejectOrderAndUploadFile,fetchAndParseInvoiceHistory,replacePendingOrder,uploadVisitsCSV,approveOrderAndUploadFile , fetchAndParsependingOrdersCSV,fetchAndParseDealerTargetCSV, fetchAndParseOrderHistoryCSV,fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
