@@ -31,9 +31,10 @@ const { csklogin ,cskloginShrirampur,cskloginBaramati} = require('../controllers
 const { replacependingordercontroller , replacependingordercontrollerShrirampur,replacependingordercontrollerBaramati } = require('../controllers/replacependingorder');
 const { getInvoiceHistory ,getInvoiceHistoryShrirampur,getInvoiceHistoryBaramati} = require('../controllers/invoiceHistory');
 const {postComplaint,postComplaintShrirampur,postComplaintBaramati}=require('../controllers/postComplaintController');
-const {GothaController}=require('../controllers/gothaVisitsController');
-const {getGotha}=require('../controllers/getGothaController');
-const {addOpinionController}=require('../controllers/addOpinionController');
+
+const {GothaController,GothaControllerBaramati}=require('../controllers/gothaVisitsController');
+const {getGotha,getGothaBaramati}=require('../controllers/getGothaController');
+const {addOpinionController,addOpinionControllerBaramati}=require('../controllers/addOpinionController');
 //SATARA
 router.post('/leads',LeadController)
 router.post('/add-followup-gotha',addOpinionController)
@@ -127,6 +128,9 @@ router.post('/upload-complaint-Shrirampur', upload.single('photo'), postComplain
 router.post('/upload-complaint-Baramati', upload.single('photo'), postComplaintBaramati);
 
 //BARAMATI
+router.post('/gotha-baramati',GothaControllerBaramati)
+router.get('/get-gotha-baramati',getGothaBaramati)
+router.post('/add-followup-gotha-baramati',addOpinionControllerBaramati)
 router.post('/approveOrder-Baramati',approveOrderBaramati)
 router.post('/rejectOrder-Baramati',rejectOrderBaramati)
 router.get('/dealers-Baramati', getDealersBaramati);
