@@ -1426,6 +1426,93 @@ console.log('✅ Visit appended and file uploaded to SFTP.');
 //SHRIRAMPUR PLANT
 //shrirampur 
 
+async function uploadGothaVisitCSVShrirampur(gothaData) {
+  const sftp = new Client();
+
+  // Mapping your form fields to CSV headers
+const headerMap = {
+    id: "ID",
+
+    // From Excel fields
+    village: "Village",
+    ownerName: "Owner Name",
+    mobile: "Mobile Number",
+    cows: "Cows",
+    calves: "Calves",
+    buffaloes: "Buffaloes",
+    goats: "Goats",
+    dailyMilkProduction: "Daily Milk Production (liters)",
+    housingType: "Housing Type (Open/Closed)",
+    milchFeedCompanyProduct: "Milch Feed (Company/Product)",
+    milchFeedSaraki: "Milch Feed - Saraki",
+    milchFeedMaize: "Milch Feed - Maize",
+    milchFeedWheat: "Milch Feed - Wheat",
+    calfFeedCompanyProduct: "Calf Feed (Company/Product)",
+    calfFeedSarakiMaizeWheat: "Calf Feed - Saraki/Maize/Wheat",
+    mineralMixtureCompany: "Mineral Mixture (Company Name)",
+    mineralMixtureUsage: "Mineral Mixture Usage (Regular/Irregular)",
+    fodderGreen: "Fodder Type - Green",
+    fodderDry: "Fodder Type - Dry",
+
+    // Keep these as extra
+    opinionOrReason: "Opinion / Reason",
+    createdAt: "Created At",
+  };
+  try {
+    await sftp.connect({
+      host: process.env.SERVER_IP,
+      port: process.env.SERVER_PORT,
+      username: process.env.SERVER_USER,
+      password: process.env.SERVER_PASS,
+    });
+
+    const fileName = `GothaVisits.csv`;
+    const tempPath = path.join(__dirname, "..", "uploads", fileName);
+    const remotePath = `/DIR_SALESTRENDZ/DIR_SALESTRENDZ_Baramati/Gotha-Visits/${fileName}`;
+
+    let existingRows = [];
+
+    // Step 1: Download existing CSV if exists
+    const fileExists = await sftp.exists(remotePath);
+    if (fileExists) {
+      await sftp.fastGet(remotePath, tempPath);
+
+      await new Promise((resolve, reject) => {
+        fs.createReadStream(tempPath)
+          .pipe(csvParser())
+          .on("data", (row) => existingRows.push(row))
+          .on("end", resolve)
+          .on("error", reject);
+      });
+    }
+
+    // Step 2: Prepare new row from gothaData
+    const newRow = {};
+    for (const key in headerMap) {
+      if (Object.prototype.hasOwnProperty.call(headerMap, key)) {
+        newRow[headerMap[key]] = gothaData[key] ?? "";
+      }
+    }
+
+    // Step 3: Merge rows
+    const allRows = [...existingRows, newRow];
+    const json2csvParser = new Parser({ fields: Object.values(headerMap) });
+    const csv = json2csvParser.parse(allRows);
+
+    // Step 4: Save locally and upload
+    fs.writeFileSync(tempPath, csv, "utf8");
+    await sftp.put(tempPath, remotePath);
+    await sftp.end();
+
+    console.log("✅ Gotha Visit CSV uploaded successfully.");
+    return { success: true };
+  } catch (err) {
+    console.error("❌ SFTP Error:", err);
+    return { success: false, error: err.message };
+  }
+}
+
+
 async function saveComplaintToSFTPShrirampur({ ID, Name, date, filePath, fileName }) {
  const sftp = new Client();
 
@@ -3071,6 +3158,6 @@ console.log('✅ Visit appended and file uploaded to SFTP.');
 
 
 
-module.exports = {addGothaFollowupCSVBaramati,addGothaFollowupCSV,uploadGothaVisitCSVBaramati,fetchGothaCSVBaramati,fetchLeadsBaramatiCSV,uploadLeadBaramatiCSV,addFollowupBaramatiCSV,fetchGothaCSV,addGothaFollowupCSV,uploadGothaVisitCSV,fetchAndParsependingOrdersCSVFinal,AreaInchargeapproveOrderAndUploadFile,addFollowupCSV,fetchLeadsCSV,uploadLeadCSV,RejectOrderAndUploadFileShrirampur,saveComplaintToSFTPShrirampur , fetchAndParseDealerTargetCSVShrirampur , fetchAndParseOrderHistoryCSVShrirampur , fetchAndParseCSVShrirampur , fetchAndParseSubDealerCSVShrirampur , fetchAndParseProductsCSVShrirampur , placeOrderAndUploadFileShrirampur,verifyDealerShrirampur,fetchAndParsependingOrdersCSVShrirampur,
+module.exports = {uploadGothaVisitCSVShrirampur,addGothaFollowupCSVBaramati,addGothaFollowupCSV,uploadGothaVisitCSVBaramati,fetchGothaCSVBaramati,fetchLeadsBaramatiCSV,uploadLeadBaramatiCSV,addFollowupBaramatiCSV,fetchGothaCSV,addGothaFollowupCSV,uploadGothaVisitCSV,fetchAndParsependingOrdersCSVFinal,AreaInchargeapproveOrderAndUploadFile,addFollowupCSV,fetchLeadsCSV,uploadLeadCSV,RejectOrderAndUploadFileShrirampur,saveComplaintToSFTPShrirampur , fetchAndParseDealerTargetCSVShrirampur , fetchAndParseOrderHistoryCSVShrirampur , fetchAndParseCSVShrirampur , fetchAndParseSubDealerCSVShrirampur , fetchAndParseProductsCSVShrirampur , placeOrderAndUploadFileShrirampur,verifyDealerShrirampur,fetchAndParsependingOrdersCSVShrirampur,
 approveOrderAndUploadFileShrirampur , uploadVisitsCSVShrirampur,fetchOutstandingAndParseCSVShrirampur,RejectOrderAndUploadFileBaramati,fetchAndParseInvoiceHistoryBaramati,replacePendingOrderBaramati,fetchAndParseDealerTargetCSVBaramati,fetchAndParseOrderHistoryCSVBaramati,fetchAndParseCSVBaramati,fetchAndParseSubDealerCSVBaramati,fetchAndParseProductsCSVBaramati,placeOrderAndUploadFileBaramati,verifyDealerBaramati,fetchOutstandingAndParseCSVBaramati,fetchAndParsependingOrdersCSVBaramati , approveOrderAndUploadFileBaramati,uploadVisitsCSVBaramati,saveComplaintToSFTPBaramati,uploadVisitsCSVBaramati, approveOrderAndUploadFileBaramati ,fetchAndParsependingOrdersCSVBaramati,fetchAndParseDealerTargetCSVBaramati,
 fetchOutstandingAndParseCSVBaramati , verifyDealerBaramati , placeOrderAndUploadFileBaramati, fetchAndParseProductsCSVBaramati , fetchAndParseSubDealerCSVBaramati,fetchAndParseCSVBaramati,fetchAndParseOrderHistoryCSVBaramati , replacePendingOrderBaramati , fetchAndParseInvoiceHistoryBaramati, RejectOrderAndUploadFileBaramati, saveComplaintToSFTPBaramati,saveComplaintToSFTP,RejectOrderAndUploadFile,fetchAndParseInvoiceHistory,replacePendingOrder,uploadVisitsCSV,approveOrderAndUploadFile , fetchAndParsependingOrdersCSV,fetchAndParseDealerTargetCSV, fetchAndParseOrderHistoryCSV,fetchAndParseSubDealerCSV,fetchOutstandingAndParseCSV,fetchAndParseCSV,fetchAndParseProductsCSV ,placeOrderAndUploadFile,verifyDealer};
